@@ -1,6 +1,13 @@
-# StateQuest
+<p align="center">
+  <img src="dist/logo.png" alt="StateQuest" width="500">
+</p>
+<p align="center">
+  <a href="https://natsteff.github.io/statequest/">
+    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.2.1" width="420">
+  </a>
+</p>
 
-[Play StateQuest](https://natsteff.github.io/statequest/)
+# StateQuest
 
 A browser geography game for all 50 U.S. states. Learn silhouettes, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Missed states receive extra practice weight. Scores, streaks and explored states are stored in the current browser.
 

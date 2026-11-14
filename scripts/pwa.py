@@ -1,22 +1,11 @@
 """Generate deterministic app icons and a subpath-scoped offline worker."""
-import hashlib,json,struct,zlib
+import hashlib,json
 
 def icons(root):
-    def chunk(kind,data):
-        return struct.pack('!I',len(data))+kind+data+struct.pack('!I',zlib.crc32(kind+data)&0xffffffff)
-    for size in (192,512):
-        rows=[]
-        # A compass diamond, kept within the maskable icon safe area.
-        for y in range(size):
-            row=bytearray()
-            for x in range(size):
-                u=abs((x+.5)/size-.5);v=abs((y+.5)/size-.5)
-                star=(u+v/3<.30 and v+u/3<.30)
-                dot=u*u+v*v<.0016
-                row.extend((220,232,168) if star and not dot else (24,62,53))
-            rows.append(b'\0'+row)
-        png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!IIBBBBB',size,size,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(b''.join(rows)))+chunk(b'IEND',b'')
-        (root/f'icon-{size}.png').write_bytes(png)
+    # Raster variants are checked in so builds need no image tools or network.
+    source=root.parent/'assets'
+    for name in ('icon-192.png','icon-512.png','apple-touch-icon.png'):
+        (root/name).write_bytes((source/name).read_bytes())
 
 def worker(root):
     assets=sorted(p.name for p in root.iterdir() if p.is_file() and p.name not in ('sw.js','build.json'))

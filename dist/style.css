@@ -9,3 +9,5 @@ button,input,select,summary{min-height:44px}button,input,select{font-size:16px}b
 }
 @media(max-width:360px){.navigation select{max-width:120px}.navigation button{font-size:12px}.edition{display:none}.choices button{font-size:14px}.shape{height:150px}.card{min-height:165px}}
 @media(max-height:500px) and (max-width:950px) and (orientation:landscape){.intro{display:none}.card{min-height:140px}.shape{height:120px}.layout{grid-template-columns:1fr}.challenge-head{padding:4px 12px}.answers{padding:10px}}
+
+.brand{display:block;width:220px;height:150px;overflow:hidden;position:relative}.app-wordmark{display:block;width:220px;height:220px;position:absolute;top:-40px;left:0;object-fit:contain}header{min-height:160px;padding-top:5px;padding-bottom:5px}@media(max-width:760px){header{min-height:98px;padding-top:0;padding-bottom:0}.brand{width:140px;height:98px}.app-wordmark{width:140px;height:140px;top:-22px}}
