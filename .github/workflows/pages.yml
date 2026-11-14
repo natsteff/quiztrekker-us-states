@@ -1,0 +1,40 @@
+name: Test and deploy StateQuest
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: statequest-pages
+  cancel-in-progress: false
+jobs:
+  test-and-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify geography and rebuild
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Verify gameplay and backups
+        run: node tests/core.test.cjs
+      - name: Verify offline cache and project scope
+        run: node tests/pwa.test.cjs
+      - name: Verify reproducible build
+        run: git diff --exit-code -- dist
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+  deploy:
+    needs: test-and-build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy game
+        id: deployment
+        uses: actions/deploy-pages@v4
