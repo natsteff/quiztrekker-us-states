@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/statequest/">
-    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.2.1" width="420">
+    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.3.0" width="420">
   </a>
 </p>
 
@@ -44,7 +44,7 @@ Boundary data: [US Atlas 3.0.1](https://github.com/topojson/us-atlas), derived f
 
 ## Mobile installation and backups
 
-Phone layouts put gameplay first, with fixed bottom mode controls, 44px minimum control heights, safe-area spacing and swipeable cards. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates become active after all game windows close and reopen; an update notice appears when detected.
+Phones start in Card view: one large flashcard fills the available game area, with Learn, Play and My Progress controls at the bottom. Overview switches to the wider dashboard; the chosen view stays on this browser. My Progress contains scores, backups, settings and installation help. Buttons use bold colors, tactile borders and large touch targets. Card geometry remains accurate. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates become active after all game windows close and reopen; an update notice appears when detected.
 
 Export save downloads a versioned JSON backup. Transfer that file yourself to another device and choose Import save. A validated summary and confirmation precede replacement; import restarts the current visit’s challenge score. Malformed, oversized and unsupported-version files are rejected. Save files are processed entirely on the device. Import replaces rather than merges progress; export first to retain the old journal.
 

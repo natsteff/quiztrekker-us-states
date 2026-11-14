@@ -41,7 +41,7 @@ def build():
     worker(ROOT/'dist')
     assets = sorted(p for p in (ROOT/'dist').iterdir() if p.is_file() and p.name!='build.json')
     digest = hashlib.sha256(b''.join(p.read_bytes() for p in assets)).hexdigest()
-    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.2.1','sha256':digest},indent=2)+'\n')
-    print(f'StateQuest 0.2.1: {len(states)} state paths; build {digest[:12]}')
+    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.3.0','sha256':digest},indent=2)+'\n')
+    print(f'StateQuest 0.3.0: {len(states)} state paths; build {digest[:12]}')
     return states
 if __name__=='__main__': build()
