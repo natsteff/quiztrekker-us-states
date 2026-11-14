@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/statequest/">
-    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.3.0" width="420">
+    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.4.0" width="420">
   </a>
 </p>
 
@@ -34,6 +34,7 @@ Progress is specific to this browser and origin. Clearing browser data removes i
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/core.test.cjs
 node tests/pwa.test.cjs
+node tests/games.test.cjs
 ```
 
 The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, weighted review and storage failures. JavaScript tests require Node (only tests require it).
@@ -53,3 +54,13 @@ Export save downloads a versioned JSON backup. Transfer that file yourself to an
 Publish the **contents of `dist/`** as a static Pages artifact. All asset URLs, manifest scope/start URL and service-worker scope are relative, supporting a project path such as `/statequest/` without code changes. The worker caches only bundled game assets and deletes only older caches for its own project path. The GitHub Actions workflow tests and rebuilds the game, verifies reproducibility, and publishes only `dist/` to Pages when `main` changes. Verify install/offline behavior on the final HTTPS URL before release.
 
 Physical iPhone/Android checks remain necessary for home-screen installation, soft-keyboard behavior, safe areas, larger system text and touch gestures. Browser viewport checks alone do not establish physical-device compatibility.
+
+## State facts and mini-games
+
+Flip a Learn card to see up to four fact groups. In **My Progress → Card Facts**, uncheck a group to make room for another; Restore Defaults selects capital, flag, nickname and statehood. Choices stay in this browser. **More Facts** is always beside the state name and shows the unselected groups, ten largest cities/communities, a selected NPS landmark and neighboring states. Fact choices are separate from the progress JSON backup.
+
+In **Play**, choose Shape Challenge, Population Showdown, Size Showdown or Neighboring States. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared water boundaries and exclude corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers affect missed-shape practice weights.
+
+See the in-app [Image/Data Credits](https://natsteff.github.io/statequest/credits.html) for exact Census/ACS vintages, Hawaii and Rhode Island geography exceptions, CRS statehood dates, Flagpedia attribution, symbol references and map licenses. No live data service, Census API key or external flag request is needed during play. Cached credits work offline; outbound source/landmark links need a connection.
+
+Fact data is checked into `data/state-facts.json`; `scripts/build.py` packages it and all 50 original SVGs from `public/assets/flags/`. To refresh the pinned sources, run `python3 scripts/refresh_facts.py --download`, review changes and source vintages, run tests, then rebuild. This maintenance operation uses the network and is separate from the normal offline build. See [data methods](data/README.md).

@@ -33,4 +33,5 @@ for(const text of ['bad', '{}',JSON.stringify({app:'StateQuest',version:2,progre
 let bad=JSON.parse(exported);bad.progress.best=-5;
 check((()=>{try{c.importProgress(JSON.stringify(bad),states);return false;}catch{return true;}})());
 check((()=>{try{c.importProgress(' '.repeat(100001),states);return false;}catch{return true;}})());
+const isolated=c.clean();c.record(isolated,states[0],true,0,false);check(Object.keys(isolated.records).length===0);check(isolated.best===100&&isolated.streak===1);
 console.log(`${checks} gameplay and persistence assertions passed`);

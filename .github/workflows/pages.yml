@@ -17,6 +17,8 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_*.py'
       - name: Verify gameplay and backups
         run: node tests/core.test.cjs
+      - name: Verify fact settings and new quizzes
+        run: node tests/games.test.cjs
       - name: Verify offline cache and project scope
         run: node tests/pwa.test.cjs
       - name: Verify reproducible build

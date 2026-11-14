@@ -1,5 +1,5 @@
 """Decode pinned TopoJSON to SVG paths without third-party build dependencies."""
-import json, pathlib, hashlib
+import json, pathlib, hashlib, shutil
 from pwa import icons, worker
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 def build():
@@ -37,11 +37,14 @@ def build():
     states.sort(key=lambda s:s['name'])
     assert len(states)==50
     (ROOT/'dist/states.js').write_text('export const states = '+json.dumps(states,separators=(',',':'))+';\n')
+    facts=json.loads((ROOT/'data/state-facts.json').read_text())
+    (ROOT/'dist/facts.js').write_text('export const facts = '+json.dumps(facts,ensure_ascii=False,separators=(',',':'))+';\n')
+    shutil.copytree(ROOT/'public/assets/flags',ROOT/'dist/assets/flags',dirs_exist_ok=True)
     icons(ROOT/'dist')
     worker(ROOT/'dist')
-    assets = sorted(p for p in (ROOT/'dist').iterdir() if p.is_file() and p.name!='build.json')
+    assets = sorted(p for p in (ROOT/'dist').rglob('*') if p.is_file() and p.name!='build.json')
     digest = hashlib.sha256(b''.join(p.read_bytes() for p in assets)).hexdigest()
-    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.3.0','sha256':digest},indent=2)+'\n')
-    print(f'StateQuest 0.3.0: {len(states)} state paths; build {digest[:12]}')
+    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.4.0','sha256':digest},indent=2)+'\n')
+    print(f'StateQuest 0.4.0: {len(states)} state paths; build {digest[:12]}')
     return states
 if __name__=='__main__': build()

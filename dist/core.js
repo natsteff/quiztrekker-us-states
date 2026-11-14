@@ -19,9 +19,8 @@ export function choose(states, progress, previous, random=Math.random) {
   let value=random()*pool.reduce((sum,s)=>sum+weight(progress,s),0);
   return pool.find(s=>(value-=weight(progress,s))<0) || pool.at(-1);
 }
-export function record(progress, state, correct, score) {
-  const r=progress.records[state.abbr] ||= {correct:0,missed:0};
-  r[correct?'correct':'missed']++;
+export function record(progress, state, correct, score, trackState=true) {
+  if(trackState){const r=progress.records[state.abbr] ||= {correct:0,missed:0};r[correct?'correct':'missed']++;}
   progress.streak=correct?progress.streak+1:0;
   progress.bestStreak=Math.max(progress.bestStreak,progress.streak);
   const points=correct?100+Math.min(100,(progress.streak-1)*10):0;

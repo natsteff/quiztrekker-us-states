@@ -1,0 +1,252 @@
+{
+  "AL": {
+    "url": "https://www.nps.gov/bicr/index.htm",
+    "status": 200,
+    "title": "Birmingham Civil Rights National Monument (U.S. National Park Service)"
+  },
+  "AK": {
+    "url": "https://www.nps.gov/dena/index.htm",
+    "status": 200,
+    "title": "Denali National Park & Preserve (U.S. National Park Service)"
+  },
+  "AZ": {
+    "url": "https://www.nps.gov/grca/index.htm",
+    "status": 200,
+    "title": "Grand Canyon National Park (U.S. National Park Service)"
+  },
+  "AR": {
+    "url": "https://www.nps.gov/hosp/index.htm",
+    "status": 200,
+    "title": "Hot Springs National Park (U.S. National Park Service)"
+  },
+  "CA": {
+    "url": "https://www.nps.gov/yose/index.htm",
+    "status": 200,
+    "title": "Yosemite National Park (U.S. National Park Service)"
+  },
+  "CO": {
+    "url": "https://www.nps.gov/meve/index.htm",
+    "status": 200,
+    "title": "Mesa Verde National Park (U.S. National Park Service)"
+  },
+  "CT": {
+    "url": "https://www.nps.gov/wefa/index.htm",
+    "status": 200,
+    "title": "Weir Farm National Historical Park (U.S. National Park Service)"
+  },
+  "DE": {
+    "url": "https://www.nps.gov/frst/index.htm",
+    "status": 200,
+    "title": "First State National Historical Park (U.S. National Park Service)"
+  },
+  "FL": {
+    "url": "https://www.nps.gov/ever/index.htm",
+    "status": 200,
+    "title": "Everglades National Park (U.S. National Park Service)"
+  },
+  "GA": {
+    "url": "https://www.nps.gov/malu/index.htm",
+    "status": 200,
+    "title": "Martin Luther King, Jr. National Historical Park (U.S. National Park Service)"
+  },
+  "HI": {
+    "url": "https://www.nps.gov/havo/index.htm",
+    "status": 200,
+    "title": "Hawai\u02bbi Volcanoes National Park (U.S. National Park Service)"
+  },
+  "ID": {
+    "url": "https://www.nps.gov/crmo/index.htm",
+    "status": 200,
+    "title": "Craters Of The Moon National Monument & Preserve (U.S. National Park Service)"
+  },
+  "IL": {
+    "url": "https://www.nps.gov/liho/index.htm",
+    "status": 200,
+    "title": "Lincoln Home National Historic Site (U.S. National Park Service)"
+  },
+  "IN": {
+    "url": "https://www.nps.gov/indu/index.htm",
+    "status": 200,
+    "title": "Indiana Dunes National Park (U.S. National Park Service)"
+  },
+  "IA": {
+    "url": "https://www.nps.gov/heho/index.htm",
+    "status": 200,
+    "title": "Herbert Hoover National Historic Site (U.S. National Park Service)"
+  },
+  "KS": {
+    "url": "https://www.nps.gov/tapr/index.htm",
+    "status": 200,
+    "title": "Tallgrass Prairie National Preserve (U.S. National Park Service)"
+  },
+  "KY": {
+    "url": "https://www.nps.gov/maca/index.htm",
+    "status": 200,
+    "title": "Mammoth Cave National Park (U.S. National Park Service)"
+  },
+  "LA": {
+    "url": "https://www.nps.gov/jela/index.htm",
+    "status": 200,
+    "title": "Jean Lafitte National Historical Park and Preserve (U.S. National Park Service)"
+  },
+  "ME": {
+    "url": "https://www.nps.gov/acad/index.htm",
+    "status": 200,
+    "title": "Acadia National Park (U.S. National Park Service)"
+  },
+  "MD": {
+    "url": "https://www.nps.gov/fomc/index.htm",
+    "status": 200,
+    "title": "Fort McHenry National Monument and Historic Shrine (U.S. National Park Service)"
+  },
+  "MA": {
+    "url": "https://www.nps.gov/mima/index.htm",
+    "status": 200,
+    "title": "Minute Man National Historical Park (U.S. National Park Service)"
+  },
+  "MI": {
+    "url": "https://www.nps.gov/isro/index.htm",
+    "status": 200,
+    "title": "Isle Royale National Park (U.S. National Park Service)"
+  },
+  "MN": {
+    "url": "https://www.nps.gov/voya/index.htm",
+    "status": 200,
+    "title": "Voyageurs National Park (U.S. National Park Service)"
+  },
+  "MS": {
+    "url": "https://www.nps.gov/vick/index.htm",
+    "status": 200,
+    "title": "Vicksburg National Military Park (U.S. National Park Service)"
+  },
+  "MO": {
+    "url": "https://www.nps.gov/jeff/index.htm",
+    "status": 200,
+    "title": "Gateway Arch National Park (U.S. National Park Service)"
+  },
+  "MT": {
+    "url": "https://www.nps.gov/glac/index.htm",
+    "status": 200,
+    "title": "Glacier National Park (U.S. National Park Service)"
+  },
+  "NE": {
+    "url": "https://www.nps.gov/scbl/index.htm",
+    "status": 200,
+    "title": "Scotts Bluff National Monument (U.S. National Park Service)"
+  },
+  "NV": {
+    "url": "https://www.nps.gov/grba/index.htm",
+    "status": 200,
+    "title": "Great Basin National Park (U.S. National Park Service)"
+  },
+  "NH": {
+    "url": "https://www.nps.gov/saga/index.htm",
+    "status": 200,
+    "title": "Saint-Gaudens National Historical Park (U.S. National Park Service)"
+  },
+  "NJ": {
+    "url": "https://www.nps.gov/pagr/index.htm",
+    "status": 200,
+    "title": "Paterson Great Falls National Historical Park (U.S. National Park Service)"
+  },
+  "NM": {
+    "url": "https://www.nps.gov/cave/index.htm",
+    "status": 200,
+    "title": "Carlsbad Caverns National Park (U.S. National Park Service)"
+  },
+  "NY": {
+    "url": "https://www.nps.gov/stli/index.htm",
+    "status": 200,
+    "title": "Statue Of Liberty National Monument (U.S. National Park Service)"
+  },
+  "NC": {
+    "url": "https://www.nps.gov/caha/index.htm",
+    "status": 200,
+    "title": "Cape Hatteras National Seashore (U.S. National Park Service)"
+  },
+  "ND": {
+    "url": "https://www.nps.gov/thro/index.htm",
+    "status": 200,
+    "title": "Theodore Roosevelt National Park (U.S. National Park Service)"
+  },
+  "OH": {
+    "url": "https://www.nps.gov/cuva/index.htm",
+    "status": 200,
+    "title": "Cuyahoga Valley National Park (U.S. National Park Service)"
+  },
+  "OK": {
+    "url": "https://www.nps.gov/chic/index.htm",
+    "status": 200,
+    "title": "Chickasaw National Recreation Area (U.S. National Park Service)"
+  },
+  "OR": {
+    "url": "https://www.nps.gov/crla/index.htm",
+    "status": 200,
+    "title": "Crater Lake National Park (U.S. National Park Service)"
+  },
+  "PA": {
+    "url": "https://www.nps.gov/inde/index.htm",
+    "status": 200,
+    "title": "Independence National Historical Park (U.S. National Park Service)"
+  },
+  "RI": {
+    "url": "https://www.nps.gov/rowi/index.htm",
+    "status": 200,
+    "title": "Roger Williams National Memorial (U.S. National Park Service)"
+  },
+  "SC": {
+    "url": "https://www.nps.gov/cong/index.htm",
+    "status": 200,
+    "title": "Congaree National Park (U.S. National Park Service)"
+  },
+  "SD": {
+    "url": "https://www.nps.gov/moru/index.htm",
+    "status": 200,
+    "title": "Mount Rushmore National Memorial (U.S. National Park Service)"
+  },
+  "TN": {
+    "url": "https://www.nps.gov/grsm/index.htm",
+    "status": 200,
+    "title": "Great Smoky Mountains National Park (U.S. National Park Service)"
+  },
+  "TX": {
+    "url": "https://www.nps.gov/bibe/index.htm",
+    "status": 200,
+    "title": "Big Bend National Park (U.S. National Park Service)"
+  },
+  "UT": {
+    "url": "https://www.nps.gov/zion/index.htm",
+    "status": 200,
+    "title": "Zion National Park (U.S. National Park Service)"
+  },
+  "VT": {
+    "url": "https://www.nps.gov/mabi/index.htm",
+    "status": 200,
+    "title": "Marsh - Billings - Rockefeller National Historical Park (U.S. National Park Service)"
+  },
+  "VA": {
+    "url": "https://www.nps.gov/shen/index.htm",
+    "status": 200,
+    "title": "Shenandoah National Park (U.S. National Park Service)"
+  },
+  "WA": {
+    "url": "https://www.nps.gov/mora/index.htm",
+    "status": 200,
+    "title": "Mount Rainier National Park (U.S. National Park Service)"
+  },
+  "WV": {
+    "url": "https://www.nps.gov/neri/index.htm",
+    "status": 200,
+    "title": "New River Gorge National Park & Preserve (U.S. National Park Service)"
+  },
+  "WI": {
+    "url": "https://www.nps.gov/apis/index.htm",
+    "status": 200,
+    "title": "Apostle Islands National Lakeshore (U.S. National Park Service)"
+  },
+  "WY": {
+    "url": "https://www.nps.gov/yell/index.htm",
+    "status": 200,
+    "title": "Yellowstone National Park (U.S. National Park Service)"
+  }
+}

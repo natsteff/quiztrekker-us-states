@@ -1,0 +1,54 @@
+{
+  "population-2025.csv": {
+    "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/state/totals/NST-EST2025-ALLDATA.csv",
+    "sha256": "92188e29cb0a67dcf95afa7d6c47359409782f086478b70ea4128eb70e223ca9"
+  },
+  "cities-2025.csv": {
+    "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/cities/totals/sub-est2025.csv",
+    "sha256": "e3508f5201465913476d4ddf91740f191f7977c9f2614a2a7e30b5fd22027934"
+  },
+  "area.html": {
+    "url": "https://www.census.gov/geographies/reference-files/2010/geo/state-area.html",
+    "sha256": "d79091a85c64894ec6d6d57c87423b2eacc5ff36e8145b9d60c151f07e5b8465"
+  },
+  "birds.html": {
+    "url": "https://en.wikipedia.org/wiki/List_of_U.S._state_birds",
+    "sha256": "410152753fee46ed1ec75c9e5143698382ee605cb6e4b85ff8f5ab19adf031c6"
+  },
+  "flowers.html": {
+    "url": "https://en.wikipedia.org/wiki/List_of_U.S._state_and_territory_flowers",
+    "sha256": "2cd473371b246920c3c1d5ef2568af0941362cafd7c570d8aecc77dd0f9f0eab"
+  },
+  "mottos.html": {
+    "url": "https://en.wikipedia.org/wiki/List_of_U.S._state_and_territory_mottos",
+    "sha256": "3d4019e29df9c06de6cdfadbfea8ec7d8ff3cd82a1b0f19c7c1c478dc58f03a7"
+  },
+  "nicknames.html": {
+    "url": "https://en.wikipedia.org/wiki/List_of_U.S._state_and_territory_nicknames",
+    "sha256": "15ef0f20ceee4c9bcedabe7e26e9d4f4812f5043bb4c6e204cfb3057032f07b4"
+  },
+  "flags.zip": {
+    "url": "https://flagcdn.com/us-svg.zip",
+    "sha256": "540e1b532d9925106429e4cb76663785bb71c60d1616701740bed3ac61d599d2"
+  },
+  "hawaii-acs-pop.dat": {
+    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/acsdt5y2024-b01003.dat",
+    "sha256": "4783898c01660796da118888584676b5a020a6e0793b62c0ed5e4ef3d620918d"
+  },
+  "hawaii-acs-geos.txt": {
+    "url": "https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/documentation/Geos20245YR.txt",
+    "sha256": "15d20da6f66d1825b2feeb0a9dcb74067219ad91b8017b0b40f8fdba477984c3"
+  },
+  "statehood.csv": {
+    "url": "https://www.congress.gov/crs-product/R47747",
+    "sha256": "e663b24167d6a14af54be032c257f6f6092ca411df8c4cab97540fcd0e7beac6"
+  },
+  "landmarks.tsv": {
+    "url": "https://www.nps.gov/findapark/index.htm",
+    "sha256": "ce7459691202e1faae3c5e03f88024b95150a0410b91eb1273044bae8e5f5503"
+  },
+  "nicknames.tsv": {
+    "url": "https://en.wikipedia.org/wiki/List_of_U.S._state_and_territory_nicknames",
+    "sha256": "92c239d38ae657d3d98cb8696933c20c62f4345bcf03cafcc8c5c2c5d15eb3b7"
+  }
+}
