@@ -2,13 +2,16 @@ import unittest,json,pathlib,sys,re,math
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from capital_projection import project_capital
+from build import build
 class Capitals(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls): cls.states=build()
     def test_source_and_projection(self):
         capitals=json.loads((ROOT/'data/capital-coordinates.json').read_text())
         golden=json.loads((ROOT/'data/capital-projected.json').read_text())
         usgs=json.loads((ROOT/'data/capitals-usgs.json').read_text())
         source={f['attributes']['city']:f['geometry'] for f in usgs['features']}
-        states=json.loads((ROOT/'dist/states.js').read_text().removeprefix('export const states = ').strip().removesuffix(';'))
+        states=self.states
         self.assertEqual(len(capitals),50)
         self.assertEqual(len({c['state'] for c in capitals}),50)
         for s in states:
@@ -20,7 +23,7 @@ class Capitals(unittest.TestCase):
                 xy=project_capital(c['lon'],c['lat'],s['abbr'])
                 expected=next(c for c in golden if c['state']==s['name'])['xy']
                 self.assertLess(math.dist(xy,expected),1e-8)
-                self.assertEqual(xy,[s['capitalPoint']['x'],s['capitalPoint']['y']])
+                self.assertEqual([round(v,6) for v in xy],[s['capitalPoint']['x'],s['capitalPoint']['y']])
                 # Even-odd point containment in the exact rendered outline, including holes.
                 inside=False;x,y=xy
                 for ring in s['path'].split('M')[1:]:

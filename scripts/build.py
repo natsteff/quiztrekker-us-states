@@ -38,7 +38,7 @@ def build():
         state=metadata[geometry['id']]
         c=capitals[state['name']]
         px,py=project_capital(c['lon'],c['lat'],state['abbr'])
-        states.append({**state, 'path':path, 'bounds':bounds, 'capitalPoint':{'lon':c['lon'],'lat':c['lat'],'x':px,'y':py}})
+        states.append({**state, 'path':path, 'bounds':bounds, 'capitalPoint':{'lon':c['lon'],'lat':c['lat'],'x':round(px,6),'y':round(py,6)}})
     states.sort(key=lambda s:s['name'])
     assert len(states)==50
     (ROOT/'dist/states.js').write_text('export const states = '+json.dumps(states,separators=(',',':'))+';\n')
