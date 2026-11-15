@@ -1,0 +1,474 @@
+{
+  "AB": {
+    "name": "Alberta",
+    "flag": "assets/extra-flags/AB.jpg",
+    "population": 4262635,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 255540.941,
+    "land_sq_mi": 247999.98,
+    "water_sq_mi": 7540.961,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "BC",
+      "NT",
+      "SK",
+      "MT"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/alberta.html"
+    ],
+    "motto": "Fortis et liber (Strong and free)",
+    "flower": "Wild rose",
+    "bird": "Great horned owl"
+  },
+  "BC": {
+    "name": "British Columbia",
+    "flag": "assets/extra-flags/BC.jpg",
+    "population": 5000879,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 364764.223,
+    "land_sq_mi": 357216.312,
+    "water_sq_mi": 7547.911,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "AB",
+      "NT",
+      "YT",
+      "AK",
+      "WA",
+      "ID",
+      "MT"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/british-columbia.html"
+    ],
+    "motto": "Splendor sine occasu (Splendour without diminishment)",
+    "flower": "Pacific dogwood",
+    "bird": "Steller's jay"
+  },
+  "MB": {
+    "name": "Manitoba",
+    "flag": "assets/extra-flags/MB.jpg",
+    "population": 1342153,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 250115.82,
+    "land_sq_mi": 213729.166,
+    "water_sq_mi": 36386.654,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "SK",
+      "NU",
+      "ON",
+      "ND",
+      "MN"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/manitoba.html"
+    ],
+    "motto": "Gloriosus et liber (Glorious and free)",
+    "flower": "Prairie crocus",
+    "bird": "Great gray owl"
+  },
+  "NB": {
+    "name": "New Brunswick",
+    "flag": "assets/extra-flags/NB.jpg",
+    "population": 775610,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 28149.936,
+    "land_sq_mi": 27586.999,
+    "water_sq_mi": 562.937,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "QC",
+      "NS",
+      "ME"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/new-brunswick.html"
+    ],
+    "motto": "Spem reduxit (Hope restored)",
+    "flower": "Purple violet",
+    "bird": "Black-capped chickadee"
+  },
+  "NL": {
+    "name": "Newfoundland and Labrador",
+    "flag": "assets/extra-flags/NL.jpg",
+    "population": 510550,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 156453.228,
+    "land_sq_mi": 144352.786,
+    "water_sq_mi": 12100.442,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "QC"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/newfoundland-and-labrador.html"
+    ],
+    "motto": "Quaerite prime regnum dei (Seek ye first the kingdom of God)",
+    "flower": "Pitcher plant",
+    "bird": "Atlantic puffin"
+  },
+  "NS": {
+    "name": "Nova Scotia",
+    "flag": "assets/extra-flags/NS.jpg",
+    "population": 969383,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 21345.272,
+    "land_sq_mi": 20593.917,
+    "water_sq_mi": 751.355,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "NB"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/nova-scotia.html"
+    ],
+    "motto": "Munit haec et altera vincit (One defends and the other conquers)",
+    "flower": "Trailing arbutus or mayflower",
+    "bird": "Osprey"
+  },
+  "ON": {
+    "name": "Ontario",
+    "flag": "assets/extra-flags/ON.jpg",
+    "population": 14223942,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 415598.433,
+    "land_sq_mi": 354341.781,
+    "water_sq_mi": 61256.652,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "MB",
+      "QC",
+      "MN",
+      "MI",
+      "OH",
+      "PA",
+      "NY"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/ontario.html",
+      "https://www.gg.ca/en/heraldry/public-register/project/2090"
+    ],
+    "motto": "Ut incepit fidelis sic permanet (As loyal she began, so loyal she remains)",
+    "flower": "White trillium",
+    "bird": "Common loon"
+  },
+  "PE": {
+    "name": "Prince Edward Island",
+    "flag": "assets/extra-flags/PE.jpg",
+    "population": 154331,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 2185.338,
+    "land_sq_mi": 2185.338,
+    "water_sq_mi": null,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/prince-edward-island.html"
+    ],
+    "motto": "Parva sub ingenti (The small under the protection of the great)",
+    "flower": "Lady's slipper",
+    "bird": "Blue jay"
+  },
+  "QC": {
+    "name": "Quebec",
+    "flag": "assets/extra-flags/QC.jpg",
+    "population": 8501833,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 595391.15,
+    "land_sq_mi": 527078.867,
+    "water_sq_mi": 68312.283,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "ON",
+      "NB",
+      "NL",
+      "NY",
+      "VT",
+      "NH",
+      "ME"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/quebec.html"
+    ],
+    "motto": "Je me souviens (I remember)",
+    "flower": "Blue flag",
+    "bird": "Snowy owl"
+  },
+  "SK": {
+    "name": "Saskatchewan",
+    "flag": "assets/extra-flags/SK.jpg",
+    "population": 1132505,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 251366.405,
+    "land_sq_mi": 228445.064,
+    "water_sq_mi": 22921.341,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "AB",
+      "NT",
+      "MB",
+      "MT",
+      "ND"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/saskatchewan.html"
+    ],
+    "motto": "Multis e gentibus vires (From many peoples strength)",
+    "flower": "Western red lily",
+    "bird": "Sharp-tailed grouse"
+  },
+  "NT": {
+    "name": "Northwest Territories",
+    "flag": "assets/extra-flags/NT.jpg",
+    "population": 41070,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 519734.432,
+    "land_sq_mi": 456791.672,
+    "water_sq_mi": 62942.76,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "YT",
+      "BC",
+      "AB",
+      "SK",
+      "NU"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/northwest-territories.html"
+    ],
+    "flower": "Mountain avens",
+    "bird": "Gyrfalcon"
+  },
+  "NU": {
+    "name": "Nunavut",
+    "flag": "assets/extra-flags/NU.jpg",
+    "population": 36858,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 808185.177,
+    "land_sq_mi": 747537.408,
+    "water_sq_mi": 60647.769,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "NT",
+      "MB"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/nunavut.html",
+      "https://www.assembly.nu.ca/about-legislative-assembly/coat-arms-nunavut"
+    ],
+    "motto": "Nunavut Sannginivut (Nunavut, our strength)",
+    "flower": "Purple saxifrage",
+    "bird": "Rock ptarmigan"
+  },
+  "YT": {
+    "name": "Yukon",
+    "flag": "assets/extra-flags/YT.jpg",
+    "population": 40232,
+    "population_as_of": "2021-05-11",
+    "population_label": "2021 Canada Census",
+    "population_source": "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+    "area_sq_mi": 186272.284,
+    "land_sq_mi": 183163.389,
+    "water_sq_mi": 3108.895,
+    "area_label": "Atlas of Canada · 2011 table (land + freshwater)",
+    "area_source": "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+    "neighbors": [
+      "BC",
+      "NT",
+      "AK"
+    ],
+    "sources": [
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/220209/t001a-eng.htm",
+      "https://www150.statcan.gc.ca/n1/pub/11-402-x/2011000/chap/geo/tbl/tbl06-eng.htm",
+      "https://www.canada.ca/en/canadian-heritage/services/provincial-territorial-symbols-canada/yukon.html"
+    ],
+    "flower": "Fireweed",
+    "bird": "Raven"
+  },
+  "DC": {
+    "name": "Washington, D.C.",
+    "flag": "assets/extra-flags/DC.svg",
+    "population": 689545,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://data.census.gov/profile/District_of_Columbia?g=040XX00US11",
+    "area_sq_mi": 68.35,
+    "land_sq_mi": 61.127,
+    "water_sq_mi": 7.223,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [
+      "MD",
+      "VA"
+    ],
+    "sources": [
+      "https://data.census.gov/profile/District_of_Columbia?g=040XX00US11",
+      "https://os.dc.gov/page/dc-symbols"
+    ]
+  },
+  "PR": {
+    "name": "Puerto Rico",
+    "flag": "assets/extra-flags/PR.svg",
+    "population": 3285874,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://www.census.gov/quickfacts/PR",
+    "area_sq_mi": 5324.843,
+    "land_sq_mi": 3424.154,
+    "water_sq_mi": 1900.688,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [],
+    "sources": [
+      "https://www.census.gov/quickfacts/PR",
+      "https://www.doi.gov/oia/islands"
+    ]
+  },
+  "GU": {
+    "name": "Guam",
+    "flag": "assets/extra-flags/GU.svg",
+    "population": 153836,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+    "area_sq_mi": 570.618,
+    "land_sq_mi": 209.868,
+    "water_sq_mi": 360.75,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [],
+    "sources": [
+      "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+      "https://www.doi.gov/oia/islands"
+    ]
+  },
+  "VI": {
+    "name": "U.S. Virgin Islands",
+    "flag": "assets/extra-flags/VI.svg",
+    "population": 87146,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+    "area_sq_mi": 732.922,
+    "land_sq_mi": 134.372,
+    "water_sq_mi": 598.55,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [],
+    "sources": [
+      "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+      "https://www.doi.gov/oia/islands"
+    ]
+  },
+  "AS": {
+    "name": "American Samoa",
+    "flag": "assets/extra-flags/AS.svg",
+    "population": 49710,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+    "area_sq_mi": 581.085,
+    "land_sq_mi": 76.355,
+    "water_sq_mi": 504.73,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [],
+    "sources": [
+      "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+      "https://www.doi.gov/oia/islands"
+    ]
+  },
+  "MP": {
+    "name": "Northern Mariana Islands",
+    "flag": "assets/extra-flags/MP.svg",
+    "population": 47329,
+    "population_as_of": "2020-04-01",
+    "population_label": "2020 U.S. Census",
+    "population_source": "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+    "area_sq_mi": 1975.509,
+    "land_sq_mi": 182.353,
+    "water_sq_mi": 1793.156,
+    "area_label": "Census TIGERweb · retrieved Nov 15, 2026 (land + water)",
+    "area_source": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "neighbors": [],
+    "sources": [
+      "https://content.govdelivery.com/accounts/USCENSUS/bulletins/2f969d8",
+      "https://www.doi.gov/oia/islands"
+    ]
+  },
+  "UM": {
+    "name": "U.S. Minor Outlying Islands",
+    "flag": "assets/extra-flags/UM.svg",
+    "population": null,
+    "population_note": "No permanent population; temporary scientific, military and refuge personnel may be present. No comparable census total in this dataset.",
+    "neighbors": [],
+    "description": "A collective geographic entry for Baker, Howland, Jarvis, Johnston, Kingman, Midway, Navassa, Palmyra and Wake. The U.S. national flag is shown; these islands have no common capital.",
+    "sources": [
+      "https://www.fisheries.noaa.gov/pacific-islands/habitat-conservation/pacific-islands-heritage-marine-national-monument",
+      "https://www.fws.gov/refuge/midway-atoll",
+      "https://www.fws.gov/refuge/navassa-island"
+    ]
+  }
+}

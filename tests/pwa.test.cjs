@@ -6,6 +6,8 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  let wait;events.message({data:{type:'OTHER'},waitUntil:p=>wait=p});assert.equal(skipped,0);events.message({data:{type:'SKIP_WAITING'},waitUntil:p=>wait=p});await wait;assert.equal(skipped,1);
  events.install({waitUntil:p=>wait=p});await wait;
  assert.equal(added.filter(p=>p.startsWith('./assets/flags/')).length,50);
+ assert.equal(added.filter(p=>p.startsWith('./assets/extra-flags/')).length,20);
+ assert(['./extra-locations.js','./geography.js','./GSHHG-LICENSE.txt','./GSHHG-COPYING.LESSERv3.txt','./GSHHG-COPYINGv3.txt'].every(p=>added.includes(p)));
  assert(['./decks.js','./update-client.js','./version.js'].every(p=>added.includes(p)));
  assert(added.includes('./credits.html') && added.includes('./facts.js'));
  assert(added.includes('./index.html') && added.includes('./states.js') && added.includes('./icon-512.png'));
@@ -15,5 +17,5 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  events.fetch({request:{url:'https://example.github.io/quiztrekker-us-states/states.js',method:'GET'},respondWith:p=>response=p});assert.equal((await response).cached,'./states.js');
  for(const path of ['credits.html','assets/flags/MN.svg']){events.fetch({request:{url:'https://example.github.io/quiztrekker-us-states/'+path,method:'GET'},respondWith:p=>response=p});assert.equal((await response).cached,'./'+path);}
  for(const url of ['https://example.github.io/other/','https://elsewhere.test/quiztrekker-us-states/','https://example.github.io/quiztrekker-us-states/unknown.json']){let intercepted=false;events.fetch({request:{url,method:'GET'},respondWith:()=>intercepted=true});assert.equal(intercepted,false);}
- console.log('15 offline cache/subpath isolation checks passed');
+ console.log('17 offline cache/subpath isolation checks passed');
 })()

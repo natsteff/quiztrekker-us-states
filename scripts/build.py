@@ -1,6 +1,7 @@
 """Decode pinned TopoJSON to SVG paths without third-party build dependencies."""
 import json, pathlib, hashlib, shutil
 from pwa import icons, worker
+from expansion import build_expansion
 from capital_projection import project_capital
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 def build():
@@ -44,13 +45,15 @@ def build():
     (ROOT/'dist/states.js').write_text('export const states = '+json.dumps(states,separators=(',',':'))+';\n')
     facts=json.loads((ROOT/'data/state-facts.json').read_text())
     (ROOT/'dist/facts.js').write_text('export const facts = '+json.dumps(facts,ensure_ascii=False,separators=(',',':'))+';\n')
+    build_expansion(ROOT)
+    shutil.copytree(ROOT/'public/assets/extra-flags',ROOT/'dist/assets/extra-flags',dirs_exist_ok=True)
     shutil.copytree(ROOT/'public/assets/flags',ROOT/'dist/assets/flags',dirs_exist_ok=True)
-    (ROOT/'dist/version.js').write_text("export const VERSION='0.7.0';\n")
+    (ROOT/'dist/version.js').write_text("export const VERSION='0.8.0';\n")
     icons(ROOT/'dist')
     worker(ROOT/'dist')
     assets = sorted(p for p in (ROOT/'dist').rglob('*') if p.is_file() and p.name!='build.json')
     digest = hashlib.sha256(b''.join(p.read_bytes() for p in assets)).hexdigest()
-    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.7.0','sha256':digest},indent=2)+'\n')
-    print(f'QuizTrekker - US States 0.7.0: {len(states)} state paths; build {digest[:12]}')
+    (ROOT/'dist/build.json').write_text(json.dumps({'version':'0.8.0','sha256':digest},indent=2)+'\n')
+    print(f'QuizTrekker - US States 0.8.0: {len(states)} state paths; build {digest[:12]}')
     return states
 if __name__=='__main__': build()

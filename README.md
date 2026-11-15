@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.7.0" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.8.0" width="420">
   </a>
 </p>
 
@@ -84,3 +84,12 @@ Questions appear directly below the game controls and before the choices. Showdo
 Capitals are always labeled on both sides of Learn cards, using USGS National Map capitol-building coordinates and the same Albers USA projection as the outlines. All 50 points are checked against their displayed state polygons. The logo is static. Mobile devices start in Card view; enable **Options → Game settings → Show view switcher** to access Overview. Each Shape Challenge and Neighboring States variant has its own entry in the Game menu.
 
 Existing browser progress and preferences are retained on the same GitHub Pages origin. New backups use the QuizTrekker - US States name; earlier StateQuest version 1 backups remain importable. Home-screen installations made at the former URL should be added again from the new URL. The home-screen icons and favicon artwork are unchanged.
+
+
+## Optional geographic expansion
+
+In **My Progress → Options → Quiz Locations**, independently enable **U.S. Territories & Washington, D.C.** (+7), **Canadian Provinces** (+10), or **Canadian Territories** (+3). All default off; the original 50 states remain enabled. All options together provide 70 locations. Settings and progress stay on this device; disabling a pack preserves its explored records and each scope’s saved deck.
+
+Learn, both Shape Challenge variants, and neighbor rounds use the selected pool. Statehood Timeline always uses only U.S. states. Population Showdowns compare locations with the same reference date; expanded Size Showdowns use land area, with source vintages disclosed. The default state-only Showdowns retain their existing data and rules. UM is one collective entry with nine shoreline insets and no common capital; it has no bundled comparable numeric Showdown totals. Non-state profiles omit statehood/admission order and other inapplicable facts rather than filling them with invented values. Existing 50-state facts, ranks, flags and capital points are retained.
+
+Expansion boundaries/facts come from the U.S. Census Bureau, USGS, NOAA, Statistics Canada, NRCan, Canadian Heritage, and D.C. government. Sources, projections, census dates, generalization methods, and GSHHG LGPL notices are documented in **Image/Data Credits**. All assets work offline after an online load.

@@ -1,0 +1,293 @@
+[
+  {
+    "id": "CA-AB",
+    "abbr": "AB",
+    "name": "Alberta",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Edmonton",
+    "capital_lonlat": [
+      -113.4902778,
+      53.5344445
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/IACMP"
+  },
+  {
+    "id": "CA-BC",
+    "abbr": "BC",
+    "name": "British Columbia",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Victoria",
+    "capital_lonlat": [
+      -123.364722,
+      48.428333
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/JBOBQ"
+  },
+  {
+    "id": "CA-MB",
+    "abbr": "MB",
+    "name": "Manitoba",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Winnipeg",
+    "capital_lonlat": [
+      -97.146389,
+      49.884444
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/GBEIN"
+  },
+  {
+    "id": "CA-NB",
+    "abbr": "NB",
+    "name": "New Brunswick",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Fredericton",
+    "capital_lonlat": [
+      -66.666667,
+      45.945278
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/DAFMJ"
+  },
+  {
+    "id": "CA-NL",
+    "abbr": "NL",
+    "name": "Newfoundland and Labrador",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "St. John's",
+    "capital_lonlat": [
+      -52.797069,
+      47.482197
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/ABEFS"
+  },
+  {
+    "id": "CA-NS",
+    "abbr": "NS",
+    "name": "Nova Scotia",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Halifax",
+    "capital_lonlat": [
+      -63.590651,
+      44.647401
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/CAPHL"
+  },
+  {
+    "id": "CA-ON",
+    "abbr": "ON",
+    "name": "Ontario",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Toronto",
+    "capital_lonlat": [
+      -79.3733,
+      43.7417
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/FEUZB"
+  },
+  {
+    "id": "CA-PE",
+    "abbr": "PE",
+    "name": "Prince Edward Island",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Charlottetown",
+    "capital_lonlat": [
+      -63.134722,
+      46.240278
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/BAARG"
+  },
+  {
+    "id": "CA-QC",
+    "abbr": "QC",
+    "name": "Quebec",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Québec City",
+    "capital_lonlat": [
+      -71.207997,
+      46.813819
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/EHTWR"
+  },
+  {
+    "id": "CA-SK",
+    "abbr": "SK",
+    "name": "Saskatchewan",
+    "country": "CA",
+    "group": "canadaProvinces",
+    "kind": "Canadian province",
+    "capital": "Regina",
+    "capital_lonlat": [
+      -104.6066083,
+      50.4548389
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/HAIMP"
+  },
+  {
+    "id": "CA-NT",
+    "abbr": "NT",
+    "name": "Northwest Territories",
+    "country": "CA",
+    "group": "canadaTerritories",
+    "kind": "Canadian territory",
+    "capital": "Yellowknife",
+    "capital_lonlat": [
+      -114.37,
+      62.4536
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/LBAMG"
+  },
+  {
+    "id": "CA-NU",
+    "abbr": "NU",
+    "name": "Nunavut",
+    "country": "CA",
+    "group": "canadaTerritories",
+    "kind": "Canadian territory",
+    "capital": "Iqaluit",
+    "capital_lonlat": [
+      -68.516667,
+      63.75
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/OATRP"
+  },
+  {
+    "id": "CA-YT",
+    "abbr": "YT",
+    "name": "Yukon",
+    "country": "CA",
+    "group": "canadaTerritories",
+    "kind": "Canadian territory",
+    "capital": "Whitehorse",
+    "capital_lonlat": [
+      -135.0560981,
+      60.7242144
+    ],
+    "capital_source": "https://geogratis.gc.ca/services/geoname/en/geonames/KAHFT"
+  },
+  {
+    "id": "US-DC",
+    "abbr": "DC",
+    "name": "Washington, D.C.",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. federal district",
+    "capital": null,
+    "capital_note": "The national capital; no separate district capital.",
+    "capital_lonlat": null,
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-PR",
+    "abbr": "PR",
+    "name": "Puerto Rico",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. territory",
+    "capital": "San Juan",
+    "capital_note": null,
+    "capital_lonlat": [
+      -66.1059308,
+      18.4667732
+    ],
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-GU",
+    "abbr": "GU",
+    "name": "Guam",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. territory",
+    "capital": "Hagåtña",
+    "capital_note": null,
+    "capital_lonlat": [
+      144.7487712,
+      13.4756871
+    ],
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-VI",
+    "abbr": "VI",
+    "name": "U.S. Virgin Islands",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. territory",
+    "capital": "Charlotte Amalie",
+    "capital_note": null,
+    "capital_lonlat": [
+      -64.9295322,
+      18.3399752
+    ],
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-AS",
+    "abbr": "AS",
+    "name": "American Samoa",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. territory",
+    "capital": "Pago Pago",
+    "capital_note": null,
+    "capital_lonlat": [
+      -170.6836191,
+      -14.2819464
+    ],
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-MP",
+    "abbr": "MP",
+    "name": "Northern Mariana Islands",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. territory",
+    "capital": "Saipan (Capitol Hill)",
+    "capital_note": null,
+    "capital_lonlat": [
+      145.7536573,
+      15.2121665
+    ],
+    "capital_source": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6"
+  },
+  {
+    "id": "US-UM",
+    "abbr": "UM",
+    "name": "U.S. Minor Outlying Islands",
+    "country": "US",
+    "group": "usExtras",
+    "kind": "U.S. collective island entry",
+    "capital": null,
+    "capital_note": "No common capital. Nine separate island groups.",
+    "inset_names": [
+      "Baker Island",
+      "Howland Island",
+      "Jarvis Island",
+      "Johnston Atoll",
+      "Kingman Reef",
+      "Midway Atoll",
+      "Navassa Island",
+      "Palmyra Atoll",
+      "Wake Island"
+    ],
+    "shape_note": "Nine island groups; separate insets, not to scale or geographic position."
+  }
+]

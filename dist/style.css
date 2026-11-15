@@ -26,3 +26,5 @@ body.flash[data-mode=challenge][data-view=game] main{grid-template-rows:minmax(0
 
 /* Show the complete edition logo inside each existing responsive header frame. */
 .brand .app-wordmark,body.flash .brand .app-wordmark{inset:0;width:100%;height:100%;object-fit:contain}
+#geographyChoices{border:2px solid #c0dbef;border-radius:15px;padding:8px 12px}#geographyChoices legend{font-size:13px;font-weight:900}#geographyChoices label{font-size:13px;align-items:flex-start}#geographyCount,#geographyStatus{font-size:12px}.identity-block small{display:block;font-size:10px;margin-top:5px}.capital-inset-note{font-size:10px;fill:#102b65}.capital-map svg{fill-rule:evenodd}
+.shape-note{font-size:10px;line-height:1.3;text-align:center;margin-top:4px;flex-shrink:0}

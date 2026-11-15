@@ -1,0 +1,34 @@
+{
+  "retrieved": "2026-11-15",
+  "boundaries": {
+    "Canada": {
+      "url": "https://geo.statcan.gc.ca/geo_wa/rest/services/2021/Cartographic_boundary_files/MapServer/0",
+      "vintage": "2021 Census cartographic boundaries",
+      "processing": "Douglas-Peucker generalization; capital rings retained at finer precision; small offshore features omitted."
+    },
+    "US": {
+      "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+      "processing": "TIGERweb state/equivalent polygons, selected DC/PR/GU/VI/AS/MP; finely generalized."
+    },
+    "UM": {
+      "url": "https://www.ncei.noaa.gov/data/oceans/archive/arc0234/0304143/1.1/data/0-data/GSHHS_shp/f/GSHHS_f_L1.shp",
+      "dataset": "GSHHG 2.3.7 full-resolution L1 shorelines, NOAA NCEI archive",
+      "attribution": "Paul Wessel and Walter H. F. Smith, SOEST/NOAA",
+      "license": "LGPL v3 or later",
+      "processing": "Nine named island/atoll groups extracted; individual shorelines retained. Display arranged as separate insets, not a connected geographic outline."
+    }
+  },
+  "adjacency": "Curated shared land/inland-water boundaries on Census/Statistics Canada maps. Original U.S. state water-border graph retained; new offshore maritime boundaries and corner-only contacts excluded. Neighbors in quizzes restricted to enabled locations.",
+  "comparison_policy": "Population comparisons require the same census/estimate reference date. Expanded area comparisons use land only; default state-only mode retains total area. UM excluded from both Showdowns because no comparable numeric census/area fact is bundled.",
+  "source_sha256": {
+    "canada-boundaries.json": "2319eb1c9015e990cd7ff963c7860320f18f566f8067e8b897fbcb290d66601a",
+    "us-extra-boundaries.json": "66c9cba5668b8c1bb2b32335232e396d43e2efd594512d8808a5ca104b5b30df",
+    "noaa-shoreline-f.shp": "121435427911ea80624802e0f352d777eaf6ba6966ca5f07e687650e95329fd9",
+    "canada-pop.html": "ecf316bdec9d0d9945f444186fbc7fe94d6c981e0f757c2049a684eb91089387",
+    "canada-area-correct.html": "a4b83754396530f1c5eb1b16aaa72b996c58dd60c676f062f9fe14082d75eb6c"
+  },
+  "fact_notes": [
+    "PE freshwater area is not reported in the Atlas table and is stored as null, not zero.",
+    "Ontario and Nunavut motto spellings follow the Governor General heraldic register and the Nunavut Legislative Assembly, respectively."
+  ]
+}
