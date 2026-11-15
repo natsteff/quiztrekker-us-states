@@ -1,0 +1,15 @@
+{
+  "source_url": "https://carto.nationalmap.gov/arcgis/rest/services/structures/MapServer/6/query?f=json&where=FCODE+%3D+83006&outFields=NAME%2CSTATE%2CCITY&geometryPrecision=7&outSR=4326&returnGeometry=true",
+  "vega_url": "https://raw.githubusercontent.com/vega/vega-datasets/main/data/us-state-capitals.json",
+  "coordinate_system": "WGS84 EPSG:4326",
+  "point_definition": "USGS National Map state capitol building",
+  "projection": "d3.geoAlbersUsa().scale(1300).translate([487.5,305])",
+  "d3_geo_version": "3.1.1",
+  "downloaded": "2026-11-15",
+  "verification": "All 50 match the direct USGS query within 0.00000011 degrees (dataset decimal rounding); projection matches d3-geo 3.1.1 within 1e-8 map units; each point inside its displayed state polygon.",
+  "sha256": {
+    "capital-coordinates.json": "070b12ff2db958b12c2df2287330f4598611404d7e7ef8211a3b578a26c0827f",
+    "capital-projected.json": "260e868c21124e1d58f3d84c81accdd4f0d138c44d6eaedd05e094ba790af853",
+    "capitals-usgs.json": "675388a9a19f04b08aa9f21c35694a58f2b0b1a06e79509bf825a4433a6250fe"
+  }
+}

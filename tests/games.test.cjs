@@ -20,7 +20,20 @@ for(const a of ['AK','HI']){
 }
 const prefs=vm.runInNewContext(fs.readFileSync('dist/facts-core.js','utf8').replaceAll('export ','')+';({factPreferences,escapeHtml,formatStatehood,placeDisplayName})');
 assert.equal(prefs.factPreferences(['capital','flag','nickname','statehood','population']).length,4);
-assert.equal(prefs.factPreferences(['unknown'])[0],'capital');assert.equal(prefs.factPreferences([]).length,0);assert.equal(prefs.factPreferences(['flag','flag']).length,1);
+assert.equal(prefs.factPreferences(['unknown'])[0],'flag');assert.equal(prefs.factPreferences([]).length,0);assert.equal(prefs.factPreferences(['flag','flag']).length,1);
 assert(!prefs.escapeHtml('<img src=x onerror="alert(1)">').includes('<'));assert.equal(prefs.formatStatehood('1848-05-29'),'May 29, 1848');count+=6;
 for(const [official,display] of [['Milwaukee city','Milwaukee'],['Juneau city and borough','Juneau'],['Salt Lake City city','Salt Lake City'],['Indianapolis city (balance)','Indianapolis (balance)'],['Jersey City city','Jersey City'],['Pearl City CDP','Pearl City CDP']]){assert.equal(prefs.placeDisplayName(official),display);count++;}
 console.log(`${count} quiz generation and fact-preference checks passed`);
+
+assert.equal(JSON.stringify(prefs.factPreferences(['capital','flag','nickname','statehood'])),JSON.stringify(['flag','nickname','statehood']));
+
+const layout=vm.runInNewContext(fs.readFileSync('dist/capital-map.js','utf8').replace(/^import .*;\n/,'').replaceAll('export ','')+';({capitalLayout})');
+const outlines=JSON.parse(fs.readFileSync('dist/states.js','utf8').replace('export const states = ','').trim().replace(/;$/,''));
+for(const state of outlines)for(const [width,height] of [[280,130],[360,350],[700,500]])for(const relative of [true,false]){
+ const p=layout.capitalLayout(state,width,height,relative);
+ assert(Number.isFinite(p.scale)&&p.scale>0);
+ assert(Math.abs((p.x-p.tx)/p.scale-state.capitalPoint.x)<1e-8);
+ assert(Math.abs((p.y-p.ty)/p.scale-state.capitalPoint.y)<1e-8);
+ assert(p.x>=0&&p.x<=width&&p.y>=0&&p.y<height-30);
+}
+console.log('300 capital viewport transforms preserve source positions');

@@ -9,7 +9,7 @@ export function makeQuestion(type,states,facts,previous,random=Math.random,setti
   if(settings.neighborMode==='all'){
    const count=Math.max(...Object.values(facts).map(s=>s.neighbors.length))+2;
    const options=shuffled([...neighbors,'NONE',...shuffled(other,random).slice(0,count-neighbors.length-1).map(s=>s.abbr)],random);
-   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Find ALL states bordering ${target.name}.`,note:'Select every neighbor, then Check. Choose None for states with no neighbors. Water borders count; corner-only contact does not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighboring U.S. states.`};
+   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Select all neighbors of ${target.name}.`,note:'Select every neighbor, then Check. Choose None for states with no neighbors. Water borders count; corner-only contact does not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighboring U.S. states.`};
   }
   const correct=neighbors.length?pick(neighbors,random):'NONE';
   const options=shuffled([correct,...shuffled(other,random).slice(0,3).map(s=>s.abbr)],random);
