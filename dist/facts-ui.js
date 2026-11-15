@@ -28,5 +28,5 @@ export function createFactsUI({storage,onChange,renderMap,facts=baseFacts}){
  controls.querySelectorAll('input').forEach(input=>input.onchange=()=>{selected=[...controls.querySelectorAll('input:checked')].map(el=>el.value);store();settings();controls.querySelector(`input[value="${input.value}"]`).focus();onChange();});$('factCount').textContent=`${selected.length} of 4 selected. Uncheck one to choose another.`;}
  function store(){try{storage.setItem('statequest.facts',JSON.stringify(selected));$('factSaveStatus').textContent='Card choices saved on this device.';}catch{$('factSaveStatus').textContent='Choices work for this visit; browser storage is unavailable.';}}
  $('restoreFacts').onclick=()=>{selected=[...DEFAULT_FACTS];store();settings();onChange();};$('closeMore').onclick=()=>$('moreDialog').close();settings();
- return {primary,more};
+ return {primary,more,flag:s=>content('flag',s)};
 }

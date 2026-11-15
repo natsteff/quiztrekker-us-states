@@ -28,3 +28,18 @@ body.flash[data-mode=challenge][data-view=game] main{grid-template-rows:minmax(0
 .brand .app-wordmark,body.flash .brand .app-wordmark{inset:0;width:100%;height:100%;object-fit:contain}
 #geographyChoices{border:2px solid #c0dbef;border-radius:15px;padding:8px 12px}#geographyChoices legend{font-size:13px;font-weight:900}#geographyChoices label{font-size:13px;align-items:flex-start}#geographyCount,#geographyStatus{font-size:12px}.identity-block small{display:block;font-size:10px;margin-top:5px}.capital-inset-note{font-size:10px;fill:#102b65}.capital-map svg{fill-rule:evenodd}
 .shape-note{font-size:10px;line-height:1.3;text-align:center;margin-top:4px;flex-shrink:0}
+
+/* Permanent flag beside the capital outline, outside the four fact slots. */
+.card-visuals{display:flex;align-items:center;gap:16px;width:100%;flex:0 0 130px;min-height:130px;max-width:580px;margin:0 auto}
+.card-visuals .compact-capital{width:50%;min-width:0;flex:1 1 50%}
+.card-flag{flex:1 1 50%;min-width:0;display:flex;justify-content:center;align-items:center}
+.card-flag .state-flag{display:block;width:100%;max-width:160px;max-height:100px;object-fit:contain}
+.settings-button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:9px;flex-shrink:0}
+.settings-button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+#optionsTitle:focus{outline:none}
+
+/* Readable outcomes and points, with gentle motion only when enabled. */
+.feedback.result-banner,body.flash .feedback.result-banner{display:grid;gap:8px;font-size:16px;line-height:1.45;margin:18px 0 14px;padding:16px;border:3px solid var(--navy);border-radius:18px;background:#eff7ff;color:var(--navy);position:relative;overflow:hidden}
+.feedback.result-correct,body.flash .feedback.result-correct{background:linear-gradient(135deg,#e7ffd5,#fff4b2)}
+.result-title{font-size:26px;line-height:1.15}.result-points{font-size:22px;font-weight:900}.result-breakdown{font-size:15px;font-weight:700}.result-explanation{font-size:17px;line-height:1.5;font-weight:700}.result-achievement{font-size:19px;border-top:2px dashed #9cb7bc;padding-top:9px}
+@media(prefers-reduced-motion:no-preference){.result-correct{animation:result-pop .35s ease-out}.result-correct::after{content:'✦ ★ ✦';position:absolute;right:12px;top:12px;color:#956400;pointer-events:none;animation:star-burst .8s ease-out forwards}.result-milestone{animation:result-pop .55s ease-out}@keyframes result-pop{0%{transform:scale(.96)}65%{transform:scale(1.015)}100%{transform:scale(1)}}@keyframes star-burst{0%{opacity:0;transform:translateY(12px) scale(.6)}40%{opacity:1}100%{opacity:0;transform:translateY(-12px) scale(1.1)}}}

@@ -20,12 +20,12 @@ for(const a of ['AK','HI']){
 }
 const prefs=vm.runInNewContext(fs.readFileSync('dist/facts-core.js','utf8').replaceAll('export ','')+';({factPreferences,escapeHtml,formatStatehood,placeDisplayName})');
 assert.equal(prefs.factPreferences(['capital','flag','nickname','statehood','population']).length,4);
-assert.equal(prefs.factPreferences(['unknown'])[0],'flag');assert.equal(prefs.factPreferences([]).length,0);assert.equal(prefs.factPreferences(['flag','flag']).length,1);
+assert.equal(prefs.factPreferences(['unknown'])[0],'statehood');assert.equal(prefs.factPreferences([]).length,0);assert.equal(prefs.factPreferences(['flag','flag']).length,1);
 assert(!prefs.escapeHtml('<img src=x onerror="alert(1)">').includes('<'));assert.equal(prefs.formatStatehood('1848-05-29'),'May 29, 1848');count+=6;
 for(const [official,display] of [['Milwaukee city','Milwaukee'],['Juneau city and borough','Juneau'],['Salt Lake City city','Salt Lake City'],['Indianapolis city (balance)','Indianapolis (balance)'],['Jersey City city','Jersey City'],['Pearl City CDP','Pearl City CDP']]){assert.equal(prefs.placeDisplayName(official),display);count++;}
 console.log(`${count} quiz generation and fact-preference checks passed`);
 
-assert.equal(JSON.stringify(prefs.factPreferences(['capital','flag','nickname','statehood'])),JSON.stringify(['flag','nickname','statehood']));
+assert.equal(JSON.stringify(prefs.factPreferences(['capital','flag','nickname','statehood'])),JSON.stringify(['nickname','statehood','area']));
 
 const layout=vm.runInNewContext(fs.readFileSync('dist/capital-map.js','utf8').replace(/^import .*;\n/,'').replaceAll('export ','')+';({capitalLayout})');
 const outlines=JSON.parse(fs.readFileSync('dist/states.js','utf8').replace('export const states = ','').trim().replace(/;$/,''));
