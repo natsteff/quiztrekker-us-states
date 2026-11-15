@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/statequest/">
-    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.5.0" width="420">
+    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.5.1" width="420">
   </a>
 </p>
 
@@ -78,3 +78,5 @@ In Neighboring States, choose **ALL neighbors**, toggle every correct state, the
 Statehood Timeline gives four states per round. Tap them from earliest to latest admission date, use Undo/Clear to revise, then Check. Same-date states (North/South Dakota) are accepted in either order. Reference dates come from the existing CRS-backed statehood data; original 13 dates mean Constitution ratification.
 
 **My Progress → Game settings → Auto-update on startup** is enabled by default. It checks/stages the offline worker without the browser HTTP cache and applies a fully installed waiting update during a short pre-play window. A successful activation reloads once; ongoing quizzes are never forcibly reloaded. Offline/slow checks fall back within eight seconds, or choose Play now. Turning the setting off stops the app's automatic startup apply/reload; the browser may still stage service-worker updates and activate them after all game windows close. An existing pre-0.5 installation may need one online visit followed by closing/reopening all game windows to receive this new updater.
+
+Questions appear directly below the game controls and before the choices. Showdowns use only the two large state cards as answer controls. ALL Neighbors retains a smaller state silhouette above its ten choices, with scrolling on short screens. Timeline marks the chosen state buttons with selection numbers 1–4; Undo/Clear revises that sequence without a separate list of slots.

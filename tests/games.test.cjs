@@ -18,8 +18,9 @@ for(const type of ['population','area','neighbors']){
 for(const a of ['AK','HI']){
  const q=g.makeQuestion('neighbors',states,f,null,()=>states.findIndex(s=>s.abbr===a)/50+.001);assert.equal(q.target,a);assert.equal(q.correct,'NONE');assert.equal(q.options.length,4);count++;
 }
-const prefs=vm.runInNewContext(fs.readFileSync('dist/facts-core.js','utf8').replaceAll('export ','')+';({factPreferences,escapeHtml,formatStatehood})');
+const prefs=vm.runInNewContext(fs.readFileSync('dist/facts-core.js','utf8').replaceAll('export ','')+';({factPreferences,escapeHtml,formatStatehood,placeDisplayName})');
 assert.equal(prefs.factPreferences(['capital','flag','nickname','statehood','population']).length,4);
 assert.equal(prefs.factPreferences(['unknown'])[0],'capital');assert.equal(prefs.factPreferences([]).length,0);assert.equal(prefs.factPreferences(['flag','flag']).length,1);
 assert(!prefs.escapeHtml('<img src=x onerror="alert(1)">').includes('<'));assert.equal(prefs.formatStatehood('1848-05-29'),'May 29, 1848');count+=6;
+for(const [official,display] of [['Milwaukee city','Milwaukee'],['Juneau city and borough','Juneau'],['Salt Lake City city','Salt Lake City'],['Indianapolis city (balance)','Indianapolis (balance)'],['Jersey City city','Jersey City'],['Pearl City CDP','Pearl City CDP']]){assert.equal(prefs.placeDisplayName(official),display);count++;}
 console.log(`${count} quiz generation and fact-preference checks passed`);

@@ -28,6 +28,6 @@ export function sameAnswers(selected,expected){return selected.length===expected
 export function makeTimeline(states,facts,random=Math.random,count=4){
  const options=shuffled(states,random).slice(0,count).map(s=>s.abbr);
  const solution=[...options].sort((a,b)=>facts[a].statehood_date.localeCompare(facts[b].statehood_date)||facts[a].statehood_order-facts[b].statehood_order);
- return {type:'timeline',target:options[0],options,solution,prompt:'Build a timeline: earliest to latest!',note:'Tap four states in order, then Check. States admitted on the same date can go either way.',explanation:solution.map(a=>`${facts[a].name}: ${facts[a].statehood_date}`).join(' → ')};
+ return {type:'timeline',target:options[0],options,solution,prompt:'Pick the states in the order they were admitted to the Union.',note:'Earliest first. States admitted on the same date can go either way.',explanation:solution.map(a=>`${facts[a].name}: ${facts[a].statehood_date}`).join(' → ')};
 }
 export function timelineCorrect(order,options,facts){return sameAnswers(order,options)&&order.every((a,i)=>i===0||facts[order[i-1]].statehood_date<=facts[a].statehood_date);}
