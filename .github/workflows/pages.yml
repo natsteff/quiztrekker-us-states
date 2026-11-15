@@ -1,4 +1,4 @@
-name: Test and deploy StateQuest
+name: Test and deploy QuizTrekker - US States
 on:
   push:
     branches: [main]
@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: statequest-pages
+  group: quiztrekker-us-states-pages
   cancel-in-progress: false
 jobs:
   test-and-build:

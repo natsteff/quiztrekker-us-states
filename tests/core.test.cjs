@@ -35,3 +35,8 @@ check((()=>{try{c.importProgress(JSON.stringify(bad),states);return false;}catch
 check((()=>{try{c.importProgress(' '.repeat(100001),states);return false;}catch{return true;}})());
 const isolated=c.clean();c.record(isolated,states[0],true,0,false);check(Object.keys(isolated.records).length===0);check(isolated.best===100&&isolated.streak===1);
 console.log(`${checks} gameplay and persistence assertions passed`);
+
+const legacy=JSON.parse(exported);legacy.app='StateQuest';
+assert.equal(JSON.stringify(c.importProgress(JSON.stringify(legacy),states)),JSON.stringify(c.importProgress(exported,states)));
+assert.equal(JSON.parse(exported).app,'QuizTrekker - US States');
+console.log('Renamed exports and legacy StateQuest imports passed');

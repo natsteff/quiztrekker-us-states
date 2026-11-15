@@ -90,14 +90,14 @@ $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>swit
 
 $('exportSave').onclick=()=>{
  const url=URL.createObjectURL(new Blob([exportProgress(progress)],{type:'application/json'}));
- const link=document.createElement('a');link.href=url;link.download='statequest-save.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+ const link=document.createElement('a');link.href=url;link.download='quiztrekker-us-states-save.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
  $('saveStatus').textContent='Save exported. Keep the JSON file somewhere safe.';
 };
 let pendingImport;
 $('importSave').onclick=()=>$('saveFile').click();
 $('saveFile').onchange=async e=>{
  const file=e.target.files[0];e.target.value='';if(!file)return;
- try {if(file.size>100000)throw Error('Save is too large. Choose a StateQuest JSON export.');pendingImport=importProgress(await file.text(),states);$('importSummary').textContent=`${pendingImport.seen.length} states explored · best score ${pendingImport.best} · longest streak ${pendingImport.bestStreak}.`;$('importDialog').showModal();}
+ try {if(file.size>100000)throw Error('Save is too large. Choose a QuizTrekker - US States JSON export.');pendingImport=importProgress(await file.text(),states);$('importSummary').textContent=`${pendingImport.seen.length} states explored · best score ${pendingImport.best} · longest streak ${pendingImport.bestStreak}.`;$('importDialog').showModal();}
  catch(error){$('saveStatus').textContent=error.message;pendingImport=undefined;}
 };
 $('cancelImport').onclick=()=>{pendingImport=undefined;$('importDialog').close();};

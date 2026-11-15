@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="dist/logo.png" alt="StateQuest" width="500">
+  <img src="dist/logo.png" alt="QuizTrekker - US States" width="500">
 </p>
 <p align="center">
-  <a href="https://natsteff.github.io/statequest/">
-    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.6.0" width="420">
+  <a href="https://natsteff.github.io/quiztrekker-us-states/">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.7.0" width="420">
   </a>
 </p>
 
-# StateQuest
+# QuizTrekker - US States
 
 A browser geography game for all 50 U.S. states. Learn silhouettes, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and Neighboring States cover all 50 states before starting a new random order. Scores, streaks and explored states are stored in the current browser.
 
@@ -53,7 +53,7 @@ Export save downloads a versioned JSON backup. Transfer that file yourself to an
 
 ## GitHub Pages preparation
 
-Publish the **contents of `dist/`** as a static Pages artifact. All asset URLs, manifest scope/start URL and service-worker scope are relative, supporting a project path such as `/statequest/` without code changes. The worker caches only bundled game assets and deletes only older caches for its own project path. The GitHub Actions workflow tests and rebuilds the game, verifies reproducibility, and publishes only `dist/` to Pages when `main` changes. Verify install/offline behavior on the final HTTPS URL before release.
+Publish the **contents of `dist/`** as a static Pages artifact. All asset URLs, manifest scope/start URL and service-worker scope are relative, supporting a project path such as `/quiztrekker-us-states/` without code changes. The worker caches only bundled game assets and deletes only older caches for its own project path. The GitHub Actions workflow tests and rebuilds the game, verifies reproducibility, and publishes only `dist/` to Pages when `main` changes. Verify install/offline behavior on the final HTTPS URL before release.
 
 Physical iPhone/Android checks remain necessary for home-screen installation, soft-keyboard behavior, safe areas, larger system text and touch gestures. Browser viewport checks alone do not establish physical-device compatibility.
 
@@ -63,7 +63,7 @@ Flip a Learn card to see up to four fact groups. In **My Progress → Options �
 
 In **Play**, choose Shape Challenge, Population Showdown, Size Showdown, Neighboring States or Statehood Timeline. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared water boundaries and exclude corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers update per-state practice history.
 
-See the in-app [Image/Data Credits](https://natsteff.github.io/statequest/credits.html) for exact Census/ACS vintages, Hawaii and Rhode Island geography exceptions, CRS statehood dates, Flagpedia attribution, symbol references and map licenses. No live data service, Census API key or external flag request is needed during play. Cached credits work offline; outbound source/landmark links need a connection.
+See the in-app [Image/Data Credits](https://natsteff.github.io/quiztrekker-us-states/credits.html) for exact Census/ACS vintages, Hawaii and Rhode Island geography exceptions, CRS statehood dates, Flagpedia attribution, symbol references and map licenses. No live data service, Census API key or external flag request is needed during play. Cached credits work offline; outbound source/landmark links need a connection.
 
 Fact data is checked into `data/state-facts.json`; `scripts/build.py` packages it and all 50 original SVGs from `public/assets/flags/`. To refresh the pinned sources, run `python3 scripts/refresh_facts.py --download`, review changes and source vintages, run tests, then rebuild. This maintenance operation uses the network and is separate from the normal offline build. See [data methods](data/README.md).
 
@@ -82,3 +82,5 @@ Statehood Timeline gives four states per round. Tap them from earliest to latest
 Questions appear directly below the game controls and before the choices. Showdowns use only the two large state cards as answer controls. ALL Neighbors retains a smaller state silhouette above its ten choices, with scrolling on short screens. Timeline marks the chosen state buttons with selection numbers 1–4; Undo/Clear revises that sequence without a separate list of slots.
 
 Capitals are always labeled on both sides of Learn cards, using USGS National Map capitol-building coordinates and the same Albers USA projection as the outlines. All 50 points are checked against their displayed state polygons. The logo is static. Mobile devices start in Card view; enable **Options → Game settings → Show view switcher** to access Overview. Each Shape Challenge and Neighboring States variant has its own entry in the Game menu.
+
+Existing browser progress and preferences are retained on the same GitHub Pages origin. New backups use the QuizTrekker - US States name; earlier StateQuest version 1 backups remain importable. Home-screen installations made at the former URL should be added again from the new URL. The home-screen icons and favicon artwork are unchanged.

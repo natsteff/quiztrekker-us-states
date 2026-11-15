@@ -29,12 +29,12 @@ export function record(progress, state, correct, score, trackState=true) {
 }
 
 export function exportProgress(progress) {
-  return JSON.stringify({app:'StateQuest',version:1,progress:clean(progress)},null,2);
+  return JSON.stringify({app:'QuizTrekker - US States',version:1,progress:clean(progress)},null,2);
 }
 export function importProgress(text, states) {
-  if (text.length>100000) throw Error('Save is too large. Choose a StateQuest JSON export.');
+  if (text.length>100000) throw Error('Save is too large. Choose a QuizTrekker - US States JSON export.');
   let data;try {data=JSON.parse(text);} catch {throw Error('This file is not valid JSON.');}
-  if(data?.app!=='StateQuest' || data.version!==1 || !data.progress || typeof data.progress!=='object') throw Error('Choose a supported StateQuest save (version 1).');
+  if(!['QuizTrekker - US States','StateQuest'].includes(data?.app) || data.version!==1 || !data.progress || typeof data.progress!=='object') throw Error('Choose a supported QuizTrekker - US States or StateQuest save (version 1).');
   const p=data.progress, valid=new Set(states.map(s=>s.abbr));
   if(!Array.isArray(p.seen) || p.seen.some(a=>!valid.has(a)) || !p.records || Array.isArray(p.records) || typeof p.records!=='object' || ['best','streak','bestStreak'].some(k=>!integer(p[k])) || p.streak>p.bestStreak) throw Error('Save contains invalid progress.');
   for(const [key,r] of Object.entries(p.records)) if(!valid.has(key) || !r || !integer(r.correct) || !integer(r.missed)) throw Error('Save contains invalid state records.');

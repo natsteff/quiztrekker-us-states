@@ -2,7 +2,7 @@ import {VERSION} from './version.js';
 export function startUpdates({storage,document,navigator,location,setTimer=setTimeout,clearTimer=clearTimeout}){
  const $=id=>document.getElementById(id),toggle=$('autoUpdate');
  let enabled=true;try{enabled=storage.getItem('statequest.autoUpdate')!=='false';}catch{}
- toggle.checked=enabled;$('appVersion').textContent=`StateQuest v${VERSION}`;
+ toggle.checked=enabled;$('appVersion').textContent=`QuizTrekker - US States v${VERSION}`;
  const shell=[document.querySelector?.('header'),document.querySelector?.('main')].filter(Boolean);
  function block(value){shell.forEach(el=>el.inert=value);}
  let startup=enabled,applying=false,timer,controlled=Boolean(navigator.serviceWorker?.controller);

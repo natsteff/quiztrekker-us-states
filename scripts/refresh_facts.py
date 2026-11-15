@@ -21,7 +21,7 @@ ACS_FILES={'hawaii-acs-pop.dat':ACS+'data/5YRData/acsdt5y2024-b01003.dat','hawai
 def download():
  CACHE.mkdir(exist_ok=True,parents=True)
  for name,url in SOURCES.items():
-  req=urllib.request.Request(url,headers={'User-Agent':'StateQuest/1.0 (github.com/natsteff/statequest)'})
+  req=urllib.request.Request(url,headers={'User-Agent':'QuizTrekker-US-States/1.0 (github.com/natsteff/quiztrekker-us-states)'})
   (CACHE/name).write_bytes(urllib.request.urlopen(req,timeout=60).read())
  for name,url in ACS_FILES.items():
   with urllib.request.urlopen(url,timeout=60) as r:
