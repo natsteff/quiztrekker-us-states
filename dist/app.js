@@ -1,14 +1,17 @@
 import {states} from './states.js';
 import {facts} from './facts.js';
 import {createFactsUI} from './facts-ui.js';
-import {escapeHtml as esc} from './facts-core.js';
-import {GAME_NAMES,makeQuestion} from './games.js';
-import {load,save,matches,choose,record,exportProgress,importProgress} from './core.js';
+import {escapeHtml as esc,formatStatehood} from './facts-core.js';
+import {GAME_NAMES,makeQuestion,makeTimeline,timelineCorrect,sameAnswers} from './games.js';
+import {createDecks} from './decks.js';
+import {startUpdates} from './update-client.js';
+import {load,save,matches,record,exportProgress,importProgress} from './core.js';
 const $ = id=>document.getElementById(id);
 let storage;try{storage=window.localStorage;}catch{}
 const progress=load(storage);
 progress.seen=progress.seen.filter(a=>states.some(s=>s.abbr===a));
-let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini;
+let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
+const decks=createDecks(states,storage);
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map});
 function persist(){ const ok=save(storage,progress);document.querySelector('.local').textContent=ok?'● Saved on this device':'● Session only';$('storageNote').textContent=ok?'Your progress stays in this browser. No account, no leaderboard, just you and the map.':'Browser storage is unavailable. You can still play, but progress will only last for this visit.';stats(); }
 function stats(){ $('seenCount').textContent=`${progress.seen.length} / 50`;$('explored').value=progress.seen.length;for(const id of ['best','streak','bestStreak']) $(id).textContent=progress[id].toLocaleString(); }
@@ -28,33 +31,58 @@ function learn(){
 function navigate(delta){index=(index+delta+50)%50;flipped=false;learn();}
 function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function question(){
- document.querySelector('.play').classList.remove('celebrate');answered=false;
- if(gameType==='shape'){current=choose(states,progress,current?.abbr);choices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);}
- else{mini=makeQuestion(gameType,states,facts,current?.abbr);current=states.find(s=>s.abbr===mini.target);}
- challenge();
+ document.querySelector('.play').classList.remove('celebrate');answered=false;selectedAnswers=new Set();timelineOrder=[];questionPosition=undefined;
+ if(gameType==='shape'){const a=decks.current('shape');current=states.find(s=>s.abbr===a);questionPosition=decks.position('shape');choices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);}
+ else if(gameType==='timeline'){mini=makeTimeline(states,facts);current=states.find(s=>s.abbr===mini.target);}
+ else{const settings=gameType==='neighbors'?{target:decks.current('neighbors'),neighborMode}:{};mini=makeQuestion(gameType,states,facts,current?.abbr,Math.random,settings);current=states.find(s=>s.abbr===mini.target);if(gameType==='neighbors')questionPosition=decks.position('neighbors');}
+ challenge();$('game').scrollTop=0;
 }
 function challenge(){
+ const all=gameType==='neighbors'&&neighborMode==='all',timeline=gameType==='timeline';
+ document.body.dataset.game=all?'neighbors-all':gameType;
  $('counter').textContent=`${score.toLocaleString()} POINTS`;$('modeLabel').textContent=GAME_NAMES[gameType].toUpperCase();
  const options=gameType==='shape'?choices.map(s=>s.abbr):mini.options;
- const selector=`<label>Game <select id="gameSelect">${Object.entries(GAME_NAMES).map(([key,label])=>`<option value="${key}" ${key===gameType?'selected':''}>${label}</option>`).join('')}</select></label>`;
- const answerSelect=gameType==='shape'?`<label>Answer <select id="answerMode"><option value="choice">Multiple choice</option><option value="typed">Postal abbreviation</option></select></label>`:'';
- const visual=gameType==='shape'?shape(current):gameType==='neighbors'?`<span class="question-state">${esc(current.name)}</span>${shape(current)}`:`<div class="duel">${mini.pair.map(a=>{const s=states.find(t=>t.abbr===a);return `<div><img src="assets/flags/${a}.svg" alt="Flag of ${esc(s.name)}">${shape(s)}<b>${esc(s.name)}</b></div>`;}).join('')}</div>`;
- $('game').innerHTML=`<div class="challenge-head game-controls">${selector}${answerSelect}</div><div class="card ${gameType==='shape'?'':'mini-card'}">${visual}<span class="badge">★ ${gameType==='shape'?'SHAPE DETECTIVE':gameType==='neighbors'?'NEXT-DOOR NEIGHBORS':'SHOWDOWN!'}</span></div><div class="answers"><h2>${gameType==='shape'?'Which state is this?':esc(mini.prompt)}</h2>${gameType==='shape'&&answerMode==='typed'?`<form id="answerForm" class="typed"><label for="answerInput" class="empty">Two letters</label><input id="answerInput" aria-label="Two-letter postal abbreviation" maxlength="2" pattern="[A-Za-z]{2}" required autocomplete="off" autocapitalize="characters" inputmode="text" spellcheck="false" enterkeyhint="done" placeholder="e.g. NY"><button class="primary">Check</button></form>`:`<div class="choices">${options.map(a=>`<button data-answer="${a}" aria-label="${a==='NONE'?'None — no neighboring states':esc(facts[a].name)}">${a==='NONE'?'None — no neighboring states':esc(facts[a].name)}</button>`).join('')}</div>`}<p id="feedback" class="feedback" role="status" aria-live="polite">Ready? Pick your answer!</p><button class="primary next" id="nextQuestion" hidden>Next question ▶</button><p class="game-method">${gameType==='shape'?'Missed shapes return more often.':esc(mini.note)}</p></div>`;
+ const selector=`<label>Game <select id="gameSelect" aria-label="Game">${Object.entries(GAME_NAMES).map(([key,label])=>`<option value="${key}" ${key===gameType?'selected':''}>${label}</option>`).join('')}</select></label>`;
+ const answerSelect=gameType==='shape'?`<label>Answer <select id="answerMode" aria-label="Answer"><option value="choice">Multiple choice</option><option value="typed">Postal abbreviation</option></select></label>`:gameType==='neighbors'?`<label>Find <select id="neighborMode" aria-label="Neighbor mode"><option value="one">ONE neighbor</option><option value="all">ALL neighbors</option></select></label>`:'';
+ const badge=questionPosition?`ROUND ${questionPosition.round} · STATE ${questionPosition.number} / 50`:gameType==='timeline'?'★ TIME TRAVEL':'★ SHOWDOWN!';
+ const visual=gameType==='shape'?shape(current):gameType==='neighbors'?`<span class="question-state">${esc(current.name)}${all?` <small class="cycle-count">${questionPosition.number} / 50</small>`:''}</span>${all?'':shape(current)}`:timeline?`<div class="timeline-builder"><b>Build your timeline!</b><p>Earliest statehood → latest statehood</p><ol class="timeline-list">${mini.options.map((_,i)=>{const a=timelineOrder[i];return `<li>${a?`<strong>${esc(facts[a].name)}</strong>`:'<span>Pick a state below…</span>'}</li>`;}).join('')}</ol><p class="timeline-progress" role="status" aria-live="polite">${timelineOrder.length} of ${mini.options.length} picked</p></div>`:`<div class="duel">${mini.pair.map(a=>{const s=states.find(t=>t.abbr===a);return `<button class="duel-card" data-answer="${a}" aria-label="Choose ${esc(s.name)}"><span class="tap-prompt">Tap to choose!</span><img src="assets/flags/${a}.svg" alt="Flag of ${esc(s.name)}">${shape(s)}<b>${esc(s.name)}</b></button>`;}).join('')}</div>`;
+ const answerMarkup=timeline?`<div class="choices timeline-choices">${options.map(a=>`<button data-pick="${a}" ${timelineOrder.includes(a)?'disabled':''} aria-label="Add ${esc(facts[a].name)} to timeline">${esc(facts[a].name)}</button>`).join('')}</div><div class="selection-actions"><button id="undoTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>↶ Undo</button><button id="clearTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>Clear</button><button id="checkTimeline" class="primary" ${timelineOrder.length===options.length?'':'disabled'}>Check timeline ✓</button></div>`:gameType==='shape'&&answerMode==='typed'?`<form id="answerForm" class="typed"><label for="answerInput" class="empty">Two letters</label><input id="answerInput" aria-label="Two-letter postal abbreviation" maxlength="2" pattern="[A-Za-z]{2}" required autocomplete="off" autocapitalize="characters" inputmode="text" spellcheck="false" enterkeyhint="done" placeholder="e.g. NY"><button class="primary">Check</button></form>`:`<div class="choices ${all?'all-neighbors':''}">${options.map(a=>`<button data-answer="${a}" ${all?`aria-pressed="${selectedAnswers.has(a)}" class="${selectedAnswers.has(a)?'selected-answer':''}"`:''} aria-label="${a==='NONE'?'None — no neighboring states':esc(facts[a].name)}">${a==='NONE'?'None — no neighboring states':esc(facts[a].name)}</button>`).join('')}</div>${all?`<button class="primary check-selection" id="checkNeighbors" ${selectedAnswers.size?'':'disabled'}>Check ALL neighbors ✓</button>`:''}`;
+ $('game').innerHTML=`<div class="challenge-head game-controls">${selector}${answerSelect}</div><div class="card ${gameType==='shape'?'':'mini-card'}">${visual}<span class="badge">${badge}</span></div><div class="answers"><h2>${gameType==='shape'?'Which state is this?':esc(mini.prompt)}</h2>${answerMarkup}<p id="feedback" class="feedback" role="status" aria-live="polite">${all?'Select all neighbors, then tap Check.':timeline?'Pick states in order. Undo lets you change your mind.':'Ready? Pick your answer!'}</p><button class="primary next" id="nextQuestion" hidden>Next question ▶</button><p class="game-method">${gameType==='shape'?'All 50 states, once each, then a fresh shuffle.':esc(mini.note)}</p></div>`;
  $('gameSelect').onchange=e=>{gameType=e.target.value;question();};
  if($('answerMode')){$('answerMode').value=answerMode;$('answerMode').onchange=e=>{answerMode=e.target.value;if(answered)question();else challenge();};}
- document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>submit(b.dataset.answer));
+ if($('neighborMode')){$('neighborMode').value=neighborMode;$('neighborMode').onchange=e=>{neighborMode=e.target.value;question();};}
+ document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>all?toggleNeighbor(b.dataset.answer):submit(b.dataset.answer));
+ if($('checkNeighbors'))$('checkNeighbors').onclick=()=>finishAnswer(sameAnswers([...selectedAnswers],mini.correctSet),mini.correctSet,mini.explanation);
+ if(timeline){
+  const redraw=()=>{challenge();(document.querySelector('[data-pick]:not(:disabled)')||$('checkTimeline')).focus();};
+  document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{if(!answered&&!timelineOrder.includes(b.dataset.pick)){timelineOrder.push(b.dataset.pick);redraw();}});
+  $('undoTimeline').onclick=()=>{timelineOrder.pop();redraw();};$('clearTimeline').onclick=()=>{timelineOrder=[];redraw();};
+  $('checkTimeline').onclick=()=>{const explanation=mini.solution.map(a=>`${facts[a].name}: ${formatStatehood(facts[a].statehood_date)}`).join(' → ');finishAnswer(timelineCorrect(timelineOrder,mini.options,facts),[],explanation);};
+ }
  if($('answerForm'))$('answerForm').onsubmit=e=>{e.preventDefault();submit($('answerInput').value);};
- $('nextQuestion').onclick=()=>{question();(document.querySelector('[data-answer]')||$('answerInput')).focus();};
+ $('nextQuestion').onclick=()=>{question();const heading=document.querySelector('.answers h2');heading.tabIndex=-1;heading.focus({preventScroll:true});};
+}
+function toggleNeighbor(value){
+ if(answered)return;
+ if(selectedAnswers.has(value))selectedAnswers.delete(value);else{if(value==='NONE')selectedAnswers.clear();else selectedAnswers.delete('NONE');selectedAnswers.add(value);}
+ document.querySelectorAll('[data-answer]').forEach(b=>{const chosen=selectedAnswers.has(b.dataset.answer);b.setAttribute('aria-pressed',String(chosen));b.classList.toggle('selected-answer',chosen);});
+ $('checkNeighbors').disabled=selectedAnswers.size===0;
 }
 function submit(value){
- if(answered)return;answered=true;const correct=gameType==='shape'?matches(current,value):value===mini.correct;
- document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,score,gameType==='shape');score+=points;persist();$('counter').textContent=`${score.toLocaleString()} POINTS`;
- const answer=gameType==='shape'?current.abbr:mini.correct;
- $('feedback').textContent=gameType==='shape'?(correct?`★ You got it! ${current.name} · +${points} points!`:`Nice try! It’s ${current.name} (${current.abbr}). We’ll practice it again!`):`${correct?`★ You got it! +${points} points!`:'Nice try! Here’s the answer:'} ${mini.explanation}`;
- document.querySelectorAll('[data-answer]').forEach(b=>{b.disabled=true;if(b.dataset.answer===answer)b.classList.add('correct');else if(b.dataset.answer===value)b.classList.add('wrong');});
+ const correct=gameType==='shape'?matches(current,value):value===mini.correct;
+ finishAnswer(correct,[gameType==='shape'?current.abbr:mini.correct],gameType==='shape'?`${current.name} (${current.abbr})`:mini.explanation,value);
+}
+function finishAnswer(correct,correctAnswers,explanation,value){
+ if(answered)return;answered=true;
+ document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,score,gameType==='shape');score+=points;
+ if(gameType==='shape'||gameType==='neighbors')decks.complete(gameType,current.abbr);
+ persist();$('counter').textContent=`${score.toLocaleString()} POINTS`;
+ $('feedback').textContent=`${correct?`★ You got it! +${points} points!`:'Nice try! Here’s the answer:'} ${explanation}`;
+ document.querySelectorAll('[data-answer]').forEach(b=>{b.disabled=true;if(correctAnswers.includes(b.dataset.answer))b.classList.add('correct');else if(b.dataset.answer===value||selectedAnswers.has(b.dataset.answer))b.classList.add('wrong');});
+ document.querySelectorAll('[data-pick],#undoTimeline,#clearTimeline,#checkTimeline,#checkNeighbors').forEach(b=>b.disabled=true);
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }
-function setMode(next){mode=next;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'A correct answer earns 100 points, plus a streak bonus. Missed states get more chances to become familiar.';if(mode==='learn')learn();else if(!current)question();else if(answered)question();else challenge();}
+function setMode(next){mode=next;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Challenge and Neighbors visit all 50 states before shuffling again.';if(mode==='learn')learn();else if(!current)question();else if(answered)question();else challenge();}
 $('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);svg.outerHTML=shape(s);});}};
 function switchMode(next){setMode(next);if(matchMedia('(max-width:760px)').matches)document.querySelector('.play').scrollIntoView({block:'start'});}
 $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>switchMode('challenge');document.addEventListener('keydown',e=>{if(mode==='learn' && !['INPUT','SELECT','BUTTON'].includes(document.activeElement.tagName)){if(e.key==='ArrowRight')navigate(1);if(e.key==='ArrowLeft')navigate(-1);}});persist();setMode('learn');
@@ -77,13 +105,7 @@ $('confirmImport').onclick=()=>{
  if(!pendingImport)return;
  Object.assign(progress,pendingImport);pendingImport=undefined;score=0;current=undefined;persist();setMode(mode);$('importDialog').close();$('saveStatus').textContent='Progress imported. Your current challenge score has restarted.';
 };
-if('serviceWorker' in navigator){
- navigator.serviceWorker.register('./sw.js').then(async registration=>{
-  await navigator.serviceWorker.ready;
-  $('offlineStatus').textContent='Ready for offline play after this first load. Install from your browser menu.';
-  registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed' && navigator.serviceWorker.controller)$('offlineStatus').textContent='An update is ready. Close all StateQuest windows and reopen to use it.';});});
- }).catch(()=>{$('offlineStatus').textContent=navigator.serviceWorker.controller?'Playing from your saved offline game.':'Offline setup unavailable. Play online and try again later.';});
-}else{$('offlineStatus').textContent='Offline installation is unavailable in this browser. You can still play online.';}
+startUpdates({storage,document,navigator,location});
 
 // View preferences are separate from learning progress and do not alter saved scores.
 let flashDefault=matchMedia('(max-width:760px), (max-height:500px) and (max-width:950px)').matches;

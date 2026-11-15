@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/statequest/">
-    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.4.0" width="420">
+    <img src="assets/play-now.svg" alt="Play StateQuest now — v0.5.0" width="420">
   </a>
 </p>
 
 # StateQuest
 
-A browser geography game for all 50 U.S. states. Learn silhouettes, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Missed states receive extra practice weight. Scores, streaks and explored states are stored in the current browser.
+A browser geography game for all 50 U.S. states. Learn silhouettes, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and Neighboring States cover all 50 states before starting a new random order. Scores, streaks and explored states are stored in the current browser.
 
 ## Run locally
 
@@ -35,9 +35,11 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/core.test.cjs
 node tests/pwa.test.cjs
 node tests/games.test.cjs
+node tests/rounds.test.cjs
+node tests/updates.test.cjs
 ```
 
-The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, weighted review and storage failures. JavaScript tests require Node (only tests require it).
+The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, saved practice history and storage failures. JavaScript tests require Node (only tests require it).
 
 ## Geography attribution
 
@@ -59,8 +61,20 @@ Physical iPhone/Android checks remain necessary for home-screen installation, so
 
 Flip a Learn card to see up to four fact groups. In **My Progress → Card Facts**, uncheck a group to make room for another; Restore Defaults selects capital, flag, nickname and statehood. Choices stay in this browser. **More Facts** is always beside the state name and shows the unselected groups, ten largest cities/communities, a selected NPS landmark and neighboring states. Fact choices are separate from the progress JSON backup.
 
-In **Play**, choose Shape Challenge, Population Showdown, Size Showdown or Neighboring States. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared water boundaries and exclude corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers affect missed-shape practice weights.
+In **Play**, choose Shape Challenge, Population Showdown, Size Showdown, Neighboring States or Statehood Timeline. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared water boundaries and exclude corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers update per-state practice history.
 
 See the in-app [Image/Data Credits](https://natsteff.github.io/statequest/credits.html) for exact Census/ACS vintages, Hawaii and Rhode Island geography exceptions, CRS statehood dates, Flagpedia attribution, symbol references and map licenses. No live data service, Census API key or external flag request is needed during play. Cached credits work offline; outbound source/landmark links need a connection.
 
 Fact data is checked into `data/state-facts.json`; `scripts/build.py` packages it and all 50 original SVGs from `public/assets/flags/`. To refresh the pinned sources, run `python3 scripts/refresh_facts.py --download`, review changes and source vintages, run tests, then rebuild. This maintenance operation uses the network and is separate from the normal offline build. See [data methods](data/README.md).
+
+## Rounds, timelines and startup updates
+
+Showdowns accept either the large state card (including its flag/image) or its answer button. Each question scores once.
+
+Shape Challenge and Neighboring States have independent shuffled 50-state decks. A state is completed after an answer, including a miss. The next cycle uses a new shuffled order, avoiding an immediate repeat across the boundary. Deck order/position is saved locally; reloading or switching games resumes the current unanswered state. ONE/ALL neighbor modes share one deck. Old practice counts remain, but no state receives an early repeat. Deck positions are device-local and separate from the exported progress backup.
+
+In Neighboring States, choose **ALL neighbors**, toggle every correct state, then Check. There are 10 options (the current maximum of eight neighboring states plus two). “None — no neighboring states” is exclusive and handles Alaska/Hawaii. Partial sets or extra wrong selections do not count as correct.
+
+Statehood Timeline gives four states per round. Tap them from earliest to latest admission date, use Undo/Clear to revise, then Check. Same-date states (North/South Dakota) are accepted in either order. Reference dates come from the existing CRS-backed statehood data; original 13 dates mean Constitution ratification.
+
+**My Progress → Game settings → Auto-update on startup** is enabled by default. It checks/stages the offline worker without the browser HTTP cache and applies a fully installed waiting update during a short pre-play window. A successful activation reloads once; ongoing quizzes are never forcibly reloaded. Offline/slow checks fall back within eight seconds, or choose Play now. Turning the setting off stops the app's automatic startup apply/reload; the browser may still stage service-worker updates and activate them after all game windows close. An existing pre-0.5 installation may need one online visit followed by closing/reopening all game windows to receive this new updater.
