@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.2" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.3" width="420">
   </a>
 </p>
 
@@ -107,7 +107,7 @@ Highest Point replaces the redundant Location Map fact option. It shows the poin
 
 Mark/unmark a location with the Learn trophy. First marking prompts before switching the Learn bar to Mastered; Options can switch it back to Explored. My Progress always shows both metrics against the enabled geography pool, independent of practice exclusions. Manage mastered locations there even when hidden from Learn. Mastery and cumulative post-mark failures travel in the existing version1 JSON backup; legacy backups start with no mastered locations. After every three additional wrong answers about a mastered location, an in-game prompt offers removal. Keeping mastery retains the count and prompts after another three failures; removing/re-marking clears its count. Shape, Map Quest and neighbor misses count against the target. Showdown misses count against both compared locations; Timeline misses count against locations involved in ordering inversions (same-date ties accepted). Correct answers do not reset these cumulative failures.
 
-Options can exclude mastered locations from Learn and game question/answer pools, except that ALL Neighbors retains mastered neighbors and distractors from enabled geography so its full answer set is available; existing geography progress is retained. If a game lacks enough eligible locations or comparable values, it offers to include mastered locations again. All available geography stays visible for context maps and fact-reference comparisons. Map Quest uses eligible U.S. states only: tap the requested state on the map, or use Tab/Enter. Alaska and Hawaii use the existing insets. Wrong answers reveal target yellow and the wrong choice red. Points follow the existing100 +streak-bonus formula.
+Options can exclude mastered locations from Learn and game question/answer pools, except that ALL Neighbors retains mastered neighbors and distractors from enabled geography so its full answer set is available; existing geography progress is retained. If a game lacks enough eligible locations or comparable values, it offers to include mastered locations again. All available geography stays visible for context maps and fact-reference comparisons. Map Quest uses eligible U.S. states only: preview a state on the map (or use Tab/Enter), then press Submit answer. Alaska and Hawaii use the existing insets. Wrong answers reveal target yellow and the wrong choice red. Points follow the existing100 +streak-bonus formula.
 
 Neighbor results use a common geographic map: target yellow, selected correct green, missed eligible neighbors/wrong selections red, other/reference neighbors blue. ONE mode leaves unasked neighbors blue. Labels use postal abbreviations with full names in the key. Cross-border maps reproject pinned U.S. and Canadian outlines to a shared geographic frame; U.S.-only maps retain the familiar source map/insets. This replaces disconnected silhouette cards.
 
@@ -123,4 +123,7 @@ Options → Game settings has Check for Updates Now and, when a downloaded updat
 
 Neighbor quizzes, facts and maps use land/river adjacency, excluding lake-only/ocean-only pairs consistently, including MI–MN, MI–IL, NY–RI, ON–OH and ON–PA. MI–ON and ordinary river neighbors remain.
 
-Map Quest results color the original main map: correct green, incorrect choice red, intended target yellow after a miss. There is no second result map. Double-tap an area to zoom without submitting either tap; a single pointer tap answers after a brief double-tap recognition interval. Zoom +/− and Full map work with keyboard or touch. Drag a zoomed map to pan. Small-state results automatically frame target and choice; Zoom target/Zoom your choice buttons help when those states are far apart. Next question resets to the full map. Map-local zoom does not change browser/page zoom behavior.
+Map Quest results color the original main map: correct green, incorrect choice red, intended target yellow after a miss. There is no second result map. Double-tap an area to zoom without submitting either tap; a single pointer tap previews a choice after a brief double-tap recognition interval. Zoom +/− and Full map work with keyboard or touch. Drag a zoomed map to pan. Small-state results automatically frame target and choice; Zoom target/Zoom your choice buttons help when those states are far apart. Next question resets to the full map. Map-local zoom does not change browser/page zoom behavior.
+
+### v0.9.3 Map Quest answer confirmation
+Map gestures never grade an answer. Tap (or keyboard Enter/Space) to preview a state with a neutral dashed outline, change/clear that preview freely, then press Submit answer to grade once. Submit is disabled until there is a preview and while a map gesture is pending. Double-tap zoom and drag pan preserve the previous preview without selecting another state; zoom controls cancel pending taps. Navigation no longer produces yellow hover fills. Green/red/yellow are reserved for submitted results. Each new question starts with no preview.
