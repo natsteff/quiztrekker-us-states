@@ -88,8 +88,12 @@ Existing browser progress and preferences are retained on the same GitHub Pages 
 
 ## Optional geographic expansion
 
-In **My Progress → Options → Quiz Locations**, independently enable **U.S. Territories & Washington, D.C.** (+7), **Canadian Provinces** (+10), or **Canadian Territories** (+3). All default off; the original 50 states remain enabled. All options together provide 70 locations. Settings and progress stay on this device; disabling a pack preserves its explored records and each scope’s saved deck.
+In **My Progress → Options → Choose Locations**, independently enable **U.S. Territories & Washington, D.C.** (+7), **Canadian Provinces** (+10), or **Canadian Territories** (+3). All default off; the original 50 states remain enabled. All options together provide 70 locations. Settings and progress stay on this device; disabling a pack preserves its explored records and each scope’s saved deck.
 
 Learn, both Shape Challenge variants, and neighbor rounds use the selected pool. Statehood Timeline always uses only U.S. states. Population Showdowns compare locations with the same reference date; expanded Size Showdowns use land area, with source vintages disclosed. The default state-only Showdowns retain their existing data and rules. UM is one collective entry with nine shoreline insets and no common capital; it has no bundled comparable numeric Showdown totals. Non-state profiles omit statehood/admission order and other inapplicable facts rather than filling them with invented values. Existing 50-state facts, ranks, flags and capital points are retained.
 
 Expansion boundaries/facts come from the U.S. Census Bureau, USGS, NOAA, Statistics Canada, NRCan, Canadian Heritage, and D.C. government. Sources, projections, census dates, generalization methods, and GSHHG LGPL notices are documented in **Image/Data Credits**. All assets work offline after an online load.
+
+Learn fronts include a small locator beside the close-up shape. Shape / On the Map switches views without flipping; tap the image for facts. Options → Game settings → Default Learn view saves the starting view on this browser. The full map also retains a capital close-up. U.S. states use the U.S. map with Alaska/Hawaii insets; Canadian locations use Canada. Other optional locations retain their documented local outline/insets.
+
+The gear toggles a separate Options card and returns to the previous activity; Close Options does the same. My Progress opens its own stats card. Double-tap browser zoom is disabled with touch-action manipulation while pinch zoom remains available. Neighbor results reveal every supported neighbor with labeled silhouettes after correct or wrong answers, including neighbors outside enabled packs.

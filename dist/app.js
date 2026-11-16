@@ -15,6 +15,8 @@ const allLocations=[...baseStates,...extraLocations],facts=mergeFacts(baseFacts,
 let geography=readGeography(storage),states=selectedLocations(baseStates,extraLocations,geography);
 const progress=load(storage);
 progress.seen=progress.seen.filter(a=>allLocations.some(s=>s.abbr===a));
+let learnDefault='shape';try{learnDefault=storage.getItem('statequest.learnDefault')==='map'?'map':'shape';}catch{}
+let learnView=learnDefault,optionsReturn='game';
 let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
 let decks=createDecks(states,storage,Math.random,deckStorageKey(states));
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map,facts});
@@ -32,8 +34,11 @@ function map(s){
 function seen(s){if(!progress.seen.includes(s.abbr)){progress.seen.push(s.abbr);persist();}}
 function learn(){
  const s=states[index];seen(s);$('counter').textContent=`${String(index+1).padStart(2,'0')} / ${states.length}`;$('modeLabel').textContent='FLIP & DISCOVER';
- const card=flipped?`<div class="card back-card"><div class="fact-card-heading"><b>★ ${esc(s.kind||'U.S. state')}</b><button id="flipBack" class="secondary">↻ Flip back</button></div><div class="card-visuals">${capitalMap(s,true)}<div class="card-flag">${factUI.flag(s)}</div></div><div class="back-facts">${factUI.primary(s)}</div></div>`:`<button class="card" id="flip" aria-label="Flip card for facts"><span class="badge">WHAT A GREAT SHAPE!</span>${capitalMap(s)}<span class="hint">↻ Tap to flip!</span></button>`;
+ const viewControls=`<div class="learn-view-toggle" role="group" aria-label="Learning view"><button id="shapeView" aria-pressed="${learnView==='shape'}">Shape</button><button id="mapView" aria-pressed="${learnView==='map'}">On the Map</button></div>`;
+ const card=flipped?`<div class="card back-card"><div class="fact-card-heading"><b>★ ${esc(s.kind||'U.S. state')}</b><button id="flipBack" class="secondary">↻ Flip back</button></div><div class="card-visuals">${capitalMap(s,true)}<div class="card-flag">${factUI.flag(s)}</div></div><div class="back-facts">${factUI.primary(s)}</div></div>`:`${viewControls}<button class="card learn-front ${learnView==='map'?'map-front':''}" id="flip" aria-label="Flip card for facts">${learnView==='shape'?`<span class="learn-visuals">${capitalMap(s)}<span class="locator"><b>On the Map</b>${map(s)}<small>${s.country==='CA'?'Canada':s.group?'Location outline':'U.S. · AK/HI inset'}</small></span></span>`:`<span class="large-locator">${map(s)}<small>${s.country==='CA'?'Canada':s.group?esc(s.shape_note||s.kind):'Alaska and Hawaii inset; Alaska reduced.'}</small></span><span class="map-capital">${capitalMap(s,true)}</span>`}<span class="hint">↻ Tap to flip!</span></button>`;
  $('game').innerHTML=card+`<div class="state-label"><div class="identity-block"><span>${s.abbr}</span><h2>${s.name}</h2>${s.group?`<small>${esc(s.kind)}</small>`:''}</div><button id="moreFacts" class="secondary">More Facts ＋</button></div><div class="navigation"><button id="prev" aria-label="Previous location">◀ Back</button><label for="stateSelect">Choose ${states.length===50?'state':'location'}</label><select id="stateSelect">${states.map((t,i)=>`<option value="${i}" ${i===index?'selected':''}>${t.name}</option>`).join('')}</select><button id="next">Next ▶</button></div>`;
+ if($('shapeView'))$('shapeView').onclick=()=>{learnView='shape';learn();};
+ if($('mapView'))$('mapView').onclick=()=>{learnView='map';learn();};
  mountCapitalMaps(states,relativeScale);
  if($('flip'))$('flip').onclick=()=>{if(Date.now()<suppressFlipUntil)return;flipped=true;learn();};
  if($('flipBack'))$('flipBack').onclick=()=>{flipped=false;learn();};
@@ -95,11 +100,15 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  const feedback=$('feedback');feedback.className=`feedback result-banner ${correct?'result-correct':'result-wrong'}${milestone||roundComplete?' result-milestone':''}`;
  feedback.innerHTML=`<strong class="result-title">${correct?'★ Correct!':'Keep exploring!'}</strong>${correct?`<span class="result-points">+${points} points</span><span class="result-breakdown">100 for the answer + ${points-100} streak bonus</span>`:'<span class="result-breakdown">Here’s the answer · 0 points · streak reset</span>'}<span class="result-explanation">${esc(explanation)}</span>${milestone?`<strong class="result-achievement">🌟 ${progress.streak} correct in a row!</strong>`:''}${roundComplete?`<strong class="result-achievement">🏁 Round complete! You practiced all ${questionPosition.total} locations.</strong>`:''}`;
 
+ if(gameType==='neighbors'){
+ const neighbors=facts[current.abbr].neighbors.map(a=>allLocations.find(s=>s.abbr===a)).filter(Boolean);
+ feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>All neighbors of ${esc(current.name)}</h3>${neighbors.length?`<div class="neighbor-gallery">${neighbors.map(s=>`<figure>${shape(s).replace('Mystery location silhouette',esc(s.name)+' silhouette')}<figcaption>${esc(s.name)} (${s.abbr})</figcaption></figure>`).join('')}</div>`:'<p>No neighboring locations.</p>'}<small>Includes supported neighbors outside your enabled location choices.</small></section>`);
+ }
  document.querySelectorAll('[data-answer]').forEach(b=>{b.disabled=true;if(correctAnswers.includes(b.dataset.answer))b.classList.add('correct');else if(b.dataset.answer===value||selectedAnswers.has(b.dataset.answer))b.classList.add('wrong');});
  document.querySelectorAll('[data-pick],#undoTimeline,#clearTimeline,#checkTimeline,#checkNeighbors').forEach(b=>b.disabled=true);
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }
-function setMode(next){mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Challenge and Neighbors visit every enabled location before shuffling again.';if(mode==='learn')learn();else if(!current)question();else if(answered)question();else challenge();}
+function setMode(next){$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Challenge and Neighbors visit every enabled location before shuffling again.';if(mode==='learn')learn();else if(!current)question();else if(answered)question();else challenge();}
 $('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);svg.outerHTML=shape(s);});}};
 function switchMode(next){setMode(next);if(matchMedia('(max-width:760px)').matches)document.querySelector('.play').scrollIntoView({block:'start'});}
 $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>switchMode('challenge');document.addEventListener('keydown',e=>{if(mode==='learn' && !['INPUT','SELECT','BUTTON'].includes(document.activeElement.tagName)){if(e.key==='ArrowRight')navigate(1);if(e.key==='ArrowLeft')navigate(-1);}});persist();setMode('learn');
@@ -137,8 +146,14 @@ applyCardView(mobileView&&!showSwitcher?true:preferredView?preferredView==='card
 applyViewSwitcher();
 $('showViewSwitcher').onchange=e=>{showSwitcher=e.target.checked;try{storage.setItem('statequest.viewSwitcher',String(showSwitcher));}catch{}applyViewSwitcher();};
 $('viewToggle').onclick=()=>{const enabled=!document.body.classList.contains('flash');applyCardView(enabled);try{storage.setItem('statequest.view',enabled?'cards':'overview');}catch{}};
-$('settingsButton').onclick=()=>{ $('progressTab').click(); const panel=document.querySelector('.save-tools'); panel.scrollIntoView({block:'start'}); $('optionsTitle').focus({preventScroll:true}); };
-$('progressTab').onclick=()=>{document.body.dataset.view='progress';for(const id of ['learnTab','challengeTab'])$(id).setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed','true');};
+function panelView(view){document.body.dataset.view=view;$('settingsButton').setAttribute('aria-pressed',String(view==='options'));for(const id of ['learnTab','challengeTab'])$(id).setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed',String(view==='progress'));document.querySelector('.progress-scroll').scrollTop=0;}
+function returnToGame(){document.body.dataset.view='game';$('settingsButton').setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',String(mode==='learn'));$('challengeTab').setAttribute('aria-pressed',String(mode==='challenge'));}
+function closeOptions(){if(optionsReturn==='progress')panelView('progress');else returnToGame();}
+$('settingsButton').onclick=()=>{if(document.body.dataset.view==='options'){closeOptions();return;}optionsReturn=document.body.dataset.view==='progress'?'progress':'game';panelView('options');$('optionsTitle').focus({preventScroll:true});};
+$('closeOptions').onclick=closeOptions;
+$('progressTab').onclick=()=>{if(document.body.dataset.view==='progress')returnToGame();else panelView('progress');};
+$('learnDefault').value=learnDefault;
+$('learnDefault').onchange=e=>{learnDefault=e.target.value;learnView=learnDefault;try{storage.setItem('statequest.learnDefault',learnDefault);}catch{}if(mode==='learn')learn();};
 function fitViewport(){document.documentElement.style.setProperty('--app-height',`${window.visualViewport?.height || window.innerHeight}px`);}
 window.visualViewport?.addEventListener('resize',fitViewport);window.addEventListener('resize',fitViewport);fitViewport();
 
