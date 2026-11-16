@@ -10,7 +10,10 @@ assert.equal(c.clean({mastered:['AL','AL','bad'],masteryFailures:{AL:3,AK:8}}).m
 assert.throws(()=>c.importProgress(JSON.stringify({app:'QuizTrekker - US States',version:1,progress:{seen:[],records:{},best:0,streak:0,bestStreak:0,mastered:['XX']}}),[{abbr:'AL'}]));
 const map=fs.readFileSync('dist/teaching-map.js','utf8');const context=JSON.parse(fs.readFileSync('dist/context-geometry.js','utf8').replace('export const contextGeometry = ','').trim().replace(/;$/,''));const t=vm.runInNewContext(map.replace(/^import .*;\n/gm,'').replaceAll('export ','')+';({teachingMap})',{contextGeometry:context,esc:x=>x});
 const states=JSON.parse(fs.readFileSync('dist/states.js','utf8').replace('export const states = ','').trim().replace(/;$/,''));let html=t.teachingMap({locations:states,target:'WV',neighbors:['OH','VA'],chosen:['OH','FL'],eligible:['OH','VA'],all:true});assert(html.includes('correct'));assert(html.includes('missed'));assert(html.includes('wrong'));assert(html.includes('WV</text>'));
-html=t.teachingMap({locations:states,mode:'quest',eligible:['AL']});assert.equal((html.match(/data-map-answer=/g)||[]).length,1);assert(html.includes('aria-label="Alabama"'));
+html=t.teachingMap({locations:states,mode:'quest',eligible:['AL']});assert.equal((html.match(/data-map-answer=/g)||[]).length,1);assert(html.includes('aria-label="Map region 1"'));assert(!html.includes('Alabama'));assert(!html.includes('<title>'));assert(!html.includes('<text'));
 console.log('Mastery persistence/review, timeline removal, attribution and teaching-map checks passed');
 
 assert.equal(context.length,70);assert(context.find(s=>s.abbr==='UM').path.length>0);
+
+html=t.teachingMap({locations:states,mode:'quest',eligible:states.map(s=>s.abbr)});for(const s of states)assert(!html.includes(s.name));assert(!html.includes('<title>'));assert(!html.includes('aria-label="RI"'));
+html=t.teachingMap({locations:states,target:'LA',neighbors:[]});assert(html.includes('<title>Louisiana</title>'));

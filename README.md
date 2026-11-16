@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.3" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.4" width="420">
   </a>
 </p>
 
@@ -127,3 +127,6 @@ Map Quest results color the original main map: correct green, incorrect choice r
 
 ### v0.9.3 Map Quest answer confirmation
 Map gestures never grade an answer. Tap (or keyboard Enter/Space) to preview a state with a neutral dashed outline, change/clear that preview freely, then press Submit answer to grade once. Submit is disabled until there is a preview and while a map gesture is pending. Double-tap zoom and drag pan preserve the previous preview without selecting another state; zoom controls cancel pending taps. Navigation no longer produces yellow hover fills. Green/red/yellow are reserved for submitted results. Each new question starts with no preview.
+
+### v0.9.4 Map Quest identity concealment
+Before submission, selected regions show only a neutral outline and “Press Submit answer to check your selected region.” Map regions have generic numbered accessibility labels and no identifying tooltips or abbreviations. The question still names the intended target. State identities, titles and result labels are revealed only after Submit answer. Tap/clear/zoom/pan and explicit grading are unchanged.
