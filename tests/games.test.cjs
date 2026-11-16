@@ -37,3 +37,6 @@ for(const state of outlines)for(const [width,height] of [[280,130],[360,350],[70
  assert(p.x>=0&&p.x<=width&&p.y>=0&&p.y<height-30);
 }
 console.log('300 capital viewport transforms preserve source positions');
+
+assert.equal(JSON.stringify(prefs.factPreferences(['nickname','location','bird'])),JSON.stringify(['nickname','highest','bird']));
+assert.equal(JSON.stringify(prefs.factPreferences(['location','highest'])),JSON.stringify(['highest']));

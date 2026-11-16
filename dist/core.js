@@ -1,13 +1,16 @@
 export const KEY = 'statequest.v1';
 const integer = n => Number.isSafeInteger(n) && n >= 0;
 export function clean(raw) {
-  const result = {seen:[], records:{}, best:0, streak:0, bestStreak:0};
+  const result = {seen:[], records:{}, best:0, streak:0, bestStreak:0,mastered:[],masteryFailures:{}};
   if (!raw || typeof raw !== 'object') return result;
   result.seen = [...new Set(Array.isArray(raw.seen) ? raw.seen.filter(x=>/^[A-Z]{2}$/.test(x)) : [])];
   for (const key of ['best','streak','bestStreak']) if(integer(raw[key])) result[key]=raw[key];
   if(raw.records && typeof raw.records === 'object') for(const [key,value] of Object.entries(raw.records)) {
     if(/^[A-Z]{2}$/.test(key) && value && integer(value.correct) && integer(value.missed)) result.records[key]={correct:value.correct,missed:value.missed};
   }
+  result.masteryDisplay=raw?.masteryDisplay===true;
+  result.mastered=[...new Set(Array.isArray(raw?.mastered)?raw.mastered.filter(a=>/^[A-Z]{2}$/.test(a)):[])];
+  result.masteryFailures={};for(const [a,n] of Object.entries(raw?.masteryFailures||{}))if(result.mastered.includes(a)&&integer(n))result.masteryFailures[a]=n;
   return result;
 }
 export function load(storage) {try {return clean(JSON.parse(storage.getItem(KEY)));} catch {return clean();}}
@@ -38,5 +41,7 @@ export function importProgress(text, states) {
   const p=data.progress, valid=new Set(states.map(s=>s.abbr));
   if(!Array.isArray(p.seen) || p.seen.some(a=>!valid.has(a)) || !p.records || Array.isArray(p.records) || typeof p.records!=='object' || ['best','streak','bestStreak'].some(k=>!integer(p[k])) || p.streak>p.bestStreak) throw Error('Save contains invalid progress.');
   for(const [key,r] of Object.entries(p.records)) if(!valid.has(key) || !r || !integer(r.correct) || !integer(r.missed)) throw Error('Save contains invalid state records.');
+  if(p.mastered!==undefined&&(!Array.isArray(p.mastered)||p.mastered.some(a=>!valid.has(a))))throw Error('Save contains invalid mastery records.');
+  if(p.masteryFailures!==undefined&&(!p.masteryFailures||typeof p.masteryFailures!=='object'||Array.isArray(p.masteryFailures)||Object.entries(p.masteryFailures).some(([a,n])=>!valid.has(a)||!integer(n)||!p.mastered?.includes(a))))throw Error('Save contains invalid mastery failures.');
   return clean(p);
 }

@@ -34,6 +34,23 @@ class Facts(unittest.TestCase):
   for a,n,d in [('DE',1,'1787-12-07'),('WI',30,'1848-05-29'),('AK',49,'1959-01-03'),('HI',50,'1959-08-21')]:
    self.assertEqual(self.f[a]['statehood_order'],n);self.assertEqual(self.f[a]['statehood_date'],d)
   self.assertEqual(self.f['AK']['area_rank'],1);self.assertEqual(self.f['RI']['area_rank'],50)
+ def test_highest_points(self):
+  import subprocess,sys
+  subprocess.run([sys.executable,str(ROOT/'scripts/build.py')],check=True,capture_output=True)
+  built=json.loads((ROOT/'dist/facts.js').read_text().removeprefix('export const facts = ').strip().removesuffix(';'))
+  rows=[line.split('\t') for line in (ROOT/'data/highest-points.tsv').read_text().splitlines()]
+  self.assertEqual(len(rows),50)
+  self.assertEqual({r[0] for r in rows},set(self.f))
+  for a,name,ft in rows:
+   point=built[a]['highest_point']
+   self.assertTrue(name)
+   self.assertGreater(point['elevation_ft'],0)
+   self.assertEqual(point['elevation_m'],round(int(ft)*.3048))
+  self.assertEqual(built['AK']['highest_point']['elevation_ft'],20310)
+  self.assertEqual(built['FL']['highest_point']['elevation_ft'],345)
+  self.assertIn('south slope',built['CT']['highest_point']['name'])
+  self.assertEqual(built['SD']['highest_point']['name'],'Black Elk Peak')
+  self.assertEqual(built['TN']['highest_point']['name'],'Kuwohi')
  def test_neighbors(self):
   for a,s in self.f.items():
    self.assertEqual(len(s['neighbors']),len(set(s['neighbors'])))

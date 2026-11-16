@@ -1,10 +1,10 @@
-export const GAME_NAMES={shape:'Shape Challenge',population:'Population Showdown',area:'Size Showdown',neighbors:'Neighboring States',timeline:'Statehood Timeline'};
+export const GAME_NAMES={mapquest:'Map Quest',shape:'Shape Challenge',population:'Population Showdown',area:'Size Showdown',neighbors:'Neighboring States',timeline:'Statehood Timeline'};
 function pick(a,r){return a[Math.min(a.length-1,Math.floor(r()*a.length))];}
 function shuffled(a,r){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 export function makeQuestion(type,states,facts,previous,random=Math.random,settings={}){
  const expanded=states.some(s=>s.group);
  if(['population','area'].includes(type))states=states.filter(s=>Number.isFinite(facts[s.abbr][type==='population'?'population':expanded?'land_sq_mi':'area_sq_mi']));
- const target=settings.target?states.find(s=>s.abbr===settings.target):pick(states.filter(s=>s.abbr!==previous),random),f=facts[target.abbr];
+ const target=settings.target?states.find(s=>s.abbr===settings.target):pick((states.filter(s=>s.abbr!==previous).length?states.filter(s=>s.abbr!==previous):states),random),f=facts[target.abbr];
  if(type==='neighbors'){
   const neighbors=f.neighbors.filter(a=>states.some(s=>s.abbr===a));
   const other=states.filter(s=>s.abbr!==target.abbr&&!neighbors.includes(s.abbr));
@@ -19,7 +19,9 @@ export function makeQuestion(type,states,facts,previous,random=Math.random,setti
  }
  if(!['population','area'].includes(type))throw Error('Unsupported game');
  const key=type==='population'?'population':expanded?'land_sq_mi':'area_sq_mi';
- const other=pick(states.filter(s=>s.abbr!==target.abbr&&facts[s.abbr][key]!==f[key]&&(type!=='population'||facts[s.abbr].population_as_of===f.population_as_of)),random);
+ const candidates=states.filter(s=>s.abbr!==target.abbr&&facts[s.abbr][key]!==f[key]&&(type!=='population'||facts[s.abbr].population_as_of===f.population_as_of));
+ if(!candidates.length)return makeQuestion(type,states,facts,null,random,{target:states.find(a=>states.some(b=>a!==b&&facts[a.abbr][key]!==facts[b.abbr][key]&&Number.isFinite(facts[b.abbr][key])&&(type!=='population'||facts[a.abbr].population_as_of===facts[b.abbr].population_as_of))).abbr});
+ const other=pick(candidates,random);
  const pair=shuffled([target.abbr,other.abbr],random);
  const correct=f[key]>facts[other.abbr][key]?target.abbr:other.abbr;
  const unit=type==='population'?'people':'sq mi';

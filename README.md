@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.8.0" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.0" width="420">
   </a>
 </p>
 
@@ -37,6 +37,7 @@ node tests/pwa.test.cjs
 node tests/games.test.cjs
 node tests/rounds.test.cjs
 node tests/updates.test.cjs
+node tests/learning.test.cjs
 ```
 
 The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, saved practice history and storage failures. JavaScript tests require Node (only tests require it).
@@ -97,3 +98,15 @@ Expansion boundaries/facts come from the U.S. Census Bureau, USGS, NOAA, Statist
 Learn fronts include a small locator beside the close-up shape. Shape / On the Map switches views without flipping; tap the image for facts. Options → Game settings → Default Learn view saves the starting view on this browser. The full map also retains a capital close-up. U.S. states use the U.S. map with Alaska/Hawaii insets; Canadian locations use Canada. Other optional locations retain their documented local outline/insets.
 
 The gear toggles a separate Options card and returns to the previous activity; Close Options does the same. My Progress opens its own stats card. Double-tap browser zoom is disabled with touch-action manipulation while pinch zoom remains available. Neighbor results reveal every supported neighbor with labeled silhouettes after correct or wrong answers, including neighbors outside enabled packs.
+
+Highest Point replaces the redundant Location Map fact option. It shows the point’s name and approximate elevation in feet/meters for every U.S. state, on the card when selected or in More Facts otherwise. Existing Location Map selections migrate to Highest Point; the default four selections stay unchanged. Learn’s front locator and map view remain available. See Image/Data Credits for reference vintages and Alaska’s updated elevation. Optional non-state locations omit highest point until sourced.
+
+## Mastery, Map Quest and fact comparisons
+
+Mark/unmark a location with the Learn trophy. First marking prompts before switching the Learn bar to Mastered; Options can switch it back to Explored. My Progress always shows both metrics against the enabled geography pool, independent of practice exclusions. Manage mastered locations there even when hidden from Learn. Mastery and cumulative post-mark failures travel in the existing version1 JSON backup; legacy backups start with no mastered locations. After every three additional wrong answers about a mastered location, an in-game prompt offers removal. Keeping mastery retains the count and prompts after another three failures; removing/re-marking clears its count. Shape, Map Quest and neighbor misses count against the target. Showdown misses count against both compared locations; Timeline misses count against locations involved in ordering inversions (same-date ties accepted). Correct answers do not reset these cumulative failures.
+
+Options can exclude mastered locations from all Learn/game question and answer pools; existing geography progress is retained. If a game lacks enough eligible locations or comparable values, it offers to include mastered locations again. All available geography stays visible for context maps and fact-reference comparisons. Map Quest uses eligible U.S. states only: tap the requested state on the map, or use Tab/Enter. Alaska and Hawaii use the existing insets. Wrong answers reveal target yellow and the wrong choice red. Points follow the existing100 +streak-bonus formula.
+
+Neighbor results use a common geographic map: target yellow, selected correct green, missed eligible neighbors/wrong selections red, other/reference neighbors blue. ONE mode leaves unasked neighbors blue. Labels use postal abbreviations with full names in the key. Cross-border maps reproject pinned U.S. and Canadian outlines to a shared geographic frame; U.S.-only maps retain the familiar source map/insets. This replaces disconnected silhouette cards.
+
+Tap a fact tile in flipped Learn or More Facts to open a comparison popup. It includes all supported locations with that fact, regardless of enabled packs or mastery filters. Numeric facts sort by value (statehood by admission order); other facts sort by location name. All can switch to location-name order. Population values are grouped by reference date before ordering within each date. Sources/vintages and area definitions remain visible. Unavailable numeric facts are omitted. Highest Point replaces Location Map, keeping front Learn maps unchanged. Keyboard focus uses a blue dashed indicator instead of red outlines. Timeline selections can be removed individually by tapping again, compacting later positions; Undo still removes the last remaining selection.
