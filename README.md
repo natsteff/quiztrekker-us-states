@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.4" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.5" width="420">
   </a>
 </p>
 
@@ -40,6 +40,7 @@ node tests/updates.test.cjs
 node tests/learning.test.cjs
 node tests/results.test.cjs
 node tests/map-quest.test.cjs
+node tests/welcome.test.cjs
 ```
 
 The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, saved practice history and storage failures. JavaScript tests require Node (only tests require it).
@@ -130,3 +131,8 @@ Map gestures never grade an answer. Tap (or keyboard Enter/Space) to preview a s
 
 ### v0.9.4 Map Quest identity concealment
 Before submission, selected regions show only a neutral outline and “Press Submit answer to check your selected region.” Map regions have generic numbered accessibility labels and no identifying tooltips or abbreviations. The question still names the intended target. State identities, titles and result labels are revealed only after Submit answer. Tap/clear/zoom/pan and explicit grading are unchanged.
+
+### v0.9.5 welcome and installation help
+The logo welcome screen appears once per browser/device after the startup updater finishes. Close, Escape or Let’s explore records dismissal; it can be reopened from Options → Game settings → View welcome & installation help. Installation instructions are shared with Settings from one source. Standalone/home-screen launches suppress the installation recommendation while retaining the first-visit introduction.
+
+Returning mobile browser visits show a compact home-screen reminder. Close dismisses it for that visit; Don’t show again persists on that browser. It never appears in standalone mode and hides after a supported appinstalled event. Standalone detection describes the current launch, not installation elsewhere. Welcome/reminder preferences are browser-local and separate from progress backups. If browser storage is unavailable or cleared, first-visit detection cannot persist.

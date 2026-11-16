@@ -1,3 +1,4 @@
+import {startWelcome} from './welcome.js';
 import {mountMapQuest} from './map-quest.js';
 import {timelinePrefix,neighborResult} from './result-rules.js';
 import {teachingMap} from './teaching-map.js';
@@ -215,3 +216,5 @@ function geographySettings(){
  });
 }
 geographySettings();
+
+startWelcome({storage,document,window,navigator,mobile:mobileView});

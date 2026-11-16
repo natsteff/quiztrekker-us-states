@@ -27,6 +27,7 @@ jobs:
           node tests/learning.test.cjs
           node tests/results.test.cjs
           node tests/map-quest.test.cjs
+          node tests/welcome.test.cjs
       - name: Verify offline cache and project scope
         run: node tests/pwa.test.cjs
       - name: Verify reproducible build
