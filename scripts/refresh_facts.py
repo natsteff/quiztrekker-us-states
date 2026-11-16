@@ -57,9 +57,7 @@ def generate():
   polygons=g['arcs'] if g['type']=='MultiPolygon' else [g['arcs']]
   arcs[byname[g['properties']['name']]]={i if i>=0 else ~i for poly in polygons for ring in poly for i in ring}
  adjacent={a:sorted(b for b in arcs if b!=a and arcs[a]&arcs[b]) for a in arcs}
- # Cartographic coastlines omit three wholly-water shared boundaries.
- for a,b in [('MI','IL'),('MI','MN'),('NY','RI')]:
-  adjacent[a]=sorted(set(adjacent[a]+[b]));adjacent[b]=sorted(set(adjacent[b]+[a]))
+ # Shared coastline arcs include land/river borders; do not add lake/ocean-only pairs.
  result={}
  for fips,abbr,name,capital in meta:
   candidates=sorted([r for r in cities if r['STNAME']==name and r['SUMLEV']==('061' if abbr=='RI' else '162')],key=lambda r:(-int(r['POPESTIMATE2025']),r['PLACE']))[:10]

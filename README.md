@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.1" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.2" width="420">
   </a>
 </p>
 
@@ -38,6 +38,8 @@ node tests/games.test.cjs
 node tests/rounds.test.cjs
 node tests/updates.test.cjs
 node tests/learning.test.cjs
+node tests/results.test.cjs
+node tests/map-quest.test.cjs
 ```
 
 The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, saved practice history and storage failures. JavaScript tests require Node (only tests require it).
@@ -48,7 +50,7 @@ Boundary data: [US Atlas 3.0.1](https://github.com/topojson/us-atlas), derived f
 
 ## Mobile installation and backups
 
-Phones start in Card view: one large flashcard fills the available game area, with Learn, Play and My Progress controls at the bottom. Overview switches to the wider dashboard; the chosen view stays on this browser. My Progress contains scores. The top-right gear opens Options for backups, settings and installation help. Buttons use bold colors, tactile borders and large touch targets. Card geometry remains accurate. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates become active after all game windows close and reopen; an update notice appears when detected.
+Phones start in Card view: one large flashcard fills the available game area, with Learn, Play and My Progress controls at the bottom. Overview switches to the wider dashboard; the chosen view stays on this browser. My Progress contains scores. The top-right gear opens Options for backups, settings and installation help. Buttons use bold colors, tactile borders and large touch targets. Card geometry remains accurate. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates apply at startup, or through Options → Game settings → Update & Reload when a download is ready.
 
 Export save downloads a versioned JSON backup. Transfer that file yourself to another device and choose Import save. A validated summary and confirmation precede replacement; import restarts the current visit’s challenge score. Malformed, oversized and unsupported-version files are rejected. Save files are processed entirely on the device. Import replaces rather than merges progress; export first to retain the old journal.
 
@@ -62,7 +64,7 @@ Physical iPhone/Android checks remain necessary for home-screen installation, so
 
 Flip a Learn card to see up to four fact groups. In **Options → Card Facts**, uncheck a group to make room for another; Restore Defaults selects U.S. statehood, nickname, population/rank and area/rank. The flag always appears beside the state image on the flipped card and does not use a fact slot. Choices stay in this browser. **More Facts** is always beside the state name and shows the unselected groups, ten largest cities/communities, a selected NPS landmark and neighboring states. Fact choices are separate from the progress JSON backup.
 
-In **Play**, choose Shape Challenge, Population Showdown, Size Showdown, Neighboring States or Statehood Timeline. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared water boundaries and exclude corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers update per-state practice history.
+In **Play**, choose Shape Challenge, Population Showdown, Size Showdown, Neighboring States or Statehood Timeline. Showdowns compare July 2025 state populations or Census 2010 total area (land + water). Neighbors include shared land/river borders and exclude lake-only, ocean-only and corner-only contact. Alaska and Hawaii have no neighboring U.S. states. Every question has one correct answer; answers reveal the figures or complete neighbor list. All games contribute points/streaks; only Shape Challenge answers update per-state practice history.
 
 See the in-app [Image/Data Credits](https://natsteff.github.io/quiztrekker-us-states/credits.html) for exact Census/ACS vintages, Hawaii and Rhode Island geography exceptions, CRS statehood dates, Flagpedia attribution, symbol references and map licenses. No live data service, Census API key or external flag request is needed during play. Cached credits work offline; outbound source/landmark links need a connection.
 
@@ -97,7 +99,7 @@ Expansion boundaries/facts come from the U.S. Census Bureau, USGS, NOAA, Statist
 
 Learn fronts include a small locator beside the close-up shape. Shape / On the Map switches views without flipping; tap the image for facts. Options → Game settings → Default Learn view saves the starting view on this browser. The full map also retains a capital close-up. U.S. states use the U.S. map with Alaska/Hawaii insets; Canadian locations use Canada. Other optional locations retain their documented local outline/insets.
 
-The gear toggles a separate Options card and returns to the previous activity; Close Options does the same. My Progress opens its own stats card. Double-tap browser zoom is disabled with touch-action manipulation while pinch zoom remains available. Neighbor results reveal every supported neighbor with labeled silhouettes after correct or wrong answers, including neighbors outside enabled packs.
+The gear toggles a separate Options card and returns to the previous activity; Close Options does the same. My Progress opens its own stats card. Double-tap browser zoom is disabled with touch-action manipulation while pinch zoom remains available. Neighbor results show a geographic map with labeled neighbors after correct or wrong answers, including neighbors outside enabled packs.
 
 Highest Point replaces the redundant Location Map fact option. It shows the point’s name and approximate elevation in feet/meters for every U.S. state, on the card when selected or in More Facts otherwise. Existing Location Map selections migrate to Highest Point; the default four selections stay unchanged. Learn’s front locator and map view remain available. See Image/Data Credits for reference vintages and Alaska’s updated elevation. Optional non-state locations omit highest point until sourced.
 
@@ -115,3 +117,10 @@ Tap a fact tile in flipped Learn or More Facts to open a comparison popup. It in
 ALL Neighbors chooses targets from the practice pool but answers from the full enabled geography: mastered neighbors remain required and selectable. All correct neighbors plus at least two incorrect locations are always offered; None is separate. Results distinguish Correctly selected (green), Missed (red), Incorrect choice (red), and unselected distractors (neutral), matching the map. ONE mode is unchanged.
 
 Timeline results show a green correct prefix, red first mistake, and neutral remainder, with “first X of Y in order.” Same-date states remain interchangeable. These colors do not alter round points or mastery attribution. Population comparison rank/value order is descending population across dates, with location-name ties and source dates retained; alphabetical mode remains available.
+
+### v0.9.2 updates and map controls
+Options → Game settings has Check for Updates Now and, when a downloaded update is ready, Update & Reload. Manual checking works with automatic checks disabled. Automatic checks run on startup and quietly on foreground/background-cache resume, throttled to once per minute. Only startup or an explicit Update & Reload can apply/reload; ongoing questions are never automatically interrupted. Checks time out after eight seconds; offline play stays available. Reloading returns to Learn and resets the visit score while preserving saved progress/mastery.
+
+Neighbor quizzes, facts and maps use land/river adjacency, excluding lake-only/ocean-only pairs consistently, including MI–MN, MI–IL, NY–RI, ON–OH and ON–PA. MI–ON and ordinary river neighbors remain.
+
+Map Quest results color the original main map: correct green, incorrect choice red, intended target yellow after a miss. There is no second result map. Double-tap an area to zoom without submitting either tap; a single pointer tap answers after a brief double-tap recognition interval. Zoom +/− and Full map work with keyboard or touch. Drag a zoomed map to pan. Small-state results automatically frame target and choice; Zoom target/Zoom your choice buttons help when those states are far apart. Next question resets to the full map. Map-local zoom does not change browser/page zoom behavior.

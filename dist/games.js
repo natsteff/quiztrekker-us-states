@@ -14,11 +14,11 @@ export function makeQuestion(type,states,facts,previous,random=Math.random,setti
    const count=Math.min(answerStates.length,Math.max(...answerStates.map(s=>facts[s.abbr].neighbors.filter(a=>answerStates.some(t=>t.abbr===a)).length))+3);
    const distractors=shuffled(other,random).slice(0,Math.max(2,count-neighbors.length-1)).map(s=>s.abbr);
    const options=shuffled([...neighbors,'NONE',...distractors],random);
-   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Select all ${expanded?'enabled ':''}neighbors of ${target.name}.`,note:'Every neighbor in your enabled geography is included, even if mastered, plus at least two incorrect locations. Select all neighbors, then Check. Shared borders include water; corner-only contact does not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
+   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Select all ${expanded?'enabled ':''}neighbors of ${target.name}.`,note:'Every neighbor in your enabled geography is included, even if mastered, plus at least two incorrect locations. Select all neighbors, then Check. Land and river borders count; lake-only, ocean-only and corner-only contacts do not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
   }
   const correct=neighbors.length?pick(neighbors,random):'NONE';
   const options=shuffled([correct,...shuffled(other,random).slice(0,3).map(s=>s.abbr)],random);
-  return {type,target:target.abbr,correct,options,prompt:`Which ${expanded?'location':'state'} borders ${target.name}?`,note:'Shared borders include water. Touching only at a corner does not count.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
+  return {type,target:target.abbr,correct,options,prompt:`Which ${expanded?'location':'state'} borders ${target.name}?`,note:'Land and river borders count. Lake-only, ocean-only and corner-only contacts do not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
  }
  if(!['population','area'].includes(type))throw Error('Unsupported game');
  const key=type==='population'?'population':expanded?'land_sq_mi':'area_sq_mi';

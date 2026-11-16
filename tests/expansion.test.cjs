@@ -49,3 +49,7 @@ for(const s of pack.extraLocations)for(const [width,height] of [[280,130],[360,3
 assert.equal(pack.extraFacts.PE.water_sq_mi,null);
 assert(pack.extraFacts.ON.motto.includes('permanet'));assert(pack.extraFacts.NU.motto.includes('Sannginivut'));
 console.log('120 optional-map viewport transforms and missing-value checks passed');
+
+for(const [a,b] of [['MI','MN'],['MI','IL'],['NY','RI'],['ON','OH'],['ON','PA']]){assert(!facts[a].neighbors.includes(b));assert(!facts[b].neighbors.includes(a));}
+for(const [a,b] of [['WI','IA'],['MI','ON'],['MN','ON'],['DC','VA'],['AK','BC'],['AK','YT']]){assert(facts[a].neighbors.includes(b));assert(facts[b].neighbors.includes(a));}
+for(const [a,f] of Object.entries(facts))for(const b of f.neighbors)assert(facts[b].neighbors.includes(a));

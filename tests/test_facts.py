@@ -59,7 +59,7 @@ class Facts(unittest.TestCase):
   self.assertEqual(self.f['AK']['neighbors'],[]);self.assertEqual(self.f['HI']['neighbors'],[])
   self.assertEqual(self.f['ME']['neighbors'],['NH'])
   self.assertNotIn('AZ',self.f['CO']['neighbors']);self.assertNotIn('UT',self.f['NM']['neighbors'])
-  self.assertIn('MI',self.f['IL']['neighbors']);self.assertIn('MI',self.f['MN']['neighbors']);self.assertIn('NY',self.f['RI']['neighbors'])
+  self.assertNotIn('MI',self.f['IL']['neighbors']);self.assertNotIn('MI',self.f['MN']['neighbors']);self.assertNotIn('NY',self.f['RI']['neighbors']);self.assertIn('IA',self.f['WI']['neighbors'])
  def test_fifty_local_flags_safe_and_unchanged(self):
   paths=list((ROOT/'public/assets/flags').glob('*.svg'));self.assertEqual({p.stem for p in paths},set(self.f))
   for p in paths:
