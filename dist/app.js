@@ -1,3 +1,4 @@
+import {timelinePrefix,neighborResult} from './result-rules.js';
 import {teachingMap} from './teaching-map.js';
 import {toggleMastery,masteryMisses,toggleOrder,failedLocations} from './mastery.js';
 import {capitalMap,mountCapitalMaps} from './capital-map.js';
@@ -68,7 +69,7 @@ function question(){
  if(gameType==='mapquest'){mini={note:'U.S. states only. Tap the requested state; Alaska and Hawaii are inset.'};current=shuffle(eligible.filter(s=>s.abbr!==current?.abbr).length?eligible.filter(s=>s.abbr!==current?.abbr):eligible)[0];}
  else if(gameType==='shape'){const a=decks.current('shape');current=states.find(s=>s.abbr===a);questionPosition=decks.position('shape');choices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);}
  else if(gameType==='timeline'){mini=makeTimeline(states,facts);current=states.find(s=>s.abbr===mini.target);}
- else{const settings=gameType==='neighbors'?{target:decks.current('neighbors'),neighborMode}:{};mini=makeQuestion(gameType,states,facts,current?.abbr,Math.random,settings);current=states.find(s=>s.abbr===mini.target);if(gameType==='neighbors')questionPosition=decks.position('neighbors');}
+ else{const settings=gameType==='neighbors'?{target:decks.current('neighbors'),neighborMode,answerLocations:enabledLocations()}:{};mini=makeQuestion(gameType,states,facts,current?.abbr,Math.random,settings);current=states.find(s=>s.abbr===mini.target);if(gameType==='neighbors')questionPosition=decks.position('neighbors');}
  challenge();$('game').scrollTop=0;
 }
 function challenge(){
@@ -120,15 +121,27 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  if(gameType==='neighbors'){
  const neighbors=facts[current.abbr].neighbors;
  const chosen=neighborMode==='all'?[...selectedAnswers].filter(a=>a!=='NONE'):[value].filter(a=>a&&a!=='NONE');
- const quizNeighbors=neighbors.filter(a=>states.some(s=>s.abbr===a));
- feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>Where the neighbors fit</h3>${teachingMap({locations:allLocations,target:current.abbr,neighbors,chosen,eligible:quizNeighbors,all:neighborMode==='all'})}<p class="map-legend">🟨 Target · 🟩 Correct choice · 🟥 Missed / wrong · 🟦 Other neighbor</p><p>${[current.abbr,...neighbors,...chosen].filter((a,i,arr)=>arr.indexOf(a)===i).map(a=>`${a}: ${esc(facts[a]?.name||a)}`).join(' · ')}</p><small>All supported neighbors shown. Quiz grading uses eligible locations only; excluded neighbors are shown for reference. U.S.-only maps use Alaska/Hawaii insets; cross-border maps show geographic positions.</small></section>`);
+ const quizNeighbors=neighborMode==='all'?mini.correctSet.filter(a=>a!=='NONE'):neighbors.filter(a=>states.some(s=>s.abbr===a));
+ feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>Where the neighbors fit</h3>${teachingMap({locations:allLocations,target:current.abbr,neighbors,chosen,eligible:quizNeighbors,all:neighborMode==='all'})}<p class="map-legend">🟨 Target · 🟩 Correct choice · 🟥 Missed / wrong · 🟦 Other neighbor</p><p>${[current.abbr,...neighbors,...chosen].filter((a,i,arr)=>arr.indexOf(a)===i).map(a=>`${a}: ${esc(facts[a]?.name||a)}`).join(' · ')}</p><small>All supported neighbors shown. ALL mode includes every neighbor in your enabled geography, even if mastered. Disabled geography is shown for reference only. U.S.-only maps use Alaska/Hawaii insets; cross-border maps show geographic positions.</small></section>`);
  }
  if(gameType==='mapquest'){feedback.insertAdjacentHTML('beforeend',teachingMap({locations:allLocations,target:current.abbr,chosen:[value],neighbors:[]}));document.querySelectorAll('[data-map-answer]').forEach(el=>{el.removeAttribute('tabindex');el.onclick=null;el.onkeydown=null;});}
  const failures=failedLocations(gameType,correct,current,mini,timelineOrder,facts);
  const review=masteryMisses(progress,failures);persist();
  const showReview=()=>{const a=review.shift();if(!a)return;askMastery('Still mastered?',`${facts[a].name} has had 3 more wrong answers since it was marked mastered. Would you like to remove it from Mastered?`,'Remove mastery',()=>{toggleMastery(progress,a);persist();showReview();},showReview);};showReview();
 
- document.querySelectorAll('[data-answer]').forEach(b=>{b.disabled=true;if(correctAnswers.includes(b.dataset.answer))b.classList.add('correct');else if(b.dataset.answer===value||selectedAnswers.has(b.dataset.answer))b.classList.add('wrong');});
+ if(gameType==='timeline'){
+ const result=timelinePrefix(timelineOrder,mini.options,facts);
+ feedback.querySelector('.result-title').insertAdjacentHTML('afterend',`<strong class="timeline-summary">You got the first ${result.prefix} of ${mini.options.length} in order.</strong>`);
+ document.querySelectorAll('[data-pick]').forEach(b=>{const status=result.statuses[timelineOrder.indexOf(b.dataset.pick)],label=status==='correct'?'Correct starting position':status==='wrong'?'First mistake':'After first mistake';b.classList.add(`timeline-${status}`);b.insertAdjacentHTML('beforeend',`<small class="timeline-result-note">${label}</small>`);b.setAttribute('aria-label',`${b.getAttribute('aria-label')}. ${label}`);});
+ }
+ document.querySelectorAll('[data-answer]').forEach(b=>{
+ b.disabled=true;
+ if(gameType==='neighbors'&&neighborMode==='all'){
+  const status=neighborResult(b.dataset.answer,correctAnswers,[...selectedAnswers]);
+  b.classList.remove('selected-answer');b.classList.add(`answer-${status}`);
+  if(status!=='neutral'){const label={correct:'Correctly selected',missed:'Missed',wrong:'Incorrect choice'}[status];b.insertAdjacentHTML('beforeend',`<small class="answer-result-note">${label}</small>`);b.setAttribute('aria-label',`${b.getAttribute('aria-label')}. ${label}`);}
+ }else if(correctAnswers.includes(b.dataset.answer))b.classList.add('correct');else if(b.dataset.answer===value||selectedAnswers.has(b.dataset.answer))b.classList.add('wrong');
+ });
  document.querySelectorAll('[data-pick],#undoTimeline,#clearTimeline,#checkTimeline,#checkNeighbors').forEach(b=>b.disabled=true);
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }

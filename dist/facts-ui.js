@@ -1,3 +1,4 @@
+import {comparePopulation} from './result-rules.js';
 import {facts as baseFacts} from './facts.js';
 import {FACT_GROUPS,DEFAULT_FACTS,factPreferences,escapeHtml as esc,formatStatehood,placeDisplayName} from './facts-core.js';
 const num=n=>n.toLocaleString('en-US');
@@ -37,7 +38,7 @@ export function createFactsUI({storage,onChange,renderMap,facts=baseFacts,locati
  const numeric={population:f=>f.population,area:f=>f.area_sq_mi,statehood:f=>f.statehood_order,highest:f=>f.highest_point?.elevation_ft};
  function compare(key){comparing=key;$('compareTitle').textContent=`${labels[key]} — all locations`;$('compareOrder').value=numeric[key]?'rank':'alpha';$('compareOrder').querySelector('[value="rank"]').disabled=!numeric[key];drawComparison();$('compareDialog').showModal();}
  function drawComparison(){const key=comparing;let pool=locations.filter(s=>(!numeric[key]||Number.isFinite(numeric[key](facts[s.abbr])))&&(['capital','neighbors','flag'].includes(key)||key==='cities'?key!=='cities'||!!facts[s.abbr].top_ten_places:key==='landmarks'?!!facts[s.abbr].landmarks:applicable(key,s)));
- pool.sort((a,b)=>{if($('compareOrder').value==='alpha')return a.name.localeCompare(b.name);const fa=facts[a.abbr],fb=facts[b.abbr];if(key==='population'){const group=(fa.population_as_of||'').localeCompare(fb.population_as_of||'');if(group)return group;}return (key==='statehood'?1:-1)*(numeric[key](fa)-numeric[key](fb))||a.name.localeCompare(b.name);});
+ pool.sort((a,b)=>{if($('compareOrder').value==='alpha')return a.name.localeCompare(b.name);const fa=facts[a.abbr],fb=facts[b.abbr];if(key==='population')return comparePopulation(a,b,facts);return (key==='statehood'?1:-1)*(numeric[key](fa)-numeric[key](fb))||a.name.localeCompare(b.name);});
  $('compareContent').innerHTML=pool.map(s=>`<section class="fact-tile"><h3>${esc(s.name)}</h3><div class="fact-value">${content(key,s)}</div></section>`).join('');}
  $('compareOrder').onchange=drawComparison;$('closeCompare').onclick=()=>$('compareDialog').close();
  document.addEventListener('click',e=>{if(e.target.closest('#compareDialog,a'))return;const ref=e.target.closest('[data-compare]');if(ref){compare(ref.dataset.compare);return;}const tile=e.target.closest('[data-fact]');if(tile){compare(tile.dataset.fact);return;}if(e.target.closest('.back-card .state-flag')){compare('flag');return;}if(e.target.closest('.back-card .capital-map'))compare('capital');});

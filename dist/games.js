@@ -6,12 +6,15 @@ export function makeQuestion(type,states,facts,previous,random=Math.random,setti
  if(['population','area'].includes(type))states=states.filter(s=>Number.isFinite(facts[s.abbr][type==='population'?'population':expanded?'land_sq_mi':'area_sq_mi']));
  const target=settings.target?states.find(s=>s.abbr===settings.target):pick((states.filter(s=>s.abbr!==previous).length?states.filter(s=>s.abbr!==previous):states),random),f=facts[target.abbr];
  if(type==='neighbors'){
-  const neighbors=f.neighbors.filter(a=>states.some(s=>s.abbr===a));
-  const other=states.filter(s=>s.abbr!==target.abbr&&!neighbors.includes(s.abbr));
+  // Mastery filters question targets, not the answers needed to complete ALL.
+  const answerStates=settings.neighborMode==='all'?(settings.answerLocations||states):states;
+  const neighbors=f.neighbors.filter(a=>answerStates.some(s=>s.abbr===a));
+  const other=answerStates.filter(s=>s.abbr!==target.abbr&&!neighbors.includes(s.abbr));
   if(settings.neighborMode==='all'){
-   const count=Math.min(states.length,Math.max(...states.map(s=>facts[s.abbr].neighbors.filter(a=>states.some(t=>t.abbr===a)).length))+2);
-   const options=shuffled([...neighbors,'NONE',...shuffled(other,random).slice(0,count-neighbors.length-1).map(s=>s.abbr)],random);
-   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Select all ${expanded?'enabled ':''}neighbors of ${target.name}.`,note:'Select every neighbor, then Check. Choose None if there are no neighbors among enabled locations. Shared borders include water; corner-only contact does not. Answers use enabled locations only.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
+   const count=Math.min(answerStates.length,Math.max(...answerStates.map(s=>facts[s.abbr].neighbors.filter(a=>answerStates.some(t=>t.abbr===a)).length))+3);
+   const distractors=shuffled(other,random).slice(0,Math.max(2,count-neighbors.length-1)).map(s=>s.abbr);
+   const options=shuffled([...neighbors,'NONE',...distractors],random);
+   return {type,target:target.abbr,all:true,correctSet:neighbors.length?[...neighbors]:['NONE'],options,prompt:`Select all ${expanded?'enabled ':''}neighbors of ${target.name}.`,note:'Every neighbor in your enabled geography is included, even if mastered, plus at least two incorrect locations. Select all neighbors, then Check. Shared borders include water; corner-only contact does not.',explanation:neighbors.length?`${target.name} borders ${neighbors.map(a=>facts[a].name).join(', ')}.`:`${target.name} has no neighbors among enabled locations.`};
   }
   const correct=neighbors.length?pick(neighbors,random):'NONE';
   const options=shuffled([correct,...shuffled(other,random).slice(0,3).map(s=>s.abbr)],random);

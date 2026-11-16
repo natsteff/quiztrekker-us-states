@@ -22,7 +22,7 @@ const bad=createDecks(states,{getItem:()=>JSON.stringify({shape:{order:Array(50)
 const recovered=[];for(let i=0;i<50;i++){const a=bad.current('shape');recovered.push(a);bad.complete('shape',a);}assert.equal(new Set(recovered).size,50);checks++;
 for(const s of states){
  const q=game.makeQuestion('neighbors',states,facts,null,random,{target:s.abbr,neighborMode:'all'});
- assert.equal(q.options.length,10);assert.equal(new Set(q.options).size,10);assert(!q.options.includes(s.abbr));
+ assert.equal(q.options.length,11);assert.equal(new Set(q.options).size,11);assert(!q.options.includes(s.abbr));
  const expected=facts[s.abbr].neighbors.length?facts[s.abbr].neighbors:['NONE'];assert(game.sameAnswers(q.correctSet,expected));assert(game.sameAnswers(expected,q.correctSet));
  assert(!game.sameAnswers([],q.correctSet));assert(!game.sameAnswers([...q.correctSet,q.options.find(a=>!q.correctSet.includes(a))],q.correctSet));
  for(const a of q.correctSet)assert(q.options.includes(a));checks++;
