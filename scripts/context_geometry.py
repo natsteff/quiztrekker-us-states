@@ -15,7 +15,7 @@ def context_geometry(states,root):
   return lon,lat
  def item(a,rings):
   pts=[p for r in rings for p in r];xs,ys=zip(*pts)
-  return {'abbr':a,'path':''.join('M'+'L'.join(f'{x:.3f},{y:.3f}' for x,y in r)+'Z' for r in rings),'bounds':[min(xs),min(ys),max(xs)-min(xs),max(ys)-min(ys)]}
+  return {'abbr':a,'path':''.join('M'+'L'.join(f'{x:.3f},{y:.3f}' for x,y in r)+'Z' for r in rings),'bounds':[round(v,6) for v in [min(xs),min(ys),max(xs)-min(xs),max(ys)-min(ys)]]}
  result=[]
  for s in states:
   rings=[]
