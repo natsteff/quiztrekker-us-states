@@ -3,7 +3,7 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.5" width="420">
+    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.6" width="420">
   </a>
 </p>
 
@@ -136,3 +136,7 @@ Before submission, selected regions show only a neutral outline and “Press Sub
 The logo welcome screen appears once per browser/device after the startup updater finishes. Close, Escape or Let’s explore records dismissal; it can be reopened from Options → Game settings → View welcome & installation help. Installation instructions are shared with Settings from one source. Standalone/home-screen launches suppress the installation recommendation while retaining the first-visit introduction.
 
 Returning mobile browser visits show a compact home-screen reminder. Close dismisses it for that visit; Don’t show again persists on that browser. It never appears in standalone mode and hides after a supported appinstalled event. Standalone detection describes the current launch, not installation elsewhere. Welcome/reminder preferences are browser-local and separate from progress backups. If browser storage is unavailable or cleared, first-visit detection cannot persist.
+
+### v0.9.6 compact Map Quest
+
+Map Quest uses one selection instruction and lets players change their choice by tapping another region. After submission, selection instructions, Submit, and zoom buttons disappear. Next question appears above feedback; result colors and automatic small-state framing remain.

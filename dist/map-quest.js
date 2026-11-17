@@ -10,14 +10,14 @@ export function createMapSelection(onSubmit){
  let selected=null,locked=false;
  return {get selected(){return selected;},get locked(){return locked;},preview(a){if(!locked)selected=a;},clear(){if(!locked)selected=null;},submit(){if(locked||!selected)return false;locked=true;onSubmit(selected);return true;}};
 }
-export function mountMapQuest(root,{states,onAnswer,submitButton,selectionLabel,clearButton}){
+export function mountMapQuest(root,{states,onAnswer,submitButton}){
  const svg=root.querySelector('svg'),selection=createMapSelection(onAnswer);let box=[...FULL],finished=false,down,dragged=false;
  function draw(next){box=next;svg.setAttribute('viewBox',box.join(' '));root.querySelector('[data-zoom="out"]').disabled=box[2]>=975;svg.querySelectorAll('.quest-label').forEach(el=>el.style.fontSize=`${box[2]/28}px`);}
  function point(x,y,inverse=svg.getScreenCTM().inverse()){const p=svg.createSVGPoint();p.x=x;p.y=y;const q=p.matrixTransform(inverse);return [q.x,q.y];}
- function sync(){const a=selection.selected;submitButton.disabled=finished||selection.locked||!a;clearButton.hidden=finished||!a;selectionLabel.textContent=finished?'Answer submitted.':a?'Press Submit answer to check your selected region.':'No state selected.';svg.querySelectorAll('[data-map-answer]').forEach(el=>{const chosen=el.dataset.mapAnswer===a;el.classList.toggle('quest-preview',chosen);el.setAttribute('aria-pressed',String(chosen));});}
+ function sync(){const a=selection.selected;submitButton.disabled=finished||selection.locked||!a;svg.querySelectorAll('[data-map-answer]').forEach(el=>{const chosen=el.dataset.mapAnswer===a;el.classList.toggle('quest-preview',chosen);el.setAttribute('aria-pressed',String(chosen));});}
  function preview(a){if(!finished){selection.preview(a);sync();}}
  const tap=createMapTap({onPreview:preview,onIdle:sync,onZoom:p=>{draw(zoomBox(box,p,2));sync();}});
- submitButton.onclick=()=>{tap.cancel();if(!finished)selection.submit();sync();};clearButton.onclick=()=>{tap.cancel();selection.clear();sync();};sync();
+ submitButton.onclick=()=>{tap.cancel();if(!finished)selection.submit();sync();};sync();
  function pointerDown(e){if(!e.isPrimary){down=null;tap.cancel();sync();return;}tap.begin();submitButton.disabled=true;down={x:e.clientX,y:e.clientY,box:[...box],inverse:svg.getScreenCTM().inverse(),state:e.target.closest('[data-map-answer]')?.dataset.mapAnswer};dragged=false;svg.setPointerCapture(e.pointerId);}
  function pointerMove(e){if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)<8)return;dragged=true;tap.cancel();if(down.box[2]<975){e.preventDefault();const a=point(down.x,down.y,down.inverse),b=point(e.clientX,e.clientY,down.inverse);draw([Math.max(0,Math.min(975-box[2],down.box[0]+a[0]-b[0])),Math.max(0,Math.min(610-box[3],down.box[1]+a[1]-b[1])),box[2],box[3]]);}}
  function pointerUp(e){if(!down)return;const state=down.state;if(!dragged)tap.tap({state:finished?null:state,screen:[e.clientX,e.clientY],point:point(e.clientX,e.clientY)});else sync();down=null;}
@@ -29,8 +29,7 @@ export function mountMapQuest(root,{states,onAnswer,submitButton,selectionLabel,
   svg.querySelectorAll('[data-map-answer]').forEach(el=>{const a=el.dataset.mapAnswer;el.dataset.questState=a;el.removeAttribute('data-map-answer');el.removeAttribute('role');el.classList.remove('background');el.classList.add(a===target?(correct?'correct':'target'):a===chosen?'wrong':'background');el.setAttribute('aria-disabled','true');el.setAttribute('tabindex','-1');});
   // A mastered/excluded state is still present as context, but never an answer.
   root.querySelector('[data-quest-legend]').hidden=false;
-  const focus=root.querySelector('[data-quest-focus]');focus.innerHTML=`<button class="secondary" data-focus-state="${target}">Zoom target</button>${correct?'':`<button class="secondary" data-focus-state="${chosen}">Zoom your choice</button>`}`;
-  focus.querySelectorAll('[data-focus-state]').forEach(b=>b.onclick=()=>draw(fitQuestBox(states,[b.dataset.focusState])));
+  root.querySelectorAll('.quest-zoom-controls').forEach(el=>el.hidden=true);
   const ids=[...new Set([target,chosen])];for(const a of ids){const s=states.find(s=>s.abbr===a);if(!s)continue;const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',s.bounds[0]+s.bounds[2]/2);t.setAttribute('y',s.bounds[1]+s.bounds[3]/2);t.setAttribute('class','region-label quest-label');t.textContent=a;svg.append(t);}
   const small=ids.some(a=>{const b=states.find(s=>s.abbr===a)?.bounds;return b&&Math.max(b[2]/975,b[3]/610)<.12;});draw(small?fitQuestBox(states,ids):box);
  }};
