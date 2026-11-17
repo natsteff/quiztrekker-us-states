@@ -3,11 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg" alt="Play QuizTrekker - US States now — v0.9.6" width="420">
+    <img src="assets/play-now.svg?v=0.9.6" alt="Play QuizTrekker - US States now — v0.9.6" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
+
+Current release: **v0.9.6** — streamlined Map Quest controls and results.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
