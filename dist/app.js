@@ -1,7 +1,7 @@
 import {createSprint,readSprintBest,saveSprintBest} from './sprint.js';
 import {startWelcome} from './welcome.js';
 import {mountMapQuest} from './map-quest.js';
-import {timelinePrefix,neighborResult} from './result-rules.js';
+import {timelinePrefix,neighborResult,neighborLegend} from './result-rules.js';
 import {teachingMap} from './teaching-map.js';
 import {toggleMastery,masteryMisses,toggleOrder,failedLocations} from './mastery.js';
 import {capitalMap,mountCapitalMaps} from './capital-map.js';
@@ -168,7 +168,7 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  const neighbors=facts[current.abbr].neighbors;
  const chosen=neighborMode==='all'?[...selectedAnswers].filter(a=>a!=='NONE'):[value].filter(a=>a&&a!=='NONE');
  const quizNeighbors=neighborMode==='all'?mini.correctSet.filter(a=>a!=='NONE'):neighbors.filter(a=>states.some(s=>s.abbr===a));
- feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>Where the neighbors fit</h3>${teachingMap({locations:allLocations,target:current.abbr,neighbors,chosen,eligible:quizNeighbors,all:neighborMode==='all'})}<p class="map-legend">🟨 Target · 🟩 Correct choice · 🟥 Missed / wrong · 🟦 Other neighbor</p><p>${[current.abbr,...neighbors,...chosen].filter((a,i,arr)=>arr.indexOf(a)===i).map(a=>`${a}: ${esc(facts[a]?.name||a)}`).join(' · ')}</p><small>All supported neighbors shown. ALL mode includes every neighbor in your enabled geography, even if mastered. Disabled geography is shown for reference only. U.S.-only maps use Alaska/Hawaii insets; cross-border maps show geographic positions.</small></section>`);
+ feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>Where the neighbors fit</h3>${teachingMap({locations:allLocations,target:current.abbr,neighbors,chosen,eligible:quizNeighbors,all:neighborMode==='all'})}<p class="map-legend">${neighborLegend(neighborMode==='all')}</p><p>${[current.abbr,...neighbors,...chosen].filter((a,i,arr)=>arr.indexOf(a)===i).map(a=>`${a}: ${esc(facts[a]?.name||a)}`).join(' · ')}</p><small>All supported neighbors shown. ALL mode includes every neighbor in your enabled geography, even if mastered. Disabled geography is shown for reference only. U.S.-only maps use Alaska/Hawaii insets; cross-border maps show geographic positions.</small></section>`);
  }
  if(gameType==='neighbors'){const reveal=document.createElement('section');reveal.className='neighbor-results';reveal.append($('nextQuestion'),feedback);document.querySelector('.game-controls').after(reveal);$('game').scrollTop=0;document.querySelector('.play').scrollIntoView({block:'start'});}
  if(gameType==='mapquest'){questMap?.showResult(current.abbr,value,correct);$('questAnswerControls').hidden=true;document.querySelector('.game-method').hidden=true;feedback.before($('nextQuestion'));}

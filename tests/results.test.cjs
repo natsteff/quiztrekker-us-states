@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 function read(file,names){return vm.runInNewContext(fs.readFileSync(file,'utf8').replaceAll('export ','')+`;({${names}})`);}
-const r=read('dist/result-rules.js','timelinePrefix,neighborResult,comparePopulation');
+const r=read('dist/result-rules.js','timelinePrefix,neighborResult,comparePopulation,neighborLegend');
 const g=read('dist/games.js','makeQuestion,sameAnswers');const geo=read('dist/geography.js','selectedLocations,mergeFacts');
 const {extraLocations,extraFacts}=read('dist/extra-locations.js','extraLocations,extraFacts');const {states}=read('dist/states.js','states');const {facts:base}=read('dist/facts.js','facts');const facts=geo.mergeFacts(base,extraFacts);
 let seed=19;const random=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};let count=0;
@@ -22,3 +22,5 @@ assert.equal(r.timelinePrefix(['A','B','D','C'],['A','B','C','D'],f).statuses.jo
 const pool=[...states,...extraLocations].filter(s=>Number.isFinite(facts[s.abbr].population));const sorted=[...pool].sort((a,b)=>r.comparePopulation(a,b,facts));assert.equal(sorted[0].abbr,'CA');for(let i=1;i<sorted.length;i++)assert(facts[sorted[i-1].abbr].population>=facts[sorted[i].abbr].population);
 assert(sorted.findIndex(s=>s.abbr==='TX')<sorted.findIndex(s=>s.abbr==='PR'));assert(r.comparePopulation({abbr:'A',name:'Alabama'},{abbr:'B',name:'Alaska'},{A:{population:10},B:{population:10}})<0);
 console.log(`${count} ALL-neighbor scope/mastery cases; sequential feedback, ties and global population ordering passed`);
+
+assert(!r.neighborLegend(false).includes("Missed"));assert(r.neighborLegend(true).includes("Missed neighbor"));assert(r.neighborLegend(false).includes("Incorrect selection"));

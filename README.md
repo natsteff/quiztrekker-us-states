@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.10.0" alt="Play QuizTrekker - US States now — v0.10.0" width="420">
+    <img src="assets/play-now.svg?v=0.10.1" alt="Play QuizTrekker - US States now — v0.10.1" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.10.0** — State Sprint, renamed games, and easier access to Neighbor results.
+Current release: **v0.10.1** — distinct missed and incorrect colors in Neighbor results.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -113,7 +113,7 @@ Mark/unmark a location with the Learn trophy. First marking prompts before switc
 
 Options can exclude mastered locations from Learn and game question/answer pools, except that ALL Neighbors retains mastered neighbors and distractors from enabled geography so its full answer set is available; existing geography progress is retained. If a game lacks enough eligible locations or comparable values, it offers to include mastered locations again. All available geography stays visible for context maps and fact-reference comparisons. Map Quest uses eligible U.S. states only: preview a state on the map (or use Tab/Enter), then press Submit answer. Alaska and Hawaii use the existing insets. Wrong answers reveal target yellow and the wrong choice red. Points follow the existing100 +streak-bonus formula.
 
-Neighbor results use a common geographic map: target yellow, selected correct green, missed eligible neighbors/wrong selections red, other/reference neighbors blue. ONE mode leaves unasked neighbors blue. Labels use postal abbreviations with full names in the key. Cross-border maps reproject pinned U.S. and Canadian outlines to a shared geographic frame; U.S.-only maps retain the familiar source map/insets. This replaces disconnected silhouette cards.
+Neighbor results use a common geographic map: target yellow, selected correct green, missed eligible neighbors blue, incorrect selections red, other/reference neighbors blue. ONE mode leaves unasked neighbors blue. Labels use postal abbreviations with full names in the key. Cross-border maps reproject pinned U.S. and Canadian outlines to a shared geographic frame; U.S.-only maps retain the familiar source map/insets. This replaces disconnected silhouette cards.
 
 Tap a fact tile in flipped Learn or More Facts to open a comparison popup. It includes all supported locations with that fact, regardless of enabled packs or mastery filters. Numeric facts sort by value (statehood by admission order); other facts sort by location name. All can switch to location-name order. Population values sort highest to lowest across all available locations, with source/reference dates still visible. Sources/vintages and area definitions remain visible. Unavailable numeric facts are omitted. Highest Point replaces Location Map, keeping front Learn maps unchanged. Keyboard focus uses a blue dashed indicator instead of red outlines. Timeline selections can be removed individually by tapping again, compacting later positions; Undo still removes the last remaining selection.
 
@@ -151,3 +151,7 @@ The game menu is now Shape Spotter (multiple choice), Postal Pro (typed abbrevia
 State Sprint asks how many locations you can identify correctly in 60 seconds. Start begins a three-second countdown. A fresh shuffled pool visits every eligible location before repeating, using Choose Locations and mastery exclusions. Questions offer up to four names. Correct/wrong feedback lasts 0.65/1.1 seconds and the round clock keeps running; there is no per-question timeout or Next button. Sprint scoring starts at 100 per correct answer plus a round-local streak bonus (10 for each additional consecutive correct answer, capped at 100). Its results show correct/attempted, accuracy, points, longest streak and a separate best correct count for that exact location pool. Sprint bests live on this device separately from progress exports. Per-location answer history and mastery failures are tracked; mastery review prompts wait until the round ends. Sprint does not change untimed scores/streaks.
 
 Pause, backgrounding the app, Learn, Settings and My Progress pause a round; Resume Sprint explicitly continues it. Changing game or location pool discards the unfinished Sprint. The final unanswered question is not a miss. After answering a neighbors question, Next question and the detailed result map appear directly under the game selector, above the original question and answer choices.
+
+### v0.10.1 Neighbor result colors
+
+Red now identifies incorrect selections only. All my Neighbors shows missed required neighbors in blue on the map and answer buttons. One of my Neighbors never marks unselected neighbors as missed; they remain blue for reference. Both modes keep the target yellow and correct selections green, with mode-specific legends and explicit answer labels. Ordinary map background remains light blue.

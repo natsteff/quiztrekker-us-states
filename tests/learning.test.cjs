@@ -17,3 +17,7 @@ assert.equal(context.length,70);assert(context.find(s=>s.abbr==='UM').path.lengt
 
 html=t.teachingMap({locations:states,mode:'quest',eligible:states.map(s=>s.abbr)});for(const s of states)assert(!html.includes(s.name));assert(!html.includes('<title>'));assert(!html.includes('aria-label="RI"'));
 html=t.teachingMap({locations:states,target:'LA',neighbors:[]});assert(html.includes('<title>Louisiana</title>'));
+
+// One mode has no missed neighbors, whether its selected answer is right or wrong.
+for(const chosen of [['OH'],['FL']]){const one=t.teachingMap({locations:states,target:'WV',neighbors:['OH','VA'],chosen,eligible:['OH','VA'],all:false});assert(!one.includes('map-region missed'));assert(one.includes('map-region neighbor'));if(chosen[0]==='FL')assert(one.includes('map-region wrong'));}
+const css=fs.readFileSync('dist/style.css','utf8');assert(css.includes('.map-region.missed,.map-region.neighbor{fill:#479fd7}'));assert(css.includes('.choices button.answer-missed{background:linear-gradient(#d9efff,#8bc8f2)}'));
