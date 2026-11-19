@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.9.6" alt="Play QuizTrekker - US States now — v0.9.6" width="420">
+    <img src="assets/play-now.svg?v=0.10.0" alt="Play QuizTrekker - US States now — v0.10.0" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.9.6** — streamlined Map Quest controls and results.
+Current release: **v0.10.0** — State Sprint, renamed games, and easier access to Neighbor results.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -42,6 +42,7 @@ node tests/updates.test.cjs
 node tests/learning.test.cjs
 node tests/results.test.cjs
 node tests/map-quest.test.cjs
+node tests/sprint.test.cjs
 node tests/welcome.test.cjs
 ```
 
@@ -142,3 +143,11 @@ Returning mobile browser visits show a compact home-screen reminder. Close dismi
 ### v0.9.6 compact Map Quest
 
 Map Quest uses one selection instruction and lets players change their choice by tapping another region. After submission, selection instructions, Submit, and zoom buttons disappear. Next question appears above feedback; result colors and automatic small-state framing remain.
+
+### v0.10.0 State Sprint and game navigation
+
+The game menu is now Shape Spotter (multiple choice), Postal Pro (typed abbreviation), State Sprint, Map Quest, Population Showdown, Size Showdown, Statehood Timeline, One of my Neighbors, and All my Neighbors.
+
+State Sprint asks how many locations you can identify correctly in 60 seconds. Start begins a three-second countdown. A fresh shuffled pool visits every eligible location before repeating, using Choose Locations and mastery exclusions. Questions offer up to four names. Correct/wrong feedback lasts 0.65/1.1 seconds and the round clock keeps running; there is no per-question timeout or Next button. Sprint scoring starts at 100 per correct answer plus a round-local streak bonus (10 for each additional consecutive correct answer, capped at 100). Its results show correct/attempted, accuracy, points, longest streak and a separate best correct count for that exact location pool. Sprint bests live on this device separately from progress exports. Per-location answer history and mastery failures are tracked; mastery review prompts wait until the round ends. Sprint does not change untimed scores/streaks.
+
+Pause, backgrounding the app, Learn, Settings and My Progress pause a round; Resume Sprint explicitly continues it. Changing game or location pool discards the unfinished Sprint. The final unanswered question is not a miss. After answering a neighbors question, Next question and the detailed result map appear directly under the game selector, above the original question and answer choices.

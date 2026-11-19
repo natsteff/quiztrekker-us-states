@@ -1,3 +1,4 @@
+import {createSprint,readSprintBest,saveSprintBest} from './sprint.js';
 import {startWelcome} from './welcome.js';
 import {mountMapQuest} from './map-quest.js';
 import {timelinePrefix,neighborResult} from './result-rules.js';
@@ -30,7 +31,7 @@ progress.seen=progress.seen.filter(a=>allLocations.some(s=>s.abbr===a));
 let learnDefault='shape';try{learnDefault=storage.getItem('statequest.learnDefault')==='map'?'map':'shape';}catch{}
 let learnView=learnDefault,optionsReturn='game';
 let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
-let questMap;
+let questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[];
 let decks=createDecks(states,storage,Math.random,deckStorageKey(states));
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map,facts,locations:allLocations});
 function persist(){ const ok=save(storage,progress);document.querySelector('.local').textContent=ok?'● Saved on this device':'● Session only';$('storageNote').textContent=ok?'Your progress stays in this browser. No account, no leaderboard, just you and the map.':'Browser storage is unavailable. You can still play, but progress will only last for this visit.';stats(); }
@@ -46,6 +47,7 @@ function map(s){
 }
 function seen(s){if(!progress.seen.includes(s.abbr)){progress.seen.push(s.abbr);persist();}}
 function learn(){
+ if(sprint&&!sprint.snapshot().paused)sprint.pause();
  questMap?.destroy();questMap=null;
  if(!states.length){emptyPool();return;}
  const s=states[index];seen(s);$('counter').textContent=`${String(index+1).padStart(2,'0')} / ${states.length}`;$('modeLabel').textContent='FLIP & DISCOVER';
@@ -65,6 +67,8 @@ function learn(){
 function navigate(delta){index=(index+delta+states.length)%states.length;flipped=false;learn();}
 function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function question(){
+ if(gameType==='sprint'){startSprint();return;}
+ stopSprint();
  const minimum=gameType==='timeline'?4:['population','area'].includes(gameType)?2:1;
  const eligible=gameType==='timeline'||gameType==='mapquest'?states.filter(s=>!s.group):states;
  if(eligible.length<minimum){emptyPool('Not enough unmastered locations for this game.');return;}
@@ -77,20 +81,18 @@ function question(){
  challenge();$('game').scrollTop=0;
 }
 function challenge(){
+ if(gameType==='sprint'){if(!sprint)startSprint();else renderSprint();return;}
  questMap?.destroy();questMap=null;
  const all=gameType==='neighbors'&&neighborMode==='all',timeline=gameType==='timeline';
  document.body.dataset.game=all?'neighbors-all':gameType;
- const neighborTitle=states.length===50?GAME_NAMES.neighbors:'Neighboring Locations';
- $('counter').textContent=`${score.toLocaleString()} POINTS`;$('modeLabel').textContent=(gameType==='neighbors'?neighborTitle:GAME_NAMES[gameType]).toUpperCase();
+ $('counter').textContent=`${score.toLocaleString()} POINTS`;$('modeLabel').textContent=(gameType==='neighbors'?(neighborMode==='all'?'All my Neighbors':'One of my Neighbors'):gameType==='shape'?(answerMode==='typed'?'Postal Pro':'Shape Spotter'):GAME_NAMES[gameType]).toUpperCase();
  const options=gameType==='mapquest'?[]:gameType==='shape'?choices.map(s=>s.abbr):mini.options;
- const gameEntries=[['shape-choice','Shape Challenge (Multiple Choice)'],['shape-typed',`Shape Challenge (${states.length===50?'Postal Abbreviation':'Abbreviation'})`],['population',GAME_NAMES.population],['area',GAME_NAMES.area],['neighbors-one',`${neighborTitle} (One)`],['neighbors-all',`${neighborTitle} (All)`],['timeline',GAME_NAMES.timeline],['mapquest','Map Quest']];
- const selectedGame=gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType;
- const selector=`<label>Game <select id="gameSelect" aria-label="Game">${gameEntries.map(([key,label])=>`<option value="${key}" ${key===selectedGame?'selected':''}>${label}</option>`).join('')}</select></label>`;
+ const selector=gameSelector();
  const badge=questionPosition?`ROUND ${questionPosition.round} · LOCATION ${questionPosition.number} / ${questionPosition.total}`:gameType==='timeline'?'★ TIME TRAVEL':'★ SHOWDOWN!';
  const visual=gameType==='mapquest'?`<div class="quest-map"><div class="quest-zoom-controls" role="group" aria-label="Map zoom"><button class="secondary" data-zoom="in" aria-label="Zoom in">Zoom +</button><button class="secondary" data-zoom="out" aria-label="Zoom out">Zoom −</button><button class="secondary" data-zoom="reset">Full map</button></div>${teachingMap({locations:allLocations,mode:'quest',eligible:states.filter(s=>!s.group).map(s=>s.abbr)})}<p data-quest-legend class="map-legend" hidden>🟩 Correct · 🟥 Incorrect choice · 🟨 Intended target</p></div>`:gameType==='shape'?shape(current):gameType==='neighbors'?`<span class="question-state">${esc(current.name)}</span>${shape(current)}`:timeline?'':`<div class="duel">${mini.pair.map(a=>{const s=states.find(t=>t.abbr===a);return `<button class="duel-card" data-answer="${a}" aria-label="Choose ${esc(s.name)}"><span class="tap-prompt">Tap to choose!</span><img src="${facts[a].flag||`assets/flags/${a}.svg`}" alt="Flag of ${esc(s.name)}">${shape(s)}<b>${esc(s.name)}</b></button>`;}).join('')}</div>`;
  const answerMarkup=gameType==='mapquest'?'<div id="questAnswerControls"><p>Tap a state to preview it, then Submit answer. Double-tap to zoom; drag to move.</p><button id="submitMapAnswer" class="primary quest-submit" disabled>Submit answer</button></div>':timeline?`<div class="choices timeline-choices">${options.map(a=>`<button data-pick="${a}" aria-pressed="${timelineOrder.includes(a)}" aria-label="${timelineOrder.includes(a)?`${timelineOrder.indexOf(a)+1}. ${esc(facts[a].name)} selected`:`Add ${esc(facts[a].name)} to timeline`}">${timelineOrder.includes(a)?`<span class="pick-number" aria-hidden="true">${timelineOrder.indexOf(a)+1}</span>`:''}${esc(facts[a].name)}</button>`).join('')}</div><p class="timeline-progress" role="status" aria-live="polite">${timelineOrder.length} of ${mini.options.length} selected</p><div class="selection-actions"><button id="undoTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>↶ Undo</button><button id="clearTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>Clear</button><button id="checkTimeline" class="primary" ${timelineOrder.length===options.length?'':'disabled'}>Check timeline ✓</button></div>`:['population','area'].includes(gameType)?'':gameType==='shape'&&answerMode==='typed'?`<form id="answerForm" class="typed"><label for="answerInput" class="empty">Two letters</label><input id="answerInput" aria-label="Two-letter abbreviation" maxlength="2" pattern="[A-Za-z]{2}" required autocomplete="off" autocapitalize="characters" inputmode="text" spellcheck="false" enterkeyhint="done" placeholder="e.g. NY"><button class="primary">Check</button></form>`:`<div class="choices ${all?'all-neighbors':''}">${options.map(a=>`<button data-answer="${a}" ${all?`aria-pressed="${selectedAnswers.has(a)}" class="${selectedAnswers.has(a)?'selected-answer':''}"`:''} aria-label="${a==='NONE'?'None — no enabled neighbors':esc(facts[a].name)}">${a==='NONE'?'None — no enabled neighbors':esc(facts[a].name)}</button>`).join('')}</div>${all?`<button class="primary check-selection" id="checkNeighbors" ${selectedAnswers.size?'':'disabled'}>Check neighbors ✓</button>`:''}`;
  $('game').innerHTML=`<div class="challenge-head game-controls">${selector}</div><h2 class="game-question">${gameType==='mapquest'?`Find ${esc(current.name)} on the map.`:gameType==='shape'?`Which ${states.length===50?'state':'location'} is this?`:esc(mini.prompt)}</h2>${timeline?'':`<div class="card ${gameType==='shape'?'':'mini-card'}">${visual}${current.shape_note?`<small class="shape-note">Insets not to scale or geographic position</small>`:''}<span class="badge">${badge}</span></div>`}<div class="answers ${timeline?'timeline-answers':''}">${answerMarkup}<div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true">${all||gameType==='mapquest'?'':timeline?'Tap a selected state to remove it, or use Undo.':'Ready? Pick your answer!'}</div><button class="primary next" id="nextQuestion" hidden>Next question ▶</button><p class="game-method" ${all?'hidden':''}>${gameType==='shape'?`All ${states.length} ${states.length===50?'states':'locations'}, once each, then a fresh shuffle.`:esc(mini.note)}</p></div>`;
- $('gameSelect').onchange=e=>{const [type,variant]=e.target.value.split('-');gameType=type;if(type==='shape')answerMode=variant;if(type==='neighbors')neighborMode=variant;question();};
+ bindGameSelector();
  document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>all?toggleNeighbor(b.dataset.answer):submit(b.dataset.answer));
  if($('checkNeighbors'))$('checkNeighbors').onclick=()=>finishAnswer(sameAnswers([...selectedAnswers],mini.correctSet),mini.correctSet,mini.explanation);
  if(timeline){
@@ -103,6 +105,45 @@ function challenge(){
  if($('answerForm'))$('answerForm').onsubmit=e=>{e.preventDefault();submit($('answerInput').value);};
  $('nextQuestion').onclick=()=>{question();const heading=document.querySelector('.game-question');heading.tabIndex=-1;heading.focus({preventScroll:true});};
 }
+function gameSelector(){
+ const entries=[['shape-choice','Shape Spotter'],['shape-typed','Postal Pro'],['sprint','State Sprint'],['mapquest','Map Quest'],['population',GAME_NAMES.population],['area',GAME_NAMES.area],['timeline',GAME_NAMES.timeline],['neighbors-one','One of my Neighbors'],['neighbors-all','All my Neighbors']];
+ const selected=gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType;
+ return `<label>Game <select id="gameSelect" aria-label="Game">${entries.map(([key,label])=>`<option value="${key}" ${key===selected?'selected':''}>${label}</option>`).join('')}</select></label>`;
+}
+function bindGameSelector(){$('gameSelect').onchange=e=>{stopSprint();const [type,variant]=e.target.value.split('-');gameType=type;if(type==='shape')answerMode=variant;if(type==='neighbors')neighborMode=variant;question();};}
+function stopSprint(){clearInterval(sprintTimer);sprintTimer=undefined;sprint=undefined;sprintChoices=[];sprintTarget=null;sprintReview=[];}
+function startSprint(){
+ stopSprint();questMap?.destroy();questMap=null;
+ if(!states.length){emptyPool();return;}
+ answered=false;sprint=createSprint({ids:states.map(s=>s.abbr),onAnswer:r=>{const record=progress.records[r.target]||={correct:0,missed:0};record[r.correct?'correct':'missed']++;if(!r.correct)sprintReview.push(...masteryMisses(progress,[r.target]));persist();},onChange:renderSprint});
+ renderSprint();sprintTimer=setInterval(()=>{if(!sprint)return;const active=!document.hidden&&document.body.dataset.view==='game'&&mode==='challenge'&&!document.querySelector('dialog[open]');if(!active&&!sprint.snapshot().paused)sprint.pause();const state=sprint.tick();if(mode==='challenge'&&document.body.dataset.view==='game')syncSprint(state);},100);
+}
+function syncSprint(state){if($('sprintClock'))$('sprintClock').textContent=`${Math.ceil(state.remaining/1000)}s`;$('counter').textContent=`${state.correct} CORRECT`;if($('sprintCountdown'))$('sprintCountdown').textContent=Math.max(1,Math.ceil(state.countdown/1000));}
+function renderSprint(){
+ if(!sprint)return;const state=sprint.snapshot();document.body.dataset.game='sprint';$('modeLabel').textContent='STATE SPRINT';
+ const header=`<div class="challenge-head game-controls">${gameSelector()}</div>`;
+ let content='';
+ if(state.phase==='idle')content=`<section class="sprint-panel"><h2>How many can you identify in 60 seconds?</h2><p>Choose the name that matches each shape. Answers advance automatically after brief feedback. The timer keeps running during feedback.</p><p>${states.length} eligible locations · four choices when available · 100 points + streak bonus.</p><p>Leaving the game pauses the timer. Sprint bests are saved separately for this location pool on this device.</p><p>Personal best: <strong>${readSprintBest(storage,states.map(s=>s.abbr))} correct</strong></p><button id="startSprint" class="primary">Start 60-second Sprint</button></section>`;
+ else if(state.phase==='finished'){
+ const best=saveSprintBest(storage,states.map(s=>s.abbr),state.correct);
+ content=`<section class="sprint-panel" role="status"><h2>Time’s up!</h2><p class="sprint-total">${state.correct} correct in 60 seconds</p><p>${state.correct} / ${state.attempted} answered · ${state.attempted?Math.round(state.correct/state.attempted*100):0}% accuracy</p><p>${state.points.toLocaleString()} points · longest streak ${state.longest}</p><p>Personal best for this location pool: <strong>${best} correct</strong></p><button id="startSprint" class="primary">Play again</button></section>`;
+ }else if(state.paused)content=`<section class="sprint-panel"><h2>Sprint paused</h2><p>${Math.ceil(state.remaining/1000)} seconds left · ${state.correct} correct</p><button id="resumeSprint" class="primary">Resume Sprint</button></section>`;
+ else if(state.phase==='countdown')content=`<section class="sprint-panel"><h2>Get ready!</h2><strong id="sprintCountdown" class="sprint-total">${Math.max(1,Math.ceil(state.countdown/1000))}</strong><button id="pauseSprint" class="secondary">Pause</button></section>`;
+ else{
+ current=states.find(s=>s.abbr===state.target);
+ if(state.phase==='playing'&&sprintTarget!==state.target){sprintChoices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);sprintTarget=state.target;}
+ const result=state.result;
+ content=`<div class="sprint-status"><strong id="sprintClock">${Math.ceil(state.remaining/1000)}s</strong><span>${state.correct} correct · ${state.attempted} answered</span><button id="pauseSprint" class="secondary">Pause</button></div><h2 class="game-question">Which ${states.length===50?'state':'location'} is this?</h2><div class="card sprint-card">${shape(current)}${current.shape_note?'<small>Insets not to scale or geographic position</small>':''}</div><div class="answers"><div class="choices">${sprintChoices.map(s=>`<button data-sprint-answer="${s.abbr}" ${result?'disabled':''} class="${result?(s.abbr===result.target?'correct':s.abbr===result.choice?'wrong':''):''}">${esc(s.name)}</button>`).join('')}</div><div class="sprint-feedback ${result?(result.correct?'sprint-correct':'sprint-wrong'):''}" role="status">${result?`${result.correct?'★ Correct!':'Answer:'} ${esc(current.name)} · ${result.earned} points${result.correct?` (100 + ${result.earned-100} streak bonus)`:''}`:''}</div></div>`;
+ }
+ $('game').innerHTML=header+content;bindGameSelector();syncSprint(state);
+ if($('startSprint'))$('startSprint').onclick=()=>{sprint.start();};
+ if($('pauseSprint'))$('pauseSprint').onclick=()=>{sprint.pause();};
+ if($('resumeSprint'))$('resumeSprint').onclick=()=>{if(document.hidden||document.querySelector('dialog[open]'))return;sprint.resume();};
+ document.querySelectorAll('[data-sprint-answer]').forEach(b=>b.onclick=()=>sprint?.answer(b.dataset.sprintAnswer));
+ if(state.phase==='playing'&&!state.paused&&document.body.classList.contains('keyboard-focus'))document.querySelector('[data-sprint-answer]')?.focus({preventScroll:true});
+ if(state.phase==='finished'&&sprintReview.length){const review=[...new Set(sprintReview)];sprintReview=[];const show=()=>{const a=review.shift();if(a)askMastery('Still mastered?',`${facts[a].name} has had 3 more wrong answers since it was marked mastered. Would you like to remove it from Mastered?`,'Remove mastery',()=>{toggleMastery(progress,a);persist();show();},show);};show();}
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&sprint&&!sprint.snapshot().paused)sprint.pause();});
 function toggleNeighbor(value){
  if(answered)return;
  if(selectedAnswers.has(value))selectedAnswers.delete(value);else{if(value==='NONE')selectedAnswers.clear();else selectedAnswers.delete('NONE');selectedAnswers.add(value);}
@@ -129,6 +170,7 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  const quizNeighbors=neighborMode==='all'?mini.correctSet.filter(a=>a!=='NONE'):neighbors.filter(a=>states.some(s=>s.abbr===a));
  feedback.insertAdjacentHTML('beforeend',`<section class="neighbor-reveal"><h3>Where the neighbors fit</h3>${teachingMap({locations:allLocations,target:current.abbr,neighbors,chosen,eligible:quizNeighbors,all:neighborMode==='all'})}<p class="map-legend">🟨 Target · 🟩 Correct choice · 🟥 Missed / wrong · 🟦 Other neighbor</p><p>${[current.abbr,...neighbors,...chosen].filter((a,i,arr)=>arr.indexOf(a)===i).map(a=>`${a}: ${esc(facts[a]?.name||a)}`).join(' · ')}</p><small>All supported neighbors shown. ALL mode includes every neighbor in your enabled geography, even if mastered. Disabled geography is shown for reference only. U.S.-only maps use Alaska/Hawaii insets; cross-border maps show geographic positions.</small></section>`);
  }
+ if(gameType==='neighbors'){const reveal=document.createElement('section');reveal.className='neighbor-results';reveal.append($('nextQuestion'),feedback);document.querySelector('.game-controls').after(reveal);$('game').scrollTop=0;document.querySelector('.play').scrollIntoView({block:'start'});}
  if(gameType==='mapquest'){questMap?.showResult(current.abbr,value,correct);$('questAnswerControls').hidden=true;document.querySelector('.game-method').hidden=true;feedback.before($('nextQuestion'));}
  const failures=failedLocations(gameType,correct,current,mini,timelineOrder,facts);
  const review=masteryMisses(progress,failures);persist();
@@ -150,8 +192,8 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  document.querySelectorAll('[data-pick],#undoTimeline,#clearTimeline,#checkTimeline,#checkNeighbors').forEach(b=>b.disabled=true);
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }
-function setMode(next){$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Challenge and Neighbors visit every enabled location before shuffling again.';if(mode==='learn')learn();else if(!current)question();else if(answered)question();else challenge();}
-$('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);svg.outerHTML=shape(s);});}};
+function setMode(next){if(next==='learn'&&sprint&&!sprint.snapshot().paused)sprint.pause();$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Spotter and Neighbor games visit every enabled location before shuffling again.';if(mode==='learn')learn();else if(gameType==='sprint'&&sprint)renderSprint();else if(!current)question();else if(answered)question();else challenge();}
+$('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(gameType==='sprint'&&mode==='challenge'){if(sprint)renderSprint();return;}if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);svg.outerHTML=shape(s);});}};
 function switchMode(next){setMode(next);if(matchMedia('(max-width:760px)').matches)document.querySelector('.play').scrollIntoView({block:'start'});}
 $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>switchMode('challenge');document.addEventListener('keydown',e=>{if(mode==='learn' && !['INPUT','SELECT','BUTTON'].includes(document.activeElement.tagName)){if(e.key==='ArrowRight')navigate(1);if(e.key==='ArrowLeft')navigate(-1);}});persist();setMode('learn');
 
@@ -171,7 +213,7 @@ $('cancelImport').onclick=()=>{pendingImport=undefined;$('importDialog').close()
 $('importDialog').addEventListener('cancel',()=>{pendingImport=undefined;});
 $('confirmImport').onclick=()=>{
  if(!pendingImport)return;
- Object.assign(progress,pendingImport);pendingImport=undefined;score=0;current=undefined;persist();setMode(mode);$('importDialog').close();$('saveStatus').textContent='Progress imported. Your current challenge score has restarted.';
+ stopSprint();Object.assign(progress,pendingImport);pendingImport=undefined;score=0;current=undefined;persist();setMode(mode);$('importDialog').close();$('saveStatus').textContent='Progress imported. Your current challenge score has restarted.';
 };
 startUpdates({storage,document,navigator,location});
 
@@ -188,7 +230,7 @@ applyCardView(mobileView&&!showSwitcher?true:preferredView?preferredView==='card
 applyViewSwitcher();
 $('showViewSwitcher').onchange=e=>{showSwitcher=e.target.checked;try{storage.setItem('statequest.viewSwitcher',String(showSwitcher));}catch{}applyViewSwitcher();};
 $('viewToggle').onclick=()=>{const enabled=!document.body.classList.contains('flash');applyCardView(enabled);try{storage.setItem('statequest.view',enabled?'cards':'overview');}catch{}};
-function panelView(view){window.scrollTo(0,0);document.body.dataset.view=view;$('settingsButton').setAttribute('aria-pressed',String(view==='options'));for(const id of ['learnTab','challengeTab'])$(id).setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed',String(view==='progress'));document.querySelector('.progress-scroll').scrollTop=0;}
+function panelView(view){if(sprint&&!sprint.snapshot().paused)sprint.pause();window.scrollTo(0,0);document.body.dataset.view=view;$('settingsButton').setAttribute('aria-pressed',String(view==='options'));for(const id of ['learnTab','challengeTab'])$(id).setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed',String(view==='progress'));document.querySelector('.progress-scroll').scrollTop=0;}
 function returnToGame(){document.body.dataset.view='game';$('settingsButton').setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',String(mode==='learn'));$('challengeTab').setAttribute('aria-pressed',String(mode==='challenge'));}
 function closeOptions(){if(optionsReturn==='progress')panelView('progress');else returnToGame();}
 $('settingsButton').onclick=()=>{if(document.body.dataset.view==='options'){closeOptions();return;}optionsReturn=document.body.dataset.view==='progress'?'progress':'game';panelView('options');$('optionsTitle').focus({preventScroll:true});};
@@ -200,7 +242,7 @@ function fitViewport(){document.documentElement.style.setProperty('--app-height'
 window.visualViewport?.addEventListener('resize',fitViewport);window.addEventListener('resize',fitViewport);fitViewport();
 
 function askMastery(title,message,yes,onYes,onNo=()=>{}){$('masteryTitle').textContent=title;$('masteryMessage').textContent=message;$('masteryYes').textContent=yes;$('masteryNo').textContent=title==='Still mastered?'?'Keep mastered':'Cancel';$('masteryDialog').showModal();$('masteryYes').onclick=()=>{$('masteryDialog').close();onYes();};$('masteryNo').onclick=()=>{$('masteryDialog').close();onNo();};$('masteryDialog').oncancel=()=>onNo();}
-function repool(previous=states[index]?.abbr){states=practiceLocations();decks=createDecks(states,storage,Math.random,deckStorageKey(states));index=Math.max(0,states.findIndex(s=>s.abbr===previous));current=undefined;answered=false;stats();if(mode==='learn')learn();else question();}
+function repool(previous=states[index]?.abbr){stopSprint();states=practiceLocations();decks=createDecks(states,storage,Math.random,deckStorageKey(states));index=Math.max(0,states.findIndex(s=>s.abbr===previous));current=undefined;answered=false;stats();if(mode==='learn')learn();else question();}
 function emptyPool(message='All enabled locations are mastered.'){$('game').innerHTML=`<div class="empty-pool"><h2>${esc(message)}</h2><p>Include mastered locations again, or change the game/location options.</p><button id="includeMastered">Include mastered locations</button></div>`;$('includeMastered').onclick=()=>{excludeMastered=false;$('excludeMastered').checked=false;try{storage.setItem('statequest.excludeMastered','false');}catch{}repool();};}
 $('masteryDisplay').checked=!!progress.masteryDisplay;$('masteryDisplay').onchange=e=>{progress.masteryDisplay=e.target.checked;persist();};
 $('excludeMastered').checked=excludeMastered;$('excludeMastered').onchange=e=>{excludeMastered=e.target.checked;try{storage.setItem('statequest.excludeMastered',String(excludeMastered));}catch{}repool();};
@@ -211,7 +253,7 @@ function geographySettings(){
  document.querySelectorAll('[data-geography]').forEach(input=>input.onchange=()=>{
   const previous=states[index]?.abbr,key=input.dataset.geography;geography[input.dataset.geography]=input.checked;
   try{storage.setItem(GEOGRAPHY_KEY,JSON.stringify(geography));$('geographyStatus').textContent='Geography choices saved on this device.';}catch{$('geographyStatus').textContent='Choices work for this visit; storage is unavailable.';}
-  states=practiceLocations();decks=createDecks(states,storage,Math.random,deckStorageKey(states));index=Math.max(0,states.findIndex(s=>s.abbr===previous));flipped=false;current=undefined;answered=false;
+  stopSprint();states=practiceLocations();decks=createDecks(states,storage,Math.random,deckStorageKey(states));index=Math.max(0,states.findIndex(s=>s.abbr===previous));flipped=false;current=undefined;answered=false;
   stats();geographySettings();document.querySelector(`[data-geography="${key}"]`).focus();if(mode==='learn')learn();else question();
  });
 }
