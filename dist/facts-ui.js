@@ -14,7 +14,7 @@ export function createFactsUI({storage,onChange,renderMap,facts=baseFacts,locati
   case 'nickname':return esc(f.nickname);
   case 'statehood':return `${esc(formatStatehood(f.statehood_date))}<strong class="fact-rank">State #${f.statehood_order}</strong>`;
   case 'population':return Number.isFinite(f.population)?`${num(f.population)}${f.population_rank?`<strong class="fact-rank">#${f.population_rank} of 50 U.S. states</strong><small>July 1, 2025 estimate</small>`:`<small>${esc(f.population_label+' · '+f.population_as_of)}</small>`}`:esc(f.population_note||'No comparable population total.');
-  case 'area':return `${num(f.area_sq_mi)} sq mi${f.area_rank?`<strong class="fact-rank">#${f.area_rank} of 50 U.S. states</strong><small>Total area</small>`:`<small>${esc(f.area_label)}</small>`}<small>Land: ${num(f.land_sq_mi)} sq mi · Water: ${Number.isFinite(f.water_sq_mi)?num(f.water_sq_mi)+' sq mi':'not reported'}${s.group?'':' (2010)'}</small>`;
+  case 'area':return `${num(f.area_sq_mi)} sq mi${f.area_rank?`<strong class="fact-rank">#${f.area_rank} of 50 U.S. states</strong>`:`<small>${esc(f.area_label)}</small>`}<small>Land: ${num(f.land_sq_mi)} sq mi</small><small>Water: ${Number.isFinite(f.water_sq_mi)?num(f.water_sq_mi)+' sq mi':'not reported'}${s.group?'':' (2010)'}</small>`;
   case 'bird':return esc(f.bird);
   case 'flower':return esc(f.flower);
   case 'motto':return esc(f.motto);
