@@ -1,4 +1,5 @@
-import {createSprint,readSprintBest,saveSprintBest} from './sprint.js';
+import {progressResults} from './progress-ui.js';
+import {createSprint} from './sprint.js';
 import {startWelcome} from './welcome.js';
 import {mountMapQuest} from './map-quest.js';
 import {timelinePrefix,neighborResult,neighborLegend} from './result-rules.js';
@@ -14,7 +15,7 @@ import {escapeHtml as esc,formatStatehood} from './facts-core.js';
 import {GAME_NAMES,makeQuestion,makeTimeline,timelineCorrect,sameAnswers} from './games.js';
 import {createDecks} from './decks.js';
 import {startUpdates} from './update-client.js';
-import {load,save,matches,record,exportProgress,importProgress} from './core.js';
+import {load,save,matches,record,exportProgress,importProgress,trackGame,trackSprint,sprintStatsFor} from './core.js';
 document.addEventListener('keydown',e=>{if(['Tab','Enter',' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))document.body.classList.add('keyboard-focus');});
 document.addEventListener('pointerdown',()=>document.body.classList.remove('keyboard-focus'));
 const $ = id=>document.getElementById(id);
@@ -22,6 +23,8 @@ let storage;try{storage=window.localStorage;}catch{}
 const allLocations=[...baseStates,...extraLocations],facts=mergeFacts(baseFacts,extraFacts);
 let geography=readGeography(storage),states=selectedLocations(baseStates,extraLocations,geography);
 const progress=load(storage);
+if(!progress.sprintMigrated){try{for(let i=0;i<Math.min(storage.length,1000);i++){const key=storage.key(i),prefix='statequest.sprintBest.v1.';if(!key?.startsWith(prefix))continue;const ids=key.slice(prefix.length).split('-').sort(),best=JSON.parse(storage.getItem(key));if(ids.length&&ids.length<=70&&new Set(ids).size===ids.length&&ids.every(a=>allLocations.some(s=>s.abbr===a))&&Number.isSafeInteger(best)&&best>=0&&!sprintStatsFor(progress,'quiz',ids))sprintStatsFor(progress,'quiz',ids,true).bestCorrect=best;}}catch{}progress.sprintMigrated=true;}
+
 let excludeMastered=false;try{excludeMastered=storage.getItem('statequest.excludeMastered')==='true';}catch{}
 const enabledLocations=()=>selectedLocations(baseStates,extraLocations,geography);
 const practiceLocations=()=>enabledLocations().filter(s=>!excludeMastered||!progress.mastered.includes(s.abbr));
@@ -31,11 +34,11 @@ progress.seen=progress.seen.filter(a=>allLocations.some(s=>s.abbr===a));
 let learnDefault='shape';try{learnDefault=storage.getItem('statequest.learnDefault')==='map'?'map':'shape';}catch{}
 let learnView=learnDefault,optionsReturn='game';
 let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
-let questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[];
+let questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[],sprintMode='quiz',sprintPool=[],sprintSaved=false;
 let decks=createDecks(states,storage,Math.random,deckStorageKey(states));
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map,facts,locations:allLocations});
 function persist(){ const ok=save(storage,progress);document.querySelector('.local').textContent=ok?'● Saved on this device':'● Session only';$('storageNote').textContent=ok?'Your progress stays in this browser. No account, no leaderboard, just you and the map.':'Browser storage is unavailable. You can still play, but progress will only last for this visit.';stats(); }
-function stats(){ const enabled=enabledLocations();if($('masteredList')){$('masteredList').innerHTML=progress.mastered.map(a=>`<button class="secondary" data-unmaster="${a}">Remove ${esc(facts[a]?.name||a)} from Mastered</button>`).join('')||'<p>No mastered locations yet.</p>';document.querySelectorAll('[data-unmaster]').forEach(b=>b.onclick=()=>{toggleMastery(progress,b.dataset.unmaster);persist();repool();});}for(const [kind,ids] of [['explored',progress.seen],['mastered',progress.mastered]]){if($(kind+'Total')){$(kind+'Total').textContent=`${ids.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$(kind+'Bar').max=enabled.length;$(kind+'Bar').value=ids.filter(a=>enabled.some(s=>s.abbr===a)).length;}} $('introMessage').textContent=states.length===50?'Tap, flip, and play your way across all 50 states!':`Tap, flip, and play across ${states.length} enabled locations!`;const displayIds=progress.masteryDisplay?progress.mastered:progress.seen;$('exploredLabel').textContent=progress.masteryDisplay?'locations mastered':'locations explored';$('seenCount').textContent=`${displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$('explored').setAttribute('aria-label',progress.masteryDisplay?'Locations mastered':'Locations explored');$('explored').max=enabled.length;$('explored').value=displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length;for(const id of ['best','streak','bestStreak']) $(id).textContent=progress[id].toLocaleString(); }
+function stats(){ if($('gameResults'))$('gameResults').innerHTML=progressResults(progress,allLocations,practiceLocations().map(s=>s.abbr),baseStates.map(s=>s.abbr));const enabled=enabledLocations();if($('masteredList')){$('masteredList').innerHTML=progress.mastered.map(a=>`<button class="secondary" data-unmaster="${a}">Remove ${esc(facts[a]?.name||a)} from Mastered</button>`).join('')||'<p>No mastered locations yet.</p>';document.querySelectorAll('[data-unmaster]').forEach(b=>b.onclick=()=>{toggleMastery(progress,b.dataset.unmaster);persist();repool();});}for(const [kind,ids] of [['explored',progress.seen],['mastered',progress.mastered]]){if($(kind+'Total')){$(kind+'Total').textContent=`${ids.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$(kind+'Bar').max=enabled.length;$(kind+'Bar').value=ids.filter(a=>enabled.some(s=>s.abbr===a)).length;}} $('introMessage').textContent=states.length===50?'Tap, flip, and play your way across all 50 states!':`Tap, flip, and play across ${states.length} enabled locations!`;const displayIds=progress.masteryDisplay?progress.mastered:progress.seen;$('exploredLabel').textContent=progress.masteryDisplay?'locations mastered':'locations explored';$('seenCount').textContent=`${displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$('explored').setAttribute('aria-label',progress.masteryDisplay?'Locations mastered':'Locations explored');$('explored').max=enabled.length;$('explored').value=displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length;for(const id of ['best','streak','bestStreak']) $(id).textContent=progress[id].toLocaleString(); }
 function shape(s){const [x,y,w,h]=s.bounds;const pad=s.group?Math.max(w,h)*.045:12;const side=760;const box=relativeScale&&!s.group?`${x+w/2-side/2} ${y+h/2-side/2} ${side} ${side}`:`${x-pad} ${y-pad} ${w+pad*2} ${h+pad*2}`;return `<svg class="shape" viewBox="${box}" role="img" aria-label="${mode==='learn'?s.name:'Mystery location'} silhouette"><path fill-rule="evenodd" d="${s.path}"/></svg>`;}
 function map(s){
  if(s.country==='CA'){
@@ -112,31 +115,34 @@ function gameSelector(){
 }
 function bindGameSelector(){$('gameSelect').onchange=e=>{stopSprint();const [type,variant]=e.target.value.split('-');gameType=type;if(type==='shape')answerMode=variant;if(type==='neighbors')neighborMode=variant;question();};}
 function stopSprint(){clearInterval(sprintTimer);sprintTimer=undefined;sprint=undefined;sprintChoices=[];sprintTarget=null;sprintReview=[];}
-function startSprint(){
- stopSprint();questMap?.destroy();questMap=null;
- if(!states.length){emptyPool();return;}
- answered=false;sprint=createSprint({ids:states.map(s=>s.abbr),onAnswer:r=>{const record=progress.records[r.target]||={correct:0,missed:0};record[r.correct?'correct':'missed']++;if(!r.correct)sprintReview.push(...masteryMisses(progress,[r.target]));persist();},onChange:renderSprint});
+function startSprint(variant='quiz'){
+ stopSprint();sprintMode=variant;sprintPool=variant==='challenge'?[...baseStates]:[...states];questMap?.destroy();questMap=null;
+ answered=false;sprintSaved=false;sprint=createSprint({ids:sprintPool.map(s=>s.abbr),duration:sprintMode==='challenge'?120000:60000,finite:sprintMode==='challenge',onAnswer:r=>{const record=progress.records[r.target]||={correct:0,missed:0};record[r.correct?'correct':'missed']++;if(!r.correct)sprintReview.push(...masteryMisses(progress,[r.target]));persist();},onChange:renderSprint});
  renderSprint();sprintTimer=setInterval(()=>{if(!sprint)return;const active=!document.hidden&&document.body.dataset.view==='game'&&mode==='challenge'&&!document.querySelector('dialog[open]');if(!active&&!sprint.snapshot().paused)sprint.pause();const state=sprint.tick();if(mode==='challenge'&&document.body.dataset.view==='game')syncSprint(state);},100);
 }
 function syncSprint(state){if($('sprintClock'))$('sprintClock').textContent=`${Math.ceil(state.remaining/1000)}s`;$('counter').textContent=`${state.correct} CORRECT`;if($('sprintCountdown'))$('sprintCountdown').textContent=Math.max(1,Math.ceil(state.countdown/1000));}
 function renderSprint(){
- if(!sprint)return;const state=sprint.snapshot();document.body.dataset.game='sprint';$('modeLabel').textContent='STATE SPRINT';
+ if(!sprint)return;const state=sprint.snapshot(),challengeMode=sprintMode==='challenge',duration=challengeMode?120:60,poolIds=sprintPool.map(s=>s.abbr);document.body.dataset.game='sprint';$('modeLabel').textContent=`STATE SPRINT · ${duration}s`;
+ if(state.phase==='finished'&&!sprintSaved){sprintSaved=true;trackSprint(progress,sprintMode,poolIds,state);persist();}
  const header=`<div class="challenge-head game-controls">${gameSelector()}</div>`;
  let content='';
- if(state.phase==='idle')content=`<section class="sprint-panel"><h2>How many can you identify in 60 seconds?</h2><p>Choose the name that matches each shape. Answers advance automatically after brief feedback. The timer keeps running during feedback.</p><p>${states.length} eligible locations · four choices when available · 100 points + streak bonus.</p><p>Leaving the game pauses the timer. Sprint bests are saved separately for this location pool on this device.</p><p>Personal best: <strong>${readSprintBest(storage,states.map(s=>s.abbr))} correct</strong></p><button id="startSprint" class="primary">Start 60-second Sprint</button></section>`;
+ if(state.phase==='idle')content=`<section class="sprint-panel"><h2>Choose your Sprint</h2><p>Match each shape to its name. Both modes award 100 points + streak bonus, with separate bests and history.</p><section class="sprint-option"><h3>60-second Quiz</h3><p>How many can you identify? Random practice across your ${states.length} eligible locations. The deck reshuffles after each pass.</p><button id="startQuiz" class="primary" ${states.length?'':'disabled'}>Start 60-second Quiz</button></section><section class="sprint-option"><h3>120-second Challenge</h3><p>Answer all 50 U.S. states before time runs out. Every state appears once, including mastered states. No repeats.</p><button id="startChallenge" class="primary">Start 120-second Challenge</button></section><p>The timer keeps running during brief answer feedback. Leaving the game pauses it; Resume continues. Results and recent runs are in My Progress and progress backups.</p></section>`;
  else if(state.phase==='finished'){
- const best=saveSprintBest(storage,states.map(s=>s.abbr),state.correct);
- content=`<section class="sprint-panel" role="status"><h2>Time’s up!</h2><p class="sprint-total">${state.correct} correct in 60 seconds</p><p>${state.correct} / ${state.attempted} answered · ${state.attempted?Math.round(state.correct/state.attempted*100):0}% accuracy</p><p>${state.points.toLocaleString()} points · longest streak ${state.longest}</p><p>Personal best for this location pool: <strong>${best} correct</strong></p><button id="startSprint" class="primary">Play again</button></section>`;
+ const best=sprintStatsFor(progress,sprintMode,poolIds);
+ content=`<section class="sprint-panel" role="status"><h2>${state.completed?(state.correct===50?'Perfect 50/50!':'All 50 completed!'):'Time’s up!'}</h2><p class="sprint-total">${state.correct} correct${challengeMode?' of 50':` in ${duration} seconds`}</p><p>${state.correct} / ${state.attempted} answered · ${state.attempted?Math.round(state.correct/state.attempted*100):0}% accuracy</p><p>${state.points.toLocaleString()} points · longest streak ${state.longest}</p><p>${state.completed?`All 50 answered in ${(state.elapsedMs/1000).toFixed(1)} seconds.`:challengeMode?`${50-state.attempted} states unanswered.`:''}</p><p>Personal best for this ${challengeMode?'Challenge':'Quiz location pool'}: <strong>${best.bestCorrect} correct</strong></p><button id="startSprint" class="primary">Play again</button><button id="chooseSprint" class="secondary">Choose Sprint mode</button></section>`;
  }else if(state.paused)content=`<section class="sprint-panel"><h2>Sprint paused</h2><p>${Math.ceil(state.remaining/1000)} seconds left · ${state.correct} correct</p><button id="resumeSprint" class="primary">Resume Sprint</button></section>`;
- else if(state.phase==='countdown')content=`<section class="sprint-panel"><h2>Get ready!</h2><strong id="sprintCountdown" class="sprint-total">${Math.max(1,Math.ceil(state.countdown/1000))}</strong><button id="pauseSprint" class="secondary">Pause</button></section>`;
+ else if(state.phase==='countdown')content=`<section class="sprint-panel sprint-countdown"><h2>Get ready!</h2><strong id="sprintCountdown" class="sprint-total">${Math.max(1,Math.ceil(state.countdown/1000))}</strong><button id="pauseSprint" class="secondary">Pause</button></section>`;
  else{
- current=states.find(s=>s.abbr===state.target);
- if(state.phase==='playing'&&sprintTarget!==state.target){sprintChoices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);sprintTarget=state.target;}
+ current=sprintPool.find(s=>s.abbr===state.target);
+ if(state.phase==='playing'&&sprintTarget!==state.target){sprintChoices=shuffle([current,...shuffle(sprintPool.filter(s=>s!==current)).slice(0,3)]);sprintTarget=state.target;}
  const result=state.result;
- content=`<div class="sprint-status"><strong id="sprintClock">${Math.ceil(state.remaining/1000)}s</strong><span>${state.correct} correct · ${state.attempted} answered</span><button id="pauseSprint" class="secondary">Pause</button></div><h2 class="game-question">Which ${states.length===50?'state':'location'} is this?</h2><div class="card sprint-card">${shape(current)}${current.shape_note?'<small>Insets not to scale or geographic position</small>':''}</div><div class="answers"><div class="choices">${sprintChoices.map(s=>`<button data-sprint-answer="${s.abbr}" ${result?'disabled':''} class="${result?(s.abbr===result.target?'correct':s.abbr===result.choice?'wrong':''):''}">${esc(s.name)}</button>`).join('')}</div><div class="sprint-feedback ${result?(result.correct?'sprint-correct':'sprint-wrong'):''}" role="status">${result?`${result.correct?'★ Correct!':'Answer:'} ${esc(current.name)} · ${result.earned} points${result.correct?` (100 + ${result.earned-100} streak bonus)`:''}`:''}</div></div>`;
+ content=`<div class="sprint-status"><strong id="sprintClock">${Math.ceil(state.remaining/1000)}s</strong><span>${state.correct} correct · ${state.attempted} answered</span><button id="pauseSprint" class="secondary">Pause</button></div><h2 class="game-question">Which ${challengeMode||sprintPool.length===50?'state':'location'} is this?</h2><div class="card sprint-card">${shape(current)}${current.shape_note?'<small>Insets not to scale or geographic position</small>':''}</div><div class="answers"><div class="choices">${sprintChoices.map(s=>`<button data-sprint-answer="${s.abbr}" ${result?'disabled':''} class="${result?(s.abbr===result.target?'correct':s.abbr===result.choice?'wrong':''):''}">${esc(s.name)}</button>`).join('')}</div><div class="sprint-feedback ${result?(result.correct?'sprint-correct':'sprint-wrong'):''}" role="status">${result?`${result.correct?'★ Correct!':'Answer:'} ${esc(current.name)} · ${result.earned} points${result.correct?` (100 + ${result.earned-100} streak bonus)`:''}`:''}</div></div>`;
  }
  $('game').innerHTML=header+content;bindGameSelector();syncSprint(state);
- if($('startSprint'))$('startSprint').onclick=()=>{sprint.start();};
+ if($('startSprint'))$('startSprint').onclick=()=>{sprintSaved=false;sprintTarget=null;sprint.start();};
+ if($('startQuiz'))$('startQuiz').onclick=()=>{startSprint('quiz');sprint.start();};
+ if($('startChallenge'))$('startChallenge').onclick=()=>{startSprint('challenge');sprint.start();};
+ if($('chooseSprint'))$('chooseSprint').onclick=()=>startSprint();
  if($('pauseSprint'))$('pauseSprint').onclick=()=>{sprint.pause();};
  if($('resumeSprint'))$('resumeSprint').onclick=()=>{if(document.hidden||document.querySelector('dialog[open]'))return;sprint.resume();};
  document.querySelectorAll('[data-sprint-answer]').forEach(b=>b.onclick=()=>sprint?.answer(b.dataset.sprintAnswer));
@@ -156,7 +162,7 @@ function submit(value){
 }
 function finishAnswer(correct,correctAnswers,explanation,value){
  if(answered)return;answered=true;
- document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,score,gameType==='shape');score+=points;
+ document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,score,gameType==='shape');score+=points;trackGame(progress,gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType,correct,points,Date.now(),gameType==='timeline'?mini.options.map(a=>facts[a].name).join(', '):['population','area'].includes(gameType)?mini.pair.map(a=>facts[a].name).join(' vs '):current.name);
  if(gameType==='shape'||gameType==='neighbors')decks.complete(gameType,current.abbr);
  persist();$('counter').textContent=`${score.toLocaleString()} POINTS`;
  const roundComplete=questionPosition&&questionPosition.number===questionPosition.total;

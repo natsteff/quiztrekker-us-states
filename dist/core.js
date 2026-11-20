@@ -1,7 +1,7 @@
 export const KEY = 'statequest.v1';
 const integer = n => Number.isSafeInteger(n) && n >= 0;
 export function clean(raw) {
-  const result = {seen:[], records:{}, best:0, streak:0, bestStreak:0,mastered:[],masteryFailures:{}};
+  const result = {seen:[], records:{}, best:0, streak:0, bestStreak:0,mastered:[],masteryFailures:{},gameStats:{},sprintStats:[],sprintMigrated:false};
   if (!raw || typeof raw !== 'object') return result;
   result.seen = [...new Set(Array.isArray(raw.seen) ? raw.seen.filter(x=>/^[A-Z]{2}$/.test(x)) : [])];
   for (const key of ['best','streak','bestStreak']) if(integer(raw[key])) result[key]=raw[key];
@@ -11,6 +11,7 @@ export function clean(raw) {
   result.masteryDisplay=raw?.masteryDisplay===true;
   result.mastered=[...new Set(Array.isArray(raw?.mastered)?raw.mastered.filter(a=>/^[A-Z]{2}$/.test(a)):[])];
   result.masteryFailures={};for(const [a,n] of Object.entries(raw?.masteryFailures||{}))if(result.mastered.includes(a)&&integer(n))result.masteryFailures[a]=n;
+  result.sprintMigrated=raw.sprintMigrated===true;result.gameStats=cleanGameStats(raw.gameStats);result.sprintStats=cleanSprintStats(raw.sprintStats);
   return result;
 }
 export function load(storage) {try {return clean(JSON.parse(storage.getItem(KEY)));} catch {return clean();}}
@@ -43,5 +44,35 @@ export function importProgress(text, states) {
   for(const [key,r] of Object.entries(p.records)) if(!valid.has(key) || !r || !integer(r.correct) || !integer(r.missed)) throw Error('Save contains invalid state records.');
   if(p.mastered!==undefined&&(!Array.isArray(p.mastered)||p.mastered.some(a=>!valid.has(a))))throw Error('Save contains invalid mastery records.');
   if(p.masteryFailures!==undefined&&(!p.masteryFailures||typeof p.masteryFailures!=='object'||Array.isArray(p.masteryFailures)||Object.entries(p.masteryFailures).some(([a,n])=>!valid.has(a)||!integer(n)||!p.mastered?.includes(a))))throw Error('Save contains invalid mastery failures.');
-  return clean(p);
+  for(const [key,cleaner] of [['gameStats',cleanGameStats],['sprintStats',cleanSprintStats]])if(p[key]!==undefined&&JSON.stringify(canonical(p[key]))!==JSON.stringify(canonical(cleaner(p[key]))))throw Error('Save contains invalid game results.');
+  if((p.sprintStats||[]).some(s=>s.pool.some(a=>!valid.has(a))))throw Error('Save contains unknown Sprint locations.');
+  const restored=clean(p);restored.sprintMigrated=true;return restored;
 }
+
+const GAME_KEYS=['shape-choice','shape-typed','mapquest','population','area','timeline','neighbors-one','neighbors-all'];
+const validPool=p=>Array.isArray(p)&&p.length>0&&p.length<=70&&new Set(p).size===p.length&&p.every(a=>/^[A-Z]{2}$/.test(a));
+const stamp=n=>integer(n)&&n>0&&n<=8640000000000000;
+export function cleanGameStats(raw){
+ const out={};for(const key of GAME_KEYS){const g=raw?.[key];if(!g||!['answered','correct','streak','bestStreak','points'].every(k=>integer(g[k]))||g.correct>g.answered||g.streak>g.bestStreak||g.bestStreak>g.correct)continue;
+ out[key]={answered:g.answered,correct:g.correct,streak:g.streak,bestStreak:g.bestStreak,points:g.points,history:(Array.isArray(g.history)?g.history:[]).filter(r=>r&&stamp(r.date)&&typeof r.correct==='boolean'&&integer(r.points)).slice(0,10).map(r=>({date:r.date,correct:r.correct,points:r.points,label:typeof r.label==='string'?r.label.slice(0,200):''}))};}return out;
+}
+export function cleanSprintStats(raw){
+ if(!Array.isArray(raw))return [];const seen=new Set();return raw.filter(s=>{
+ if(!s||!['quiz','challenge'].includes(s.mode)||!validPool(s.pool)||!['runs','bestCorrect','bestPoints','bestStreak'].every(k=>integer(s[k]))||![s.fastestMs,s.perfectMs].every(n=>n===null||integer(n)&&n<=120000))return false;
+ if(s.bestStreak>s.bestCorrect||s.mode==='quiz'&&(s.fastestMs!==null||s.perfectMs!==null)||s.perfectMs!==null&&(s.fastestMs===null||s.perfectMs<s.fastestMs))return false;
+ if(s.mode==='challenge'&&(s.pool.length!==50||s.bestCorrect>50))return false;const key=s.mode+':'+[...s.pool].sort().join('-');if(seen.has(key))return false;seen.add(key);return true;
+ }).slice(0,12).map(s=>({mode:s.mode,pool:[...s.pool].sort(),runs:s.runs,bestCorrect:s.bestCorrect,bestPoints:s.bestPoints,bestStreak:s.bestStreak,fastestMs:s.fastestMs,perfectMs:s.perfectMs,history:(Array.isArray(s.history)?s.history:[]).filter(r=>r&&stamp(r.date)&&['correct','attempted','points','longest','elapsedMs'].every(k=>integer(r[k]))&&r.correct<=r.attempted&&r.longest<=r.correct&&r.points<=r.attempted*200&&(s.mode!=='challenge'||r.attempted<=50)&&r.elapsedMs<=(s.mode==='quiz'?60000:120000)&&typeof r.completed==='boolean'&&(!r.completed||s.mode==='challenge'&&r.attempted===s.pool.length)).slice(0,20).map(r=>({date:r.date,correct:r.correct,attempted:r.attempted,points:r.points,longest:r.longest,elapsedMs:r.elapsedMs,completed:r.completed}))}));
+}
+export function trackGame(progress,key,correct,points,date=Date.now(),label=''){
+ if(!GAME_KEYS.includes(key))return;progress.gameStats||={};const g=progress.gameStats[key]||={answered:0,correct:0,streak:0,bestStreak:0,points:0,history:[]};g.answered++;g.correct+=Number(correct);g.streak=correct?g.streak+1:0;g.bestStreak=Math.max(g.bestStreak,g.streak);g.points+=points;g.history.unshift({date,correct,points,label:label.slice(0,200)});g.history=g.history.slice(0,10);
+}
+export function sprintStatsFor(progress,mode,pool,create=false){
+ progress.sprintStats||=[];const ids=[...pool].sort(),key=ids.join('-');let s=progress.sprintStats.find(s=>s.mode===mode&&s.pool.join('-')===key);if(!s&&create){s={mode,pool:ids,runs:0,bestCorrect:0,bestPoints:0,bestStreak:0,fastestMs:null,perfectMs:null,history:[]};progress.sprintStats.unshift(s);progress.sprintStats=progress.sprintStats.slice(0,12);}return s;
+}
+export function trackSprint(progress,mode,pool,result,date=Date.now()){
+ const s=sprintStatsFor(progress,mode,pool,true);s.runs++;s.bestCorrect=Math.max(s.bestCorrect,result.correct);s.bestPoints=Math.max(s.bestPoints,result.points);s.bestStreak=Math.max(s.bestStreak,result.longest);const elapsedMs=Math.round(result.elapsedMs);if(mode==='challenge'&&result.completed){s.fastestMs=s.fastestMs===null?elapsedMs:Math.min(s.fastestMs,elapsedMs);if(result.correct===pool.length)s.perfectMs=s.perfectMs===null?elapsedMs:Math.min(s.perfectMs,elapsedMs);}
+ s.history.unshift({date,correct:result.correct,attempted:result.attempted,points:result.points,longest:result.longest,elapsedMs,completed:!!result.completed});s.history=s.history.slice(0,20);
+ // Keep recently played pools, including their all-time summaries, ahead of old pools.
+ progress.sprintStats=[s,...progress.sprintStats.filter(t=>t!==s)].slice(0,12);return s;
+}
+function canonical(value){if(Array.isArray(value))return value.map(canonical);if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])]));return value;}

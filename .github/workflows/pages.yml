@@ -28,6 +28,7 @@ jobs:
           node tests/results.test.cjs
           node tests/map-quest.test.cjs
           node tests/sprint.test.cjs
+          node tests/progress.test.cjs
           node tests/welcome.test.cjs
       - name: Verify offline cache and project scope
         run: node tests/pwa.test.cjs

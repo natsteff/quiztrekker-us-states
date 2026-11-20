@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.10.1" alt="Play QuizTrekker - US States now — v0.10.1" width="420">
+    <img src="assets/play-now.svg?v=0.11.0" alt="Play QuizTrekker - US States now — v0.11.0" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.10.1** — distinct missed and incorrect colors in Neighbor results.
+Current release: **v0.11.0** — two Sprint modes, game histories in My Progress, and prominent fact ranks.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -43,6 +43,7 @@ node tests/learning.test.cjs
 node tests/results.test.cjs
 node tests/map-quest.test.cjs
 node tests/sprint.test.cjs
+node tests/progress.test.cjs
 node tests/welcome.test.cjs
 ```
 
@@ -155,3 +156,9 @@ Pause, backgrounding the app, Learn, Settings and My Progress pause a round; Res
 ### v0.10.1 Neighbor result colors
 
 Red now identifies incorrect selections only. All my Neighbors shows missed required neighbors in blue on the map and answer buttons. One of my Neighbors never marks unselected neighbors as missed; they remain blue for reference. Both modes keep the target yellow and correct selections green, with mode-specific legends and explicit answer labels. Ordinary map background remains light blue.
+
+### v0.11.0 Sprint modes, progress and ranks
+
+Learn/More Facts ranks are bold and larger, separately from dates and source notes. State Sprint offers a 60-second Quiz using the eligible practice pool and a 120-second Challenge covering all 50 U.S. states, including mastered states, once each. The Challenge stops after 50 answers or 120 seconds. Completed all 50 and Perfect 50/50 are distinct results, with separate fastest completion records. Countdown is centered and enlarged. Scoring, pauses, feedback timing and late-submit protection remain the same.
+
+My Progress retains Explored/Mastered and overall untimed stats and adds separate Sprint mode/pool bests, points, longest streak, dated recent runs and Challenge completion times. Other games now track their own correct/answered, accuracy, current/longest streak, total points and last 10 answer results, starting with this update. Sprint retains the last 20 runs per pool for the 12 most recently recorded mode/pool combinations, with best summaries retained within those pools. Prior Sprint correct-count bests migrate once without inventing history. All new results are included in the existing version-1 progress export; old backups remain importable. Unfinished/abandoned Sprints do not create a completed-run entry. Timers exclude countdown and paused time; feedback counts toward the limit and the final Challenge answer ends the run immediately.
