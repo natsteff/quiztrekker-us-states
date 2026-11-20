@@ -16,7 +16,7 @@ import {escapeHtml as esc,formatStatehood} from './facts-core.js';
 import {GAME_NAMES,makeQuestion,makeTimeline,timelineCorrect,sameAnswers} from './games.js';
 import {createDecks} from './decks.js';
 import {startUpdates} from './update-client.js';
-import {load,save,matches,record,exportProgress,importProgress,trackGame,trackSprint,sprintStatsFor} from './core.js';
+import {load,save,matches,record,exportProgress,importProgress,trackGame,trackSprint,trackSprintAnswer,sprintStatsFor} from './core.js';
 document.addEventListener('keydown',e=>{if(['Tab','Enter',' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))document.body.classList.add('keyboard-focus');});
 document.addEventListener('pointerdown',()=>document.body.classList.remove('keyboard-focus'));
 const $ = id=>document.getElementById(id);
@@ -34,12 +34,12 @@ progress.mastered=progress.mastered.filter(a=>allLocations.some(s=>s.abbr===a));
 progress.seen=progress.seen.filter(a=>allLocations.some(s=>s.abbr===a));
 let learnDefault='shape';try{learnDefault=storage.getItem('statequest.learnDefault')==='map'?'map':'shape';}catch{}
 let learnView=learnDefault,optionsReturn='game';
-let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, score=0, choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
+let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, gameRunScore=0,gameRunKey='', choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
 let questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[],sprintMode='quiz',sprintPool=[],sprintSaved=false;
 let decks=createDecks(states,storage,Math.random,deckStorageKey(states));
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map,facts,locations:allLocations});
 function persist(){ const ok=save(storage,progress);document.querySelector('.local').textContent=ok?'● Saved on this device':'● Session only';$('storageNote').textContent=ok?'Your progress stays in this browser. No account, no leaderboard, just you and the map.':'Browser storage is unavailable. You can still play, but progress will only last for this visit.';stats(); }
-function stats(){ if($('gameResults'))$('gameResults').innerHTML=progressResults(progress,allLocations,practiceLocations().map(s=>s.abbr),baseStates.map(s=>s.abbr));const enabled=enabledLocations();if($('masteredList')){$('masteredList').innerHTML=progress.mastered.map(a=>`<button class="secondary" data-unmaster="${a}">Remove ${esc(facts[a]?.name||a)} from Mastered</button>`).join('')||'<p>No mastered locations yet.</p>';document.querySelectorAll('[data-unmaster]').forEach(b=>b.onclick=()=>{toggleMastery(progress,b.dataset.unmaster);persist();repool();});}for(const [kind,ids] of [['explored',progress.seen],['mastered',progress.mastered]]){if($(kind+'Total')){$(kind+'Total').textContent=`${ids.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$(kind+'Bar').max=enabled.length;$(kind+'Bar').value=ids.filter(a=>enabled.some(s=>s.abbr===a)).length;}} $('introMessage').textContent=states.length===50?'Tap, flip, and play your way across all 50 states!':`Tap, flip, and play across ${states.length} enabled locations!`;const displayIds=progress.masteryDisplay?progress.mastered:progress.seen;$('exploredLabel').textContent=progress.masteryDisplay?'locations mastered':'locations explored';$('seenCount').textContent=`${displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$('explored').setAttribute('aria-label',progress.masteryDisplay?'Locations mastered':'Locations explored');$('explored').max=enabled.length;$('explored').value=displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length;for(const id of ['best','streak','bestStreak']) $(id).textContent=progress[id].toLocaleString(); }
+function stats(){ if($('gameResults'))$('gameResults').innerHTML=progressResults(progress,allLocations,practiceLocations().map(s=>s.abbr),baseStates.map(s=>s.abbr));const enabled=enabledLocations();if($('masteredList')){$('masteredList').innerHTML=progress.mastered.map(a=>`<button class="secondary" data-unmaster="${a}">Remove ${esc(facts[a]?.name||a)} from Mastered</button>`).join('')||'<p>No mastered locations yet.</p>';document.querySelectorAll('[data-unmaster]').forEach(b=>b.onclick=()=>{toggleMastery(progress,b.dataset.unmaster);persist();repool();});}for(const [kind,ids] of [['explored',progress.seen],['mastered',progress.mastered]]){if($(kind+'Total')){$(kind+'Total').textContent=`${ids.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$(kind+'Bar').max=enabled.length;$(kind+'Bar').value=ids.filter(a=>enabled.some(s=>s.abbr===a)).length;}} $('introMessage').textContent=states.length===50?'Tap, flip, and play your way across all 50 states!':`Tap, flip, and play across ${states.length} enabled locations!`;const displayIds=progress.masteryDisplay?progress.mastered:progress.seen;$('exploredLabel').textContent=progress.masteryDisplay?'locations mastered':'locations explored';$('seenCount').textContent=`${displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length} / ${enabled.length}`;$('explored').setAttribute('aria-label',progress.masteryDisplay?'Locations mastered':'Locations explored');$('explored').max=enabled.length;$('explored').value=displayIds.filter(a=>enabled.some(s=>s.abbr===a)).length;$('lifetimePoints').textContent=progress.lifetimePoints.toLocaleString(); }
 function shape(s){const [x,y,w,h]=s.bounds;const pad=s.group?Math.max(w,h)*.045:12;const side=760;const box=relativeScale&&!s.group?`${x+w/2-side/2} ${y+h/2-side/2} ${side} ${side}`:`${x-pad} ${y-pad} ${w+pad*2} ${h+pad*2}`;return `<svg class="shape" viewBox="${box}" role="img" aria-label="${mode==='learn'?s.name:'Mystery location'} silhouette"><path fill-rule="evenodd" d="${s.path}"/></svg>`;}
 function gameShape(s){return shapeWithLocator(s,shape(s),baseStates);}
 function map(s){
@@ -72,6 +72,7 @@ function learn(){
 function navigate(delta){index=(index+delta+states.length)%states.length;flipped=false;learn();}
 function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function question(){
+ const key=gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType;if(gameRunKey!==key){gameRunScore=0;gameRunKey=key;}
  if(gameType==='sprint'){startSprint();return;}
  stopSprint();
  const minimum=gameType==='timeline'?4:['population','area'].includes(gameType)?2:1;
@@ -90,7 +91,7 @@ function challenge(){
  questMap?.destroy();questMap=null;
  const all=gameType==='neighbors'&&neighborMode==='all',timeline=gameType==='timeline';
  document.body.dataset.game=all?'neighbors-all':gameType;
- $('counter').textContent=`${score.toLocaleString()} POINTS`;$('modeLabel').textContent=(gameType==='neighbors'?(neighborMode==='all'?'All my Neighbors':'One of my Neighbors'):gameType==='shape'?(answerMode==='typed'?'Postal Pro':'Shape Spotter'):GAME_NAMES[gameType]).toUpperCase();
+ $('counter').textContent=`${progress.lifetimePoints.toLocaleString()} POINTS`;$('modeLabel').textContent=(gameType==='neighbors'?(neighborMode==='all'?'All my Neighbors':'One of my Neighbors'):gameType==='shape'?(answerMode==='typed'?'Postal Pro':'Shape Spotter'):GAME_NAMES[gameType]).toUpperCase();
  const options=gameType==='mapquest'?[]:gameType==='shape'?choices.map(s=>s.abbr):mini.options;
  const selector=gameSelector();
  const badge=questionPosition?`ROUND ${questionPosition.round} · LOCATION ${questionPosition.number} / ${questionPosition.total}`:gameType==='timeline'?'★ TIME TRAVEL':'★ SHOWDOWN!';
@@ -119,10 +120,10 @@ function bindGameSelector(){$('gameSelect').onchange=e=>{stopSprint();const [typ
 function stopSprint(){clearInterval(sprintTimer);sprintTimer=undefined;sprint=undefined;sprintChoices=[];sprintTarget=null;sprintReview=[];}
 function startSprint(variant='quiz'){
  stopSprint();sprintMode=variant;sprintPool=variant==='challenge'?[...baseStates]:[...states];questMap?.destroy();questMap=null;
- answered=false;sprintSaved=false;sprint=createSprint({ids:sprintPool.map(s=>s.abbr),duration:sprintMode==='challenge'?120000:60000,finite:sprintMode==='challenge',onAnswer:r=>{const record=progress.records[r.target]||={correct:0,missed:0};record[r.correct?'correct':'missed']++;if(!r.correct)sprintReview.push(...masteryMisses(progress,[r.target]));persist();},onChange:renderSprint});
+ answered=false;sprintSaved=false;sprint=createSprint({ids:sprintPool.map(s=>s.abbr),duration:sprintMode==='challenge'?120000:60000,finite:sprintMode==='challenge',onAnswer:r=>{const record=progress.records[r.target]||={correct:0,missed:0};record[r.correct?'correct':'missed']++;if(!r.correct)sprintReview.push(...masteryMisses(progress,[r.target]));trackSprintAnswer(progress,sprintMode,r.earned);persist();},onChange:renderSprint});
  renderSprint();sprintTimer=setInterval(()=>{if(!sprint)return;const active=!document.hidden&&document.body.dataset.view==='game'&&mode==='challenge'&&!document.querySelector('dialog[open]');if(!active&&!sprint.snapshot().paused)sprint.pause();const state=sprint.tick();if(mode==='challenge'&&document.body.dataset.view==='game')syncSprint(state);},100);
 }
-function syncSprint(state){if($('sprintClock'))$('sprintClock').textContent=`${Math.ceil(state.remaining/1000)}s`;$('counter').textContent=`${state.correct} CORRECT`;if($('sprintCountdown'))$('sprintCountdown').textContent=Math.max(1,Math.ceil(state.countdown/1000));}
+function syncSprint(state){if($('sprintClock'))$('sprintClock').textContent=`${Math.ceil(state.remaining/1000)}s`;$('counter').textContent=`${progress.lifetimePoints.toLocaleString()} POINTS`;if($('sprintCountdown'))$('sprintCountdown').textContent=Math.max(1,Math.ceil(state.countdown/1000));}
 function renderSprint(){
  if(!sprint)return;const state=sprint.snapshot(),challengeMode=sprintMode==='challenge',duration=challengeMode?120:60,poolIds=sprintPool.map(s=>s.abbr);document.body.dataset.game='sprint';$('modeLabel').textContent=`STATE SPRINT · ${duration}s`;
  if(state.phase==='finished'&&!sprintSaved){sprintSaved=true;trackSprint(progress,sprintMode,poolIds,state);persist();}
@@ -164,9 +165,9 @@ function submit(value){
 }
 function finishAnswer(correct,correctAnswers,explanation,value){
  if(answered)return;answered=true;
- document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,score,gameType==='shape');score+=points;trackGame(progress,gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType,correct,points,Date.now(),gameType==='timeline'?mini.options.map(a=>facts[a].name).join(', '):['population','area'].includes(gameType)?mini.pair.map(a=>facts[a].name).join(' vs '):current.name);
+ document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,gameRunScore,gameType==='shape');gameRunScore+=points;trackGame(progress,gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType,correct,points,Date.now(),gameType==='timeline'?mini.options.map(a=>facts[a].name).join(', '):['population','area'].includes(gameType)?mini.pair.map(a=>facts[a].name).join(' vs '):current.name,gameRunScore);
  if(gameType==='shape'||gameType==='neighbors')decks.complete(gameType,current.abbr);
- persist();$('counter').textContent=`${score.toLocaleString()} POINTS`;
+ persist();$('counter').textContent=`${progress.lifetimePoints.toLocaleString()} POINTS`;
  const roundComplete=questionPosition&&questionPosition.number===questionPosition.total;
  const milestone=correct&&progress.streak%5===0;
  const feedback=$('feedback');feedback.className=`feedback result-banner ${correct?'result-correct':'result-wrong'}${milestone||roundComplete?' result-milestone':''}`;
@@ -200,7 +201,7 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  document.querySelectorAll('[data-pick],#undoTimeline,#clearTimeline,#checkTimeline,#checkNeighbors').forEach(b=>b.disabled=true);
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }
-function setMode(next){if(next==='learn'&&sprint&&!sprint.snapshot().paused)sprint.pause();$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');$('tip').textContent=mode==='learn'?'Flip any card to discover its capital and find its place on the map. Swipe left or right, or use the arrow buttons.':'Earn points and build a streak! Shape Spotter and Neighbor games visit every enabled location before shuffling again.';if(mode==='learn')learn();else if(gameType==='sprint'&&sprint)renderSprint();else if(!current)question();else if(answered)question();else challenge();}
+function setMode(next){if(next==='learn'&&sprint&&!sprint.snapshot().paused)sprint.pause();$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');if(mode==='learn')learn();else if(gameType==='sprint'&&sprint)renderSprint();else if(!current)question();else if(answered)question();else challenge();}
 $('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(gameType==='sprint'&&mode==='challenge'){if(sprint)renderSprint();return;}if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);(svg.closest('.game-shape-layout')||svg).outerHTML=gameShape(s);});}};
 function switchMode(next){setMode(next);if(matchMedia('(max-width:760px)').matches)document.querySelector('.play').scrollIntoView({block:'start'});}
 $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>switchMode('challenge');document.addEventListener('keydown',e=>{if(mode==='learn' && !['INPUT','SELECT','BUTTON'].includes(document.activeElement.tagName)){if(e.key==='ArrowRight')navigate(1);if(e.key==='ArrowLeft')navigate(-1);}});persist();setMode('learn');
@@ -214,14 +215,14 @@ let pendingImport;
 $('importSave').onclick=()=>$('saveFile').click();
 $('saveFile').onchange=async e=>{
  const file=e.target.files[0];e.target.value='';if(!file)return;
- try {if(file.size>100000)throw Error('Save is too large. Choose a QuizTrekker - US States JSON export.');pendingImport=importProgress(await file.text(),allLocations);$('importSummary').textContent=`${pendingImport.seen.length} locations explored · ${pendingImport.mastered.length} mastered · best score ${pendingImport.best} · longest streak ${pendingImport.bestStreak}.`;$('importDialog').showModal();}
+ try {if(file.size>100000)throw Error('Save is too large. Choose a QuizTrekker - US States JSON export.');pendingImport=importProgress(await file.text(),allLocations);$('importSummary').textContent=`${pendingImport.seen.length} locations explored · ${pendingImport.mastered.length} mastered · lifetime points ${pendingImport.lifetimePoints.toLocaleString()}.`;$('importDialog').showModal();}
  catch(error){$('saveStatus').textContent=error.message;pendingImport=undefined;}
 };
 $('cancelImport').onclick=()=>{pendingImport=undefined;$('importDialog').close();};
 $('importDialog').addEventListener('cancel',()=>{pendingImport=undefined;});
 $('confirmImport').onclick=()=>{
  if(!pendingImport)return;
- stopSprint();Object.assign(progress,pendingImport);pendingImport=undefined;score=0;current=undefined;persist();setMode(mode);$('importDialog').close();$('saveStatus').textContent='Progress imported. Your current challenge score has restarted.';
+ stopSprint();Object.assign(progress,pendingImport);pendingImport=undefined;gameRunScore=0;gameRunKey='';current=undefined;persist();setMode(mode);$('importDialog').close();$('saveStatus').textContent='Progress imported. Your lifetime points and game results have been restored.';
 };
 startUpdates({storage,document,navigator,location});
 

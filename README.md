@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.11.1" alt="Play QuizTrekker - US States now — v0.11.1" width="420">
+    <img src="assets/play-now.svg?v=0.12.0" alt="Play QuizTrekker - US States now — v0.12.0" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.11.1** — fair shape clues and more compact card, Sprint and Settings layouts.
+Current release: **v0.12.0** — lifetime points and compact per-game progress.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -167,3 +167,9 @@ My Progress retains Explored/Mastered and overall untimed stats and adds separat
 ### v0.11.1 shape clues and compact layouts
 
 Wyoming and Colorado silhouettes now include a small U.S. locator in games, including Shape Spotter, Postal Pro and both Sprint modes. The clue highlights geographic position without naming the answer; both states remain valid answer choices. Learn already provides geographic context. Area facts retain the total and bold rank with Land and Water on separate lines, removing the redundant Total area label. The Settings sources/credits/methods link is last. Sprint mode selection uses shorter copy and removes its bottom explanation; rules, mastery inclusion and scoring are unchanged.
+
+### v0.12.0 lifetime points and compact progress
+
+The Play header always shows saved lifetime points across all games, including Sprint. Points are saved after each answer, so unfinished Sprint earnings survive switching games or reloading. Sprint correct counts remain below the header. My Progress shows the same lifetime total, then games in dropdown order with lifetime points and best game scores; Sprint's two modes appear together inline. Legacy overall untimed score/streak displays, Try This, and answer/run history lists are removed. Best summaries, accuracy and per-game streaks remain. Untimed best game scores track the current uninterrupted visit to each game; switching games or reloading starts a new attempt while lifetime earnings persist. Completed Sprint rounds update best results without adding their earned points a second time.
+
+Old per-game totals migrate exactly. Old retained Sprint run points (or the known best where larger) provide recoverable Sprint totals; older missing/evicted runs cannot be reconstructed. An older combined untimed best contributes only the portion not already covered by per-game totals, shown as earlier points without a game breakdown. Migration is idempotent, and both new totals and compact best records are included in backups. Older backups with histories remain importable; those histories are validated during import, used to recover points, then discarded. No new histories are stored.
