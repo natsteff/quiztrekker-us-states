@@ -1,3 +1,4 @@
+import {startGamepad} from './gamepad.js';
 import {shapeWithLocator} from './shape-clue.js';
 import {progressResults} from './progress-ui.js';
 import {createSprint} from './sprint.js';
@@ -269,3 +270,5 @@ function geographySettings(){
 geographySettings();
 
 startWelcome({storage,document,window,navigator,mobile:mobileView});
+
+startGamepad({window,document,navigator});

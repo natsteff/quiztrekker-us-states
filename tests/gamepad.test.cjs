@@ -1,0 +1,6 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {createPadInput,startGamepad}=vm.runInNewContext(fs.readFileSync('dist/gamepad.js','utf8').replaceAll('export ','')+';({createPadInput,startGamepad})');
+const poll=createPadInput(),pad={index:0,buttons:Array.from({length:16},()=>({pressed:false})),axes:[0,0]};
+assert.equal(poll(pad,0).length,0);pad.buttons[0].pressed=true;assert.equal(poll(pad,10).join(','),'activate');assert.equal(poll(pad,1000).length,0);pad.buttons[0].pressed=false;poll(pad,1001);pad.buttons[0].pressed=true;assert.equal(poll(pad,1002).join(','),'activate');
+pad.buttons[15].pressed=true;assert.equal(poll(pad,1100).join(','),'right');assert.equal(poll(pad,1499).length,0);assert.equal(poll(pad,1500).join(','),'right');assert.equal(poll(pad,1650).join(','),'right');poll(null,1700);assert.equal(poll(pad,1800).length,0);pad.buttons[15].pressed=false;pad.axes=[0,-.7];assert.equal(poll(pad,1801).join(','),'up');pad.axes=[0,0];poll(pad,1802);pad.buttons[1].pressed=true;assert.equal(poll(pad,1803).join(','),'back');assert.equal(typeof startGamepad({navigator:{}}),'function');
+console.log('Gamepad press edges, held-button safety, dead zone, direction repeat, reconnect and unsupported browser passed');
