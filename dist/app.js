@@ -1,3 +1,5 @@
+import {capitalLocations,makeCapitalQuestion} from './capitals.js';
+import {kioskRequested} from './kiosk.js';
 import {startGamepad} from './gamepad.js';
 import {shapeWithLocator} from './shape-clue.js';
 import {progressResults} from './progress-ui.js';
@@ -21,6 +23,7 @@ import {load,save,matches,record,exportProgress,importProgress,trackGame,trackSp
 document.addEventListener('keydown',e=>{if(['Tab','Enter',' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))document.body.classList.add('keyboard-focus');});
 document.addEventListener('pointerdown',()=>document.body.classList.remove('keyboard-focus'));
 const $ = id=>document.getElementById(id);
+const kioskMode=kioskRequested(location.search);document.body.classList.toggle('kiosk',kioskMode);
 let storage;try{storage=window.localStorage;}catch{}
 const allLocations=[...baseStates,...extraLocations],facts=mergeFacts(baseFacts,extraFacts);
 let geography=readGeography(storage),states=selectedLocations(baseStates,extraLocations,geography);
@@ -36,7 +39,7 @@ progress.seen=progress.seen.filter(a=>allLocations.some(s=>s.abbr===a));
 let learnDefault='shape';try{learnDefault=storage.getItem('statequest.learnDefault')==='map'?'map':'shape';}catch{}
 let learnView=learnDefault,optionsReturn='game';
 let mode='learn', index=0, flipped=false, answerMode='choice', current, answered=false, gameRunScore=0,gameRunKey='', choices=[], relativeScale=false, suppressFlipUntil=0, gameType='shape', mini, neighborMode='one', selectedAnswers=new Set(), timelineOrder=[], questionPosition;
-let questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[],sprintMode='quiz',sprintPool=[],sprintSaved=false;
+let capitalDeck,capitalDeckKey,questMap,sprint,sprintTimer,sprintChoices=[],sprintTarget=null,sprintReview=[],sprintMode='quiz',sprintPool=[],sprintSaved=false;
 let decks=createDecks(states,storage,Math.random,deckStorageKey(states));
 const factUI=createFactsUI({storage,onChange:()=>{if(mode==='learn')learn();},renderMap:map,facts,locations:allLocations});
 function persist(){ const ok=save(storage,progress);document.querySelector('.local').textContent=ok?'● Saved on this device':'● Session only';$('storageNote').textContent=ok?'Your progress stays in this browser. No account, no leaderboard, just you and the map.':'Browser storage is unavailable. You can still play, but progress will only last for this visit.';stats(); }
@@ -76,13 +79,14 @@ function question(){
  const key=gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType;if(gameRunKey!==key){gameRunScore=0;gameRunKey=key;}
  if(gameType==='sprint'){startSprint();return;}
  stopSprint();
- const minimum=gameType==='timeline'?4:['population','area'].includes(gameType)?2:1;
- const eligible=gameType==='timeline'||gameType==='mapquest'?states.filter(s=>!s.group):states;
+ const minimum=gameType==='capitals'?2:gameType==='timeline'?4:['population','area'].includes(gameType)?2:1;
+ const eligible=gameType==='capitals'?capitalLocations(states):gameType==='timeline'||gameType==='mapquest'?states.filter(s=>!s.group):states;
  if(eligible.length<minimum){emptyPool('Not enough unmastered locations for this game.');return;}
  if(['population','area'].includes(gameType)){const key=gameType==='population'?'population':states.some(s=>s.group)?'land_sq_mi':'area_sq_mi';if(!states.some(a=>Number.isFinite(facts[a.abbr][key])&&states.some(b=>b!==a&&Number.isFinite(facts[b.abbr][key])&&facts[a.abbr][key]!==facts[b.abbr][key]&&(gameType!=='population'||facts[a.abbr].population_as_of===facts[b.abbr].population_as_of)))){emptyPool('No comparable pair remains.');return;}}
  document.querySelector('.play').classList.remove('celebrate');answered=false;selectedAnswers=new Set();timelineOrder=[];questionPosition=undefined;
  if(gameType==='mapquest'){mini={note:'U.S. states only. Preview your choice, then submit. Alaska and Hawaii are inset.'};current=shuffle(eligible.filter(s=>s.abbr!==current?.abbr).length?eligible.filter(s=>s.abbr!==current?.abbr):eligible)[0];}
  else if(gameType==='shape'){const a=decks.current('shape');current=states.find(s=>s.abbr===a);questionPosition=decks.position('shape');choices=shuffle([current,...shuffle(states.filter(s=>s!==current)).slice(0,3)]);}
+ else if(gameType==='capitals'){const key=deckStorageKey(eligible)+':capitals';if(key!==capitalDeckKey){capitalDeck=createDecks(eligible,storage,Math.random,key);capitalDeckKey=key;}const a=capitalDeck.current('shape');current=eligible.find(s=>s.abbr===a);mini=makeCapitalQuestion(eligible,a);questionPosition=capitalDeck.position('shape');}
  else if(gameType==='timeline'){mini=makeTimeline(states,facts);current=states.find(s=>s.abbr===mini.target);}
  else{const settings=gameType==='neighbors'?{target:decks.current('neighbors'),neighborMode,answerLocations:enabledLocations()}:{};mini=makeQuestion(gameType,states,facts,current?.abbr,Math.random,settings);current=states.find(s=>s.abbr===mini.target);if(gameType==='neighbors')questionPosition=decks.position('neighbors');}
  challenge();$('game').scrollTop=0;
@@ -96,8 +100,8 @@ function challenge(){
  const options=gameType==='mapquest'?[]:gameType==='shape'?choices.map(s=>s.abbr):mini.options;
  const selector=gameSelector();
  const badge=questionPosition?`ROUND ${questionPosition.round} · LOCATION ${questionPosition.number} / ${questionPosition.total}`:gameType==='timeline'?'★ TIME TRAVEL':'★ SHOWDOWN!';
- const visual=gameType==='mapquest'?`<div class="quest-map"><div class="quest-zoom-controls" role="group" aria-label="Map zoom"><button class="secondary" data-zoom="in" aria-label="Zoom in">Zoom +</button><button class="secondary" data-zoom="out" aria-label="Zoom out">Zoom −</button><button class="secondary" data-zoom="reset">Full map</button></div>${teachingMap({locations:allLocations,mode:'quest',eligible:states.filter(s=>!s.group).map(s=>s.abbr)})}<p data-quest-legend class="map-legend" hidden>🟩 Correct · 🟥 Incorrect choice · 🟨 Intended target</p></div>`:gameType==='shape'?gameShape(current):gameType==='neighbors'?`<span class="question-state">${esc(current.name)}</span>${gameShape(current)}`:timeline?'':`<div class="duel">${mini.pair.map(a=>{const s=states.find(t=>t.abbr===a);return `<button class="duel-card" data-answer="${a}" aria-label="Choose ${esc(s.name)}"><span class="tap-prompt">Tap to choose!</span><img src="${facts[a].flag||`assets/flags/${a}.svg`}" alt="Flag of ${esc(s.name)}">${gameShape(s)}<b>${esc(s.name)}</b></button>`;}).join('')}</div>`;
- const answerMarkup=gameType==='mapquest'?'<div id="questAnswerControls"><p>Tap a state to preview it, then Submit answer. Double-tap to zoom; drag to move.</p><button id="submitMapAnswer" class="primary quest-submit" disabled>Submit answer</button></div>':timeline?`<div class="choices timeline-choices">${options.map(a=>`<button data-pick="${a}" aria-pressed="${timelineOrder.includes(a)}" aria-label="${timelineOrder.includes(a)?`${timelineOrder.indexOf(a)+1}. ${esc(facts[a].name)} selected`:`Add ${esc(facts[a].name)} to timeline`}">${timelineOrder.includes(a)?`<span class="pick-number" aria-hidden="true">${timelineOrder.indexOf(a)+1}</span>`:''}${esc(facts[a].name)}</button>`).join('')}</div><p class="timeline-progress" role="status" aria-live="polite">${timelineOrder.length} of ${mini.options.length} selected</p><div class="selection-actions"><button id="undoTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>↶ Undo</button><button id="clearTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>Clear</button><button id="checkTimeline" class="primary" ${timelineOrder.length===options.length?'':'disabled'}>Check timeline ✓</button></div>`:['population','area'].includes(gameType)?'':gameType==='shape'&&answerMode==='typed'?`<form id="answerForm" class="typed"><label for="answerInput" class="empty">Two letters</label><input id="answerInput" aria-label="Two-letter abbreviation" maxlength="2" pattern="[A-Za-z]{2}" required autocomplete="off" autocapitalize="characters" inputmode="text" spellcheck="false" enterkeyhint="done" placeholder="e.g. NY"><button class="primary">Check</button></form>`:`<div class="choices ${all?'all-neighbors':''}">${options.map(a=>`<button data-answer="${a}" ${all?`aria-pressed="${selectedAnswers.has(a)}" class="${selectedAnswers.has(a)?'selected-answer':''}"`:''} aria-label="${a==='NONE'?'None — no enabled neighbors':esc(facts[a].name)}">${a==='NONE'?'None — no enabled neighbors':esc(facts[a].name)}</button>`).join('')}</div>${all?`<button class="primary check-selection" id="checkNeighbors" ${selectedAnswers.size?'':'disabled'}>Check neighbors ✓</button>`:''}`;
+ const visual=gameType==='mapquest'?`<div class="quest-map"><div class="quest-zoom-controls" role="group" aria-label="Map zoom"><button class="secondary" data-zoom="in" aria-label="Zoom in">Zoom +</button><button class="secondary" data-zoom="out" aria-label="Zoom out">Zoom −</button><button class="secondary" data-zoom="reset">Full map</button></div>${teachingMap({locations:allLocations,mode:'quest',eligible:states.filter(s=>!s.group).map(s=>s.abbr)})}<p data-quest-legend class="map-legend" hidden>🟩 Correct · 🟥 Incorrect choice · 🟨 Intended target</p></div>`:(gameType==='shape'||gameType==='capitals')?gameShape(current):gameType==='neighbors'?`<span class="question-state">${esc(current.name)}</span>${gameShape(current)}`:timeline?'':`<div class="duel">${mini.pair.map(a=>{const s=states.find(t=>t.abbr===a);return `<button class="duel-card" data-answer="${a}" aria-label="Choose ${esc(s.name)}"><span class="tap-prompt">Tap to choose!</span><img src="${facts[a].flag||`assets/flags/${a}.svg`}" alt="Flag of ${esc(s.name)}">${gameShape(s)}<b>${esc(s.name)}</b></button>`;}).join('')}</div>`;
+ const answerMarkup=gameType==='mapquest'?'<div id="questAnswerControls"><p>Tap a state to preview it, then Submit answer. Double-tap to zoom; drag to move.</p><button id="submitMapAnswer" class="primary quest-submit" disabled>Submit answer</button></div>':timeline?`<div class="choices timeline-choices">${options.map(a=>`<button data-pick="${a}" aria-pressed="${timelineOrder.includes(a)}" aria-label="${timelineOrder.includes(a)?`${timelineOrder.indexOf(a)+1}. ${esc(facts[a].name)} selected`:`Add ${esc(facts[a].name)} to timeline`}">${timelineOrder.includes(a)?`<span class="pick-number" aria-hidden="true">${timelineOrder.indexOf(a)+1}</span>`:''}${esc(facts[a].name)}</button>`).join('')}</div><p class="timeline-progress" role="status" aria-live="polite">${timelineOrder.length} of ${mini.options.length} selected</p><div class="selection-actions"><button id="undoTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>↶ Undo</button><button id="clearTimeline" class="secondary" ${timelineOrder.length?'':'disabled'}>Clear</button><button id="checkTimeline" class="primary" ${timelineOrder.length===options.length?'':'disabled'}>Check timeline ✓</button></div>`:['population','area'].includes(gameType)?'':gameType==='shape'&&answerMode==='typed'?`<form id="answerForm" class="typed"><label for="answerInput" class="empty">Two letters</label><input id="answerInput" aria-label="Two-letter abbreviation" maxlength="2" pattern="[A-Za-z]{2}" required autocomplete="off" autocapitalize="characters" inputmode="text" spellcheck="false" enterkeyhint="done" placeholder="e.g. NY"><button class="primary">Check</button></form>`:`<div class="choices ${all?'all-neighbors':''}">${options.map(a=>`<button data-answer="${a}" ${all?`aria-pressed="${selectedAnswers.has(a)}" class="${selectedAnswers.has(a)?'selected-answer':''}"`:''} aria-label="${a==='NONE'?'None — no enabled neighbors':esc(gameType==='capitals'?mini.labels[a]:facts[a].name)}">${a==='NONE'?'None — no enabled neighbors':esc(gameType==='capitals'?mini.labels[a]:facts[a].name)}</button>`).join('')}</div>${all?`<button class="primary check-selection" id="checkNeighbors" ${selectedAnswers.size?'':'disabled'}>Check neighbors ✓</button>`:''}`;
  $('game').innerHTML=`<div class="challenge-head game-controls">${selector}</div><h2 class="game-question">${gameType==='mapquest'?`Find ${esc(current.name)} on the map.`:gameType==='shape'?`Which ${states.length===50?'state':'location'} is this?`:esc(mini.prompt)}</h2>${timeline?'':`<div class="card ${gameType==='shape'?'':'mini-card'}">${visual}${current.shape_note?`<small class="shape-note">Insets not to scale or geographic position</small>`:''}<span class="badge">${badge}</span></div>`}<div class="answers ${timeline?'timeline-answers':''}">${answerMarkup}<div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true">${all||gameType==='mapquest'?'':timeline?'Tap a selected state to remove it, or use Undo.':'Ready? Pick your answer!'}</div><button class="primary next" id="nextQuestion" hidden>Next question ▶</button><p class="game-method" ${all?'hidden':''}>${gameType==='shape'?`All ${states.length} ${states.length===50?'states':'locations'}, once each, then a fresh shuffle.`:esc(mini.note)}</p></div>`;
  bindGameSelector();
  document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>all?toggleNeighbor(b.dataset.answer):submit(b.dataset.answer));
@@ -113,7 +117,7 @@ function challenge(){
  $('nextQuestion').onclick=()=>{question();const heading=document.querySelector('.game-question');heading.tabIndex=-1;heading.focus({preventScroll:true});};
 }
 function gameSelector(){
- const entries=[['shape-choice','Shape Spotter'],['shape-typed','Postal Pro'],['sprint','State Sprint'],['mapquest','Map Quest'],['population',GAME_NAMES.population],['area',GAME_NAMES.area],['timeline',GAME_NAMES.timeline],['neighbors-one','One of my Neighbors'],['neighbors-all','All my Neighbors']];
+ const entries=[['shape-choice','Shape Spotter'],['shape-typed','Postal Pro'],['sprint','State Sprint'],['mapquest','Map Quest'],['capitals','Capital Cities'],['population',GAME_NAMES.population],['area',GAME_NAMES.area],['timeline',GAME_NAMES.timeline],['neighbors-one','One of my Neighbors'],['neighbors-all','All my Neighbors']];
  const selected=gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType;
  return `<label>Game <select id="gameSelect" aria-label="Game">${entries.map(([key,label])=>`<option value="${key}" ${key===selected?'selected':''}>${label}</option>`).join('')}</select></label>`;
 }
@@ -166,7 +170,8 @@ function submit(value){
 }
 function finishAnswer(correct,correctAnswers,explanation,value){
  if(answered)return;answered=true;
- document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,gameRunScore,gameType==='shape');gameRunScore+=points;trackGame(progress,gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType,correct,points,Date.now(),gameType==='timeline'?mini.options.map(a=>facts[a].name).join(', '):['population','area'].includes(gameType)?mini.pair.map(a=>facts[a].name).join(' vs '):current.name,gameRunScore);
+ document.querySelector('.play').classList.toggle('celebrate',correct);const points=record(progress,current,correct,gameRunScore,gameType==='shape'||gameType==='capitals');gameRunScore+=points;trackGame(progress,gameType==='shape'?`shape-${answerMode}`:gameType==='neighbors'?`neighbors-${neighborMode}`:gameType,correct,points,Date.now(),gameType==='timeline'?mini.options.map(a=>facts[a].name).join(', '):['population','area'].includes(gameType)?mini.pair.map(a=>facts[a].name).join(' vs '):current.name,gameRunScore);
+ if(gameType==='capitals')capitalDeck.complete('shape',current.abbr);
  if(gameType==='shape'||gameType==='neighbors')decks.complete(gameType,current.abbr);
  persist();$('counter').textContent=`${progress.lifetimePoints.toLocaleString()} POINTS`;
  const roundComplete=questionPosition&&questionPosition.number===questionPosition.total;
@@ -203,7 +208,7 @@ function finishAnswer(correct,correctAnswers,explanation,value){
  if($('answerInput')){$('answerInput').disabled=true;$('answerForm').querySelector('button').disabled=true;}$('nextQuestion').hidden=false;
 }
 function setMode(next){if(next==='learn'&&sprint&&!sprint.snapshot().paused)sprint.pause();$('settingsButton').setAttribute('aria-pressed','false');mode=next;if(mode==='learn')delete document.body.dataset.game;document.body.dataset.view='game';document.body.dataset.mode=mode;$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',mode==='learn');$('challengeTab').setAttribute('aria-pressed',mode==='challenge');if(mode==='learn')learn();else if(gameType==='sprint'&&sprint)renderSprint();else if(!current)question();else if(answered)question();else challenge();}
-$('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(gameType==='sprint'&&mode==='challenge'){if(sprint)renderSprint();return;}if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'?current:states.find(s=>s.abbr===mini.pair[i]);(svg.closest('.game-shape-layout')||svg).outerHTML=gameShape(s);});}};
+$('scaleToggle').onchange=e=>{relativeScale=e.target.checked;if(gameType==='sprint'&&mode==='challenge'){if(sprint)renderSprint();return;}if(mode==='learn')learn();else if(!answered)challenge();else{document.querySelectorAll('.card .shape').forEach((svg,i)=>{const s=gameType==='shape'||gameType==='neighbors'||gameType==='capitals'?current:states.find(s=>s.abbr===mini.pair[i]);(svg.closest('.game-shape-layout')||svg).outerHTML=gameShape(s);});}};
 function switchMode(next){setMode(next);if(matchMedia('(max-width:760px)').matches)document.querySelector('.play').scrollIntoView({block:'start'});}
 $('learnTab').onclick=()=>switchMode('learn');$('challengeTab').onclick=()=>switchMode('challenge');document.addEventListener('keydown',e=>{if(mode==='learn' && !['INPUT','SELECT','BUTTON'].includes(document.activeElement.tagName)){if(e.key==='ArrowRight')navigate(1);if(e.key==='ArrowLeft')navigate(-1);}});persist();setMode('learn');
 
@@ -231,15 +236,15 @@ startUpdates({storage,document,navigator,location});
 const mobileView=matchMedia('(max-width:760px), (max-height:500px) and (max-width:950px), (pointer:coarse) and (hover:none)').matches;
 let showSwitcher=false,preferredView;
 try{showSwitcher=storage.getItem('statequest.viewSwitcher')==='true';preferredView=storage.getItem('statequest.view');}catch{}
-function applyCardView(enabled){document.body.classList.toggle('flash',enabled);$('viewToggle').setAttribute('aria-pressed',String(enabled));$('viewToggle').textContent=enabled?'▦ Overview':'▣ Card view';}
+function applyCardView(enabled){enabled=kioskMode||enabled;document.body.classList.toggle('flash',enabled);$('viewToggle').setAttribute('aria-pressed',String(enabled));$('viewToggle').textContent=enabled?'▦ Overview':'▣ Card view';}
 function applyViewSwitcher(){
- $('showViewSwitcher').checked=showSwitcher;$('viewToggle').hidden=mobileView&&!showSwitcher;
+ $('showViewSwitcher').checked=showSwitcher;$('viewToggle').hidden=kioskMode||mobileView&&!showSwitcher;$('showViewSwitcher').disabled=kioskMode;
  if(mobileView&&!showSwitcher)applyCardView(true);
 }
 applyCardView(mobileView&&!showSwitcher?true:preferredView?preferredView==='cards':mobileView);
 applyViewSwitcher();
 $('showViewSwitcher').onchange=e=>{showSwitcher=e.target.checked;try{storage.setItem('statequest.viewSwitcher',String(showSwitcher));}catch{}applyViewSwitcher();};
-$('viewToggle').onclick=()=>{const enabled=!document.body.classList.contains('flash');applyCardView(enabled);try{storage.setItem('statequest.view',enabled?'cards':'overview');}catch{}};
+$('viewToggle').onclick=()=>{if(kioskMode)return;const enabled=!document.body.classList.contains('flash');applyCardView(enabled);try{storage.setItem('statequest.view',enabled?'cards':'overview');}catch{}};
 function panelView(view){if(sprint&&!sprint.snapshot().paused)sprint.pause();window.scrollTo(0,0);document.body.dataset.view=view;$('settingsButton').setAttribute('aria-pressed',String(view==='options'));for(const id of ['learnTab','challengeTab'])$(id).setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed',String(view==='progress'));document.querySelector('.progress-scroll').scrollTop=0;}
 function returnToGame(){document.body.dataset.view='game';$('settingsButton').setAttribute('aria-pressed','false');$('progressTab').setAttribute('aria-pressed','false');$('learnTab').setAttribute('aria-pressed',String(mode==='learn'));$('challengeTab').setAttribute('aria-pressed',String(mode==='challenge'));}
 function closeOptions(){if(optionsReturn==='progress')panelView('progress');else returnToGame();}
@@ -269,6 +274,6 @@ function geographySettings(){
 }
 geographySettings();
 
-startWelcome({storage,document,window,navigator,mobile:mobileView});
+startWelcome({storage,document,window,navigator,mobile:mobileView&&!kioskMode});
 
 startGamepad({window,document,navigator});

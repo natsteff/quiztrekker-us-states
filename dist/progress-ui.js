@@ -1,4 +1,4 @@
-const NAMES={'shape-choice':'Shape Spotter','shape-typed':'Postal Pro',sprint:'State Sprint',mapquest:'Map Quest',population:'Population Showdown',area:'Size Showdown',timeline:'Statehood Timeline','neighbors-one':'One of my Neighbors','neighbors-all':'All my Neighbors'};
+const NAMES={'shape-choice':'Shape Spotter','shape-typed':'Postal Pro',sprint:'State Sprint',mapquest:'Map Quest',capitals:'Capital Cities',population:'Population Showdown',area:'Size Showdown',timeline:'Statehood Timeline','neighbors-one':'One of my Neighbors','neighbors-all':'All my Neighbors'};
 const num=n=>(n||0).toLocaleString();
 const seconds=ms=>(ms/1000).toFixed(1)+'s';
 export function progressResults(progress,locations,practiceIds,challengeIds){

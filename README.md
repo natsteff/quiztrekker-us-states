@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.12.1" alt="Play QuizTrekker - US States now — v0.12.1" width="420">
+    <img src="assets/play-now.svg?v=0.13.0" alt="Play QuizTrekker - US States now — v0.13.0" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.12.1** — basic standard-layout gamepad controls.
+Current release: **v0.13.0** — Capital Cities, TV kiosk view and contextual controller navigation.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -46,6 +46,7 @@ node tests/sprint.test.cjs
 node tests/progress.test.cjs
 node tests/shape-clue.test.cjs
 node tests/gamepad.test.cjs
+node tests/capitals.test.cjs
 node tests/welcome.test.cjs
 ```
 
@@ -178,3 +179,11 @@ Old per-game totals migrate exactly. Old retained Sprint run points (or the know
 ### v0.12.1 basic gamepad controls
 
 Connect a standard-layout controller and press a button to make it available to the browser. D-pad/left stick moves focus, A activates, B closes a dialog/goes back, LB/RB changes Learn cards, and Start pauses/resumes Sprint or opens Settings. Left/right changes a focused dropdown; up/down leaves it. Map Quest uses focused regions and A to preview, followed by Submit answer. Postal Pro text input requires a keyboard. Controller support depends on the browser/device and standard mapping; physical controller validation is still needed. Presses are edge-triggered, navigation repeats after a delay, and background tabs ignore controllers.
+
+### v0.13.0 Capital Cities, kiosk and controller navigation
+
+Capital Cities asks for the capital of each eligible practice location with up to four distinct city choices. Locations without a common capital are omitted. It uses its own persisted shuffled deck, location/mastery settings, lifetime points, game bests and mastery-failure reviews. Capital names are not revealed on the question image. It appears after Map Quest in the menu and My Progress.
+
+Launch on TV/PC with `chromium --kiosk "https://natsteff.github.io/quiztrekker-us-states/?fullscreen=1"`. The URL forces card view/full-width viewport layout without overwriting saved view preferences; Chromium kiosk mode handles browser fullscreen. Removing the parameter restores normal view selection.
+
+Controller mapping: shoulders switch games; left stick navigates all visible controls spatially; D-pad navigates primary answers/actions and changes Learn cards left/right; A selects, B backs out, X flips Learn, Y submits a pending multi-answer/map/timeline or advances after feedback; Start pauses/resumes Sprint or toggles Settings. Only the stick changes a focused dropdown left/right. Modal dialogs keep navigation scoped. Selecting versus submitting remains explicit for Map Quest, Neighbor All and Timeline; ordinary multiple-choice games still grade on A. Postal Pro needs a keyboard. Physical TV/controller validation remains necessary.

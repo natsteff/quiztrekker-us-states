@@ -1,4 +1,4 @@
-export const GAME_NAMES={mapquest:'Map Quest',shape:'Shape Challenge',population:'Population Showdown',area:'Size Showdown',neighbors:'Neighboring States',timeline:'Statehood Timeline'};
+export const GAME_NAMES={capitals:'Capital Cities',mapquest:'Map Quest',shape:'Shape Challenge',population:'Population Showdown',area:'Size Showdown',neighbors:'Neighboring States',timeline:'Statehood Timeline'};
 function pick(a,r){return a[Math.min(a.length-1,Math.floor(r()*a.length))];}
 function shuffled(a,r){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 export function makeQuestion(type,states,facts,previous,random=Math.random,settings={}){
