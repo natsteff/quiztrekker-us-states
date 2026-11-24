@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.13.0" alt="Play QuizTrekker - US States now — v0.13.0" width="420">
+    <img src="assets/play-now.svg?v=0.14.0" alt="Play QuizTrekker - US States now — v0.14.0" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.13.0** — Capital Cities, TV kiosk view and contextual controller navigation.
+Current release: **v0.14.0** — direct controller actions, three Capital Cities modes and the QT USA Home Screen label.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -187,3 +187,19 @@ Capital Cities asks for the capital of each eligible practice location with up t
 Launch on TV/PC with `chromium --kiosk "https://natsteff.github.io/quiztrekker-us-states/?fullscreen=1"`. The URL forces card view/full-width viewport layout without overwriting saved view preferences; Chromium kiosk mode handles browser fullscreen. Removing the parameter restores normal view selection.
 
 Controller mapping: shoulders switch games; left stick navigates all visible controls spatially; D-pad navigates primary answers/actions and changes Learn cards left/right; A selects, B backs out, X flips Learn, Y submits a pending multi-answer/map/timeline or advances after feedback; Start pauses/resumes Sprint or toggles Settings. Only the stick changes a focused dropdown left/right. Modal dialogs keep navigation scoped. Selecting versus submitting remains explicit for Map Quest, Neighbor All and Timeline; ordinary multiple-choice games still grade on A. Postal Pro needs a keyboard. Physical TV/controller validation remains necessary.
+
+### v0.14.0 direct controller actions and Capital Cities modes
+
+The Home Screen label is **QT USA**; the full app branding remains QuizTrekker - US States. Existing installed shortcuts may keep their old label until re-added.
+
+Capital Cities has one game-menu entry and three mode buttons: **Name the Capital** (location to city), **Name the State** (city to location), and **Type the Postal Code** (city to typed two-letter abbreviation). Reverse questions have no revealing silhouette or locator. Modes remember the last choice, use independent shuffled decks, and show separate scores and streaks under Capital Cities in My Progress. Existing capital results remain in Name the Capital. Typed mode requires a keyboard, including on a controller setup.
+
+Connect a standard-layout controller and press a button to expose it to the browser. A compact controls bar appears at the bottom and reserves its own space in card view. Standard Xbox button names are used; other controller labels may differ.
+
+- **LB / RB:** switch Learn, Play and My Progress. **Menu / Start:** toggle Settings (pauses Sprint). **View / Back:** close a popup, return from a panel, or open the game picker from Play.
+- **Learn:** LT / RT previous / next card, X flip, A More Facts, Y shape / map, D-pad up/down scroll facts.
+- **Four-choice games and Sprint:** A / B / X / Y answer in reading order; badges identify each choice. Two-card Showdowns use A / B. After results, RT advances; face buttons cannot accidentally advance. Sprint advances automatically.
+- **Timeline:** A / B / X / Y add or remove a state, LT undo, RT check / next. **All my Neighbors:** D-pad chooses, A toggles, RT checks / advances.
+- **Menus and mode chooser:** D-pad or stick moves focus, A selects. The stick also reaches secondary controls; left/right edits a focused dropdown. **Map Quest is adapted/slower:** D-pad moves among regions, A previews, RT submits; the stick reaches zoom controls. Typed games require a keyboard; no on-screen keyboard is included.
+
+Buttons activate once per press, direct answers require release before another answer, reconnects baseline held input, and dialogs keep focus scoped. Physical controller / Batocera acceptance remains to be tested; automated routing and browser checks do not substitute for that hardware check.

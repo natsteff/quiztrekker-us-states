@@ -10,3 +10,7 @@ console.log('Capital coverage, unique city choices, missing capitals and explici
 const core=vm.runInNewContext(fs.readFileSync('dist/core.js','utf8').replaceAll('export ','')+';({clean,trackGame,exportProgress,importProgress})');const p=core.clean();core.trackGame(p,'capitals',true,100,1,'Alabama',100);assert.equal(core.importProgress(core.exportProgress(p),states).gameStats.capitals.points,100);
 const master=vm.runInNewContext(fs.readFileSync('dist/mastery.js','utf8').replaceAll('export ','')+';({failedLocations})');assert.equal(master.failedLocations('capitals',false,{abbr:'AL'},null,[],{}).join(','),'AL');
 console.log('Capital scoring/save whitelist and target mastery attribution passed');
+for(const s of pool){const reverse=c.makeCapitalQuestion(pool,s.abbr,()=>.4,'reverse'),typed=c.makeCapitalQuestion(pool,s.abbr,()=>.4,'typed');assert(reverse.prompt.includes(s.capital));assert.equal(reverse.labels[s.abbr],s.name);assert(reverse.options.includes(s.abbr));assert(typed.prompt.includes(s.capital));assert(!typed.prompt.includes(s.name+'?'));}
+for(const key of ['capitals-reverse','capitals-typed']){core.trackGame(p,key,true,110,1,'Test',110);assert.equal(core.importProgress(core.exportProgress(p),[...states,...extras]).gameStats[key].points,110);}
+assert.equal(p.gameStats.capitals.points,100);assert.equal(p.lifetimePoints,320);
+console.log('Reverse/typed capital prompts, independent stats, legacy preservation and lifetime totals passed');

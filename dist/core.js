@@ -53,7 +53,7 @@ export function importProgress(text, states) {
   const restored=clean(p);restored.sprintMigrated=true;return restored;
 }
 
-const GAME_KEYS=['shape-choice','shape-typed','mapquest','capitals','population','area','timeline','neighbors-one','neighbors-all'];
+const GAME_KEYS=['shape-choice','shape-typed','mapquest','capitals','capitals-reverse','capitals-typed','population','area','timeline','neighbors-one','neighbors-all'];
 const validPool=p=>Array.isArray(p)&&p.length>0&&p.length<=70&&new Set(p).size===p.length&&p.every(a=>/^[A-Z]{2}$/.test(a));
 const stamp=n=>integer(n)&&n>0&&n<=8640000000000000;
 export function cleanGameStats(raw,keepHistory=false){
