@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.14.0" alt="Play QuizTrekker - US States now — v0.14.0" width="420">
+    <img src="assets/play-now.svg?v=0.14.1" alt="Play QuizTrekker - US States now — v0.14.1" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.14.0** — direct controller actions, three Capital Cities modes and the QT USA Home Screen label.
+Current release: **v0.14.1** — consistent results-first layouts and corrected text-only Capital Cities screens.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -203,3 +203,7 @@ Connect a standard-layout controller and press a button to expose it to the brow
 - **Menus and mode chooser:** D-pad or stick moves focus, A selects. The stick also reaches secondary controls; left/right edits a focused dropdown. **Map Quest is adapted/slower:** D-pad moves among regions, A previews, RT submits; the stick reaches zoom controls. Typed games require a keyboard; no on-screen keyboard is included.
 
 Buttons activate once per press, direct answers require release before another answer, reconnects baseline held input, and dialogs keep focus scoped. Physical controller / Batocera acceptance remains to be tested; automated routing and browser checks do not substitute for that hardware check.
+
+### v0.14.1 results-first layouts
+
+Every untimed game shows Next question and its correct/incorrect result directly below the game controls after submission, with the original question and choices beneath. Keyboard focus moves to Next question and results return to the top. Sprint retains automatic advancement, with brief feedback above the question and final results at the top. Text-only Capital Cities modes omit the redundant decorative card; their round counter stays in normal document flow.
