@@ -94,3 +94,5 @@ body.kiosk header,body.kiosk main{max-width:none}body.kiosk.flash{font-size:clam
 
 /* Text-only capital questions need no decorative visual card. */
 .question-round{flex-shrink:0;margin:0;padding:12px 16px;background:#fff4b2;font-size:12px;font-weight:900;letter-spacing:1px}.game-results{flex-shrink:0}.sprint-feedback:empty{display:none}.sprint-status+.sprint-feedback:not(:empty){flex-shrink:0;margin:0;padding:12px 16px;background:#eff7ff;border-bottom:2px solid #c7e3f5;font-size:18px}.game-results>.next{display:block}
+
+#controllerInputs{font-family:monospace;overflow-wrap:anywhere;font-size:13px}#controllerStatus{overflow-wrap:anywhere}.controller-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}#controllerBinding{max-width:100%}body.keyboard-focus .save-tools :focus{outline:3px solid #087cdd;outline-offset:3px}body.controller-mode .save-tools input:focus{outline:3px solid #087cdd;outline-offset:3px}

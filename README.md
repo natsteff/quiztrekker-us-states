@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.14.1" alt="Play QuizTrekker - US States now — v0.14.1" width="420">
+    <img src="assets/play-now.svg?v=0.14.2" alt="Play QuizTrekker - US States now — v0.14.2" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.14.1** — consistent results-first layouts and corrected text-only Capital Cities screens.
+Current release: **v0.14.2** — accessible controller Settings, device diagnostics and trigger/button assignments.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -207,3 +207,13 @@ Buttons activate once per press, direct answers require release before another a
 ### v0.14.1 results-first layouts
 
 Every untimed game shows Next question and its correct/incorrect result directly below the game controls after submission, with the original question and choices beneath. Keyboard focus moves to Next question and results return to the top. Sprint retains automatic advancement, with brief feedback above the question and final results at the top. Text-only Capital Cities modes omit the redundant decorative card; their round counter stays in normal document flow.
+
+### v0.14.2 controller Settings and device diagnostics
+
+Settings → **Controller controls** shows whether the browser detects a controller, its mapping, live button values/axes and the last recognized action. **Always show controller controls** keeps the bottom legend and answer badges visible; without a usable device it explicitly shows a preview. No URL parameter is required for input; `fullscreen=1` still controls TV/card layout only.
+
+Settings uses sequential up/down navigation through expanded sections, including Check for Updates and Update & Reload. A expands sections, toggles checkboxes and activates buttons; left/right edits selectors and expands/collapses a focused section. The stick continues to reach secondary controls.
+
+Button values now supplement the browser's `pressed` flag, with separate press/release thresholds. For nonworking shoulders/triggers, open **Input diagnostics and button assignments**, choose the action and Assign control, then press the physical control while keeping sticks still. Button- and axis-based assignments persist for that device in this browser; Reset this controller restores the browser layout. Unsupported layouts remain disabled unless the user explicitly selects the standard-layout fallback and adjusts differing controls. This does not automatically recognize arbitrary nonstandard devices. Profiles stay device-local and are not included in progress backups.
+
+Keyboard-emulating mappers are not native Gamepad API devices. Their keyboard bindings are not translated into gamepad actions by this release. Physical controller/Batocera testing remains necessary; automated analog-input, custom-mapping and browser routing checks cover the implemented paths.
