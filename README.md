@@ -3,13 +3,13 @@
 </p>
 <p align="center">
   <a href="https://natsteff.github.io/quiztrekker-us-states/">
-    <img src="assets/play-now.svg?v=0.14.2" alt="Play QuizTrekker - US States now — v0.14.2" width="420">
+    <img src="assets/play-now.svg?v=0.14.3" alt="Play QuizTrekker - US States now — v0.14.3" width="420">
   </a>
 </p>
 
 # QuizTrekker - US States
 
-Current release: **v0.14.2** — accessible controller Settings, device diagnostics and trigger/button assignments.
+Current release: **v0.14.3** — controller option choosers, reliable checkbox focus and explicit content scrolling.
 
 A browser geography game for all 50 U.S. states, with options to include Canadian provinces, U.S. territories and Washington, D.C., and Canadian territories—for up to 70 locations. Learn silhouettes, flags, postal abbreviations, names, capitals and locations, then practice with multiple choice or typed abbreviations. Shape Challenge and neighbor quizzes cover every enabled location once before starting a new random order. Scores, streaks and explored locations are stored in the current browser.
 
@@ -217,3 +217,9 @@ Settings uses sequential up/down navigation through expanded sections, including
 Button values now supplement the browser's `pressed` flag, with separate press/release thresholds. For nonworking shoulders/triggers, open **Input diagnostics and button assignments**, choose the action and Assign control, then press the physical control while keeping sticks still. Button- and axis-based assignments persist for that device in this browser; Reset this controller restores the browser layout. Unsupported layouts remain disabled unless the user explicitly selects the standard-layout fallback and adjusts differing controls. This does not automatically recognize arbitrary nonstandard devices. Profiles stay device-local and are not included in progress backups.
 
 Keyboard-emulating mappers are not native Gamepad API devices. Their keyboard bindings are not translated into gamepad actions by this release. Physical controller/Batocera testing remains necessary; automated analog-input, custom-mapping and browser routing checks cover the implemented paths.
+
+### v0.14.3 controller options and scrolling
+
+A on a focused dropdown now opens a controller-friendly chooser: D-pad or left stick moves, A selects, B/View cancels. Left/right still changes a focused dropdown directly. Checkbox activation restores focus after location/fact options rerender. This includes all v0.14.2 Settings fixes and diagnostics, whose first deployment was blocked by a GitHub service incident.
+
+**Right stick up/down scrolls content** without moving focus, including long results, Learn facts, More Facts and My Progress. **LT/RT scrolls up/down in Settings, My Progress and popups**; its existing Learn card and Play check/next actions remain contextual. Scrolling prefers the inner reading pane and continues to the containing pane at a boundary. Scroll up/down can also be reassigned in Controller controls for devices without a right stick. Native Batocera exit behavior is unchanged. Physical controller acceptance remains a separate hardware check.
