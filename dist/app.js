@@ -1,3 +1,4 @@
+import {startSharing} from './sharing.js';
 import {capitalLocations,makeCapitalQuestion} from './capitals.js';
 import {kioskRequested} from './kiosk.js';
 import {startGamepad} from './gamepad.js';
@@ -286,5 +287,7 @@ function geographySettings(){
 geographySettings();
 
 startWelcome({storage,document,window,navigator,mobile:mobileView&&!kioskMode});
+
+startSharing({document,navigator,onOpen:()=>{if(sprint&&!sprint.snapshot().paused)sprint.pause();}});
 
 startGamepad({window,document,navigator});

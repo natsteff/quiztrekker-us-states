@@ -48,6 +48,7 @@ node tests/shape-clue.test.cjs
 node tests/gamepad.test.cjs
 node tests/capitals.test.cjs
 node tests/welcome.test.cjs
+node tests/sharing.test.cjs
 ```
 
 The Python tests cover the 50-state data build and representative geometry. The JavaScript tests cover scoring, streaks, answer normalization, saved practice history and storage failures. JavaScript tests require Node (only tests require it).
@@ -58,7 +59,7 @@ Boundary data: [US Atlas 3.0.1](https://github.com/topojson/us-atlas), derived f
 
 ## Mobile installation and backups
 
-Phones start in Card view: one large flashcard fills the available game area, with Learn, Play and My Progress controls at the bottom. Overview switches to the wider dashboard; the chosen view stays on this browser. My Progress contains scores. The top-right gear opens Options for backups, settings and installation help. Buttons use bold colors, tactile borders and large touch targets. Card geometry remains accurate. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates apply at startup, or through Options → Game settings → Update & Reload when a download is ready.
+Phones start in Card view: one large flashcard fills the available game area, with Learn, Play and My Progress controls at the bottom. Overview switches to the wider dashboard; the chosen view stays on this browser. My Progress contains scores. The top-right gear opens Options for backups, settings and installation help. Buttons use bold colors, tactile borders and large touch targets. Card geometry remains accurate. On iPhone, use Safari’s Share → Add to Home Screen; on Android, use the browser’s Install app/Add to Home screen menu. Installation availability depends on the browser. HTTPS or localhost is required for offline setup. After the offline-ready message appears, the bundled game can reopen without a connection. Updates apply at startup, or through Options → Update & Reload when a download is ready.
 
 Export save downloads a versioned JSON backup. Transfer that file yourself to another device and choose Import save. A validated summary and confirmation precede replacement; import restarts the current visit’s challenge score. Malformed, oversized and unsupported-version files are rejected. Save files are processed entirely on the device. Import replaces rather than merges progress; export first to retain the old journal.
 
@@ -127,7 +128,7 @@ ALL Neighbors chooses targets from the practice pool but answers from the full e
 Timeline results show a green correct prefix, red first mistake, and neutral remainder, with “first X of Y in order.” Same-date states remain interchangeable. These colors do not alter round points or mastery attribution. Population comparison rank/value order is descending population across dates, with location-name ties and source dates retained; alphabetical mode remains available.
 
 ### v0.9.2 updates and map controls
-Options → Game settings has Check for Updates Now and, when a downloaded update is ready, Update & Reload. Manual checking works with automatic checks disabled. Automatic checks run on startup and quietly on foreground/background-cache resume, throttled to once per minute. Only startup or an explicit Update & Reload can apply/reload; ongoing questions are never automatically interrupted. Checks time out after eight seconds; offline play stays available. Reloading returns to Learn and resets the visit score while preserving saved progress/mastery.
+The bottom of Options has Check for Updates Now and, when a downloaded update is ready, Update & Reload. Manual checking works with automatic checks disabled. Automatic checks run on startup and quietly on foreground/background-cache resume, throttled to once per minute. Only startup or an explicit Update & Reload can apply/reload; ongoing questions are never automatically interrupted. Checks time out after eight seconds; offline play stays available. Reloading returns to Learn and resets the visit score while preserving saved progress/mastery.
 
 Neighbor quizzes, facts and maps use land/river adjacency, excluding lake-only/ocean-only pairs consistently, including MI–MN, MI–IL, NY–RI, ON–OH and ON–PA. MI–ON and ordinary river neighbors remain.
 
@@ -223,3 +224,7 @@ Keyboard-emulating mappers are not native Gamepad API devices. Their keyboard bi
 A on a focused dropdown now opens a controller-friendly chooser: D-pad or left stick moves, A selects, B/View cancels. Left/right still changes a focused dropdown directly. Checkbox activation restores focus after location/fact options rerender. This includes all v0.14.2 Settings fixes and diagnostics, whose first deployment was blocked by a GitHub service incident.
 
 **Right stick up/down scrolls content** without moving focus, including long results, Learn facts, More Facts and My Progress. **LT/RT scrolls up/down in Settings, My Progress and popups**; its existing Learn card and Play check/next actions remain contextual. Scrolling prefers the inner reading pane and continues to the containing pane at a boundary. Scroll up/down can also be reassigned in Controller controls for devices without a right stick. Native Batocera exit behavior is unchanged. Physical controller acceptance remains a separate hardware check.
+
+## About and sharing
+
+Select the top-left logo for About, the current version and Share game. Share game is also at the bottom of Settings. Supported browsers open native sharing; other browsers show the public game URL with Copy link and selectable text. Shared links always open the standard game without TV/fullscreen parameters. Version, update status and manual update controls are outside collapsible sections at the bottom of Settings, after Sources/Credits. Controller instructions are consolidated under Controller controls.
